@@ -8,8 +8,6 @@ import org.serverct.parrot.parrotx.data.PDataFolder;
 import org.serverct.parrot.parrotx.utils.LocaleUtil;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 public class PFolder implements PDataFolder {
 
@@ -20,8 +18,6 @@ public class PFolder implements PDataFolder {
     protected FileConfiguration config;
     private String id;
     private String name;
-
-    private Map<String, ?> dataMap = new HashMap<>();
 
     public PFolder(@NonNull PPlugin plugin, String folderName, String typeName) {
         this.plugin = plugin;
@@ -41,14 +37,14 @@ public class PFolder implements PDataFolder {
     }
 
     @Override
-    public Map<String, ?> getData() {
-        return dataMap;
+    public void releaseDefaultData() {
     }
 
     @Override
     public void init() {
         if (!folder.exists()) {
             if (folder.mkdirs()) {
+                releaseDefaultData();
                 plugin.getLang().log("未找到 &c" + getTypeName() + "&7, 已重新生成.", LocaleUtil.Type.WARN, false);
             } else {
                 plugin.getLang().log("尝试生成 &c" + getTypeName() + " &7失败.", LocaleUtil.Type.ERROR, false);
@@ -56,10 +52,13 @@ public class PFolder implements PDataFolder {
         } else {
             File[] files = folder.listFiles(pathname -> pathname.getName().endsWith(".yml"));
             if (files != null && files.length != 0) {
+                releaseDefaultData();
+            }
+            if (files != null && files.length != 0) {
                 for (File file : files) {
                     load(file);
                 }
-                plugin.getLang().log("共加载 &c" + getTypeName() + " &7中的 &c" + dataMap.size() + " &7个数据文件.", LocaleUtil.Type.INFO, false);
+                plugin.getLang().log("共加载 &c" + getTypeName() + " &7中的 &c" + files.length + " &7个数据文件.", LocaleUtil.Type.INFO, false);
             } else {
                 plugin.getLang().log("&c" + getTypeName() + " &7中没有数据可供加载.", LocaleUtil.Type.WARN, false);
             }

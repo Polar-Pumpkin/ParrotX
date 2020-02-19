@@ -3,14 +3,13 @@ package org.serverct.parrot.parrotx.data;
 import lombok.NonNull;
 
 import java.io.File;
-import java.util.Map;
 
 public interface PDataFolder {
     String getTypeName();
 
     String getFolderName();
 
-    Map<String, ?> getData();
+    void releaseDefaultData();
 
     void init();
 
