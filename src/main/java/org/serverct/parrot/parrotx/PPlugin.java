@@ -31,7 +31,7 @@ public class PPlugin extends JavaPlugin {
 
     public void init() {
         lang = new LocaleUtil(this, "Chinese");
-        pConfig = new PConfig(this);
+        pConfig = new PConfig(this, "config", "主配置文件");
         pConfig.init();
         localeKey = pConfig.getConfig().getString("Language");
 

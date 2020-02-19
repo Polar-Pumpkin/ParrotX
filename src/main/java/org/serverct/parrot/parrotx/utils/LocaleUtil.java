@@ -22,6 +22,7 @@ public class LocaleUtil {
     public static final String SAVE = "保存";
     public static final String REGISTER = "注册";
     public static final String RELOAD = "重载";
+    public static final String DELETE = "删除";
     private String Tool_Prefix = "&7[&b&lEP's &aLocale Tool&7] ";
     private String Tool_INFO = "&a&l> ";
     private String Tool_WARN = "&e&l> ";
@@ -111,8 +112,15 @@ public class LocaleUtil {
         }
     }
 
+    public void logAction(String action, String object) {
+        String message = "尝试%action% &c%object%&7."
+                .replace("%action%", action)
+                .replace("%object%", object);
+        log(message, Type.INFO, false);
+    }
+
     public void logError(String action, String object, String exception) {
-        String message = "%action%&c%object%&7时遇到错误(&c%exception%&7)."
+        String message = "%action% &c%object% &7时遇到错误(&c%exception%&7)."
                 .replace("%action%", action)
                 .replace("%object%", object)
                 .replace("%exception%", exception);

@@ -34,7 +34,7 @@ public class PFolder implements PDataFolder {
 
     @Override
     public String getTypeName() {
-        return name;
+        return name + "(" + id + ")";
     }
 
     @Override
@@ -51,9 +51,9 @@ public class PFolder implements PDataFolder {
     public void init() {
         if (!folder.exists()) {
             if (folder.mkdirs()) {
-                plugin.getLang().log("未找到" + name + "数据文件夹, 已重新生成.", LocaleUtil.Type.WARN, false);
+                plugin.getLang().log("未找到 &c" + getTypeName() + "&7, 已重新生成.", LocaleUtil.Type.WARN, false);
             } else {
-                plugin.getLang().log("尝试生成" + name + "数据文件夹失败.", LocaleUtil.Type.ERROR, false);
+                plugin.getLang().log("尝试生成 &c" + getTypeName() + " &7失败.", LocaleUtil.Type.ERROR, false);
             }
         } else {
             File[] files = folder.listFiles(pathname -> pathname.getName().endsWith(".yml"));
@@ -65,7 +65,7 @@ public class PFolder implements PDataFolder {
                 }
                 plugin.getLang().log("共加载 &c" + dataMap.size() + " &7个" + typeFile + ".", LocaleUtil.Type.INFO, false);
             } else {
-                plugin.getLang().log(name + "中没有数据可供加载.", LocaleUtil.Type.WARN, false);
+                plugin.getLang().log("&c" + getTypeName() + " &7中没有数据可供加载.", LocaleUtil.Type.WARN, false);
             }
         }
     }
@@ -76,7 +76,7 @@ public class PFolder implements PDataFolder {
 
     @Override
     public void reloadAll() {
-        plugin.getLang().log("尝试重载" + name + "数据文件夹.", LocaleUtil.Type.INFO, false);
+        plugin.getLang().logAction(LocaleUtil.RELOAD, getTypeName());
         init();
     }
 
