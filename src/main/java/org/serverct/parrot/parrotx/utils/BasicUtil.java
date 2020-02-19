@@ -1,5 +1,8 @@
 package org.serverct.parrot.parrotx.utils;
 
+import lombok.NonNull;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -64,6 +67,11 @@ public class BasicUtil {
             }
         }
         return fileName;
+    }
+
+    public static String formatLocation(@NonNull Location location) {
+        String result = "&c" + location.getBlockX() + "&7, &c" + location.getBlockY() + "&7, &c" + location.getBlockZ();
+        return ChatColor.translateAlternateColorCodes('&', result);
     }
 
     public static void openInventory(PPlugin plugin, Player user, Inventory inventory) {
