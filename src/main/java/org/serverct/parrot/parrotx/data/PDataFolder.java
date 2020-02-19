@@ -8,7 +8,7 @@ import java.util.Map;
 public interface PDataFolder {
     String getTypeName();
 
-    String getID();
+    String getFolderName();
 
     Map<String, ?> getData();
 

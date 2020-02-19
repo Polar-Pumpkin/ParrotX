@@ -34,7 +34,7 @@ public class PConfig implements PConfiguration {
     }
 
     @Override
-    public String getID() {
+    public String getFileName() {
         return id;
     }
 

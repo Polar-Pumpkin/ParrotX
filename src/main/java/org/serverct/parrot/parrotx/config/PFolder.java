@@ -4,9 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.serverct.parrot.parrotx.PPlugin;
-import org.serverct.parrot.parrotx.data.PConfiguration;
 import org.serverct.parrot.parrotx.data.PDataFolder;
-import org.serverct.parrot.parrotx.utils.BasicUtil;
 import org.serverct.parrot.parrotx.utils.LocaleUtil;
 
 import java.io.File;
@@ -23,7 +21,7 @@ public class PFolder implements PDataFolder {
     private String id;
     private String name;
 
-    private Map<String, PConfiguration> dataMap = new HashMap<>();
+    private Map<String, ?> dataMap = new HashMap<>();
 
     public PFolder(@NonNull PPlugin plugin, String folderName, String typeName) {
         this.plugin = plugin;
@@ -38,12 +36,12 @@ public class PFolder implements PDataFolder {
     }
 
     @Override
-    public String getID() {
+    public String getFolderName() {
         return id;
     }
 
     @Override
-    public Map<String, PConfiguration> getData() {
+    public Map<String, ?> getData() {
         return dataMap;
     }
 
@@ -58,12 +56,10 @@ public class PFolder implements PDataFolder {
         } else {
             File[] files = folder.listFiles(pathname -> pathname.getName().endsWith(".yml"));
             if (files != null && files.length != 0) {
-                String typeFile = "未知类型数据文件";
                 for (File file : files) {
                     load(file);
-                    typeFile = dataMap.get(BasicUtil.getNoExFileName(file.getName())).getTypeName();
                 }
-                plugin.getLang().log("共加载 &c" + dataMap.size() + " &7个" + typeFile + ".", LocaleUtil.Type.INFO, false);
+                plugin.getLang().log("共加载 &c" + getTypeName() + " &7中的 &c" + dataMap.size() + " &7个数据文件.", LocaleUtil.Type.INFO, false);
             } else {
                 plugin.getLang().log("&c" + getTypeName() + " &7中没有数据可供加载.", LocaleUtil.Type.WARN, false);
             }
