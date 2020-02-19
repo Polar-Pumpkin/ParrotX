@@ -1,7 +1,5 @@
 package org.serverct.parrot.parrotx.data;
 
-import lombok.NonNull;
-import org.bukkit.entity.Player;
 import org.serverct.parrot.parrotx.flags.FileSaved;
 import org.serverct.parrot.parrotx.flags.Owned;
 import org.serverct.parrot.parrotx.flags.Uniqued;
@@ -13,9 +11,9 @@ public interface PGroup extends FileSaved, Uniqued, Owned {
 
     List<?> getMembers();
 
-    boolean isMember(@NonNull Player user);
+    boolean isMember(String userName);
 
-    void addMember(@NonNull Player user);
+    void addMember(String userName);
 
-    void delMember(@NonNull Player user);
+    void delMember(String userName);
 }
