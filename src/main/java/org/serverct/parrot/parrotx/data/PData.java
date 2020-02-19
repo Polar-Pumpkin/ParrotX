@@ -5,7 +5,6 @@ import org.serverct.parrot.parrotx.flags.Uniqued;
 import org.serverct.parrot.parrotx.utils.LocaleUtil;
 
 public interface PData extends PConfiguration, Uniqued {
-
     @Override
     default void delete() {
         PPlugin plugin = getID().getPlugin();
