@@ -51,8 +51,9 @@ public class PFolder implements PDataFolder {
             }
         } else {
             File[] files = folder.listFiles(pathname -> pathname.getName().endsWith(".yml"));
-            if (files != null && files.length != 0) {
+            if (files == null || files.length == 0) {
                 releaseDefaultData();
+                files = folder.listFiles(pathname -> pathname.getName().endsWith(".yml"));
             }
             if (files != null && files.length != 0) {
                 for (File file : files) {
