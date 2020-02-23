@@ -9,9 +9,9 @@ public interface PData extends PConfiguration, Uniqued {
     default void delete() {
         PPlugin plugin = getID().getPlugin();
         if (getFile().delete()) {
-            plugin.getLang().logAction(LocaleUtil.DELETE, getTypeName());
+            plugin.lang.logAction(LocaleUtil.DELETE, getTypeName());
         } else {
-            plugin.getLang().logError(LocaleUtil.DELETE, getTypeName(), "无法删除该文件");
+            plugin.lang.logError(LocaleUtil.DELETE, getTypeName(), "无法删除该文件");
         }
     }
 }

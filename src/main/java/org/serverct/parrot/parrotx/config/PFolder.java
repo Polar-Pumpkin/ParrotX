@@ -45,9 +45,9 @@ public class PFolder implements PDataFolder {
         if (!folder.exists()) {
             if (folder.mkdirs()) {
                 releaseDefaultData();
-                plugin.getLang().log("未找到 &c" + getTypeName() + "&7, 已重新生成.", LocaleUtil.Type.WARN, false);
+                plugin.lang.log("未找到 &c" + getTypeName() + "&7, 已重新生成.", LocaleUtil.Type.WARN, false);
             } else {
-                plugin.getLang().log("尝试生成 &c" + getTypeName() + " &7失败.", LocaleUtil.Type.ERROR, false);
+                plugin.lang.log("尝试生成 &c" + getTypeName() + " &7失败.", LocaleUtil.Type.ERROR, false);
             }
         } else {
             File[] files = folder.listFiles(pathname -> pathname.getName().endsWith(".yml"));
@@ -59,9 +59,9 @@ public class PFolder implements PDataFolder {
                 for (File file : files) {
                     load(file);
                 }
-                plugin.getLang().log("共加载 &c" + getTypeName() + " &7中的 &c" + files.length + " &7个数据文件.", LocaleUtil.Type.INFO, false);
+                plugin.lang.log("共加载 &c" + getTypeName() + " &7中的 &c" + files.length + " &7个数据文件.", LocaleUtil.Type.INFO, false);
             } else {
-                plugin.getLang().log("&c" + getTypeName() + " &7中没有数据可供加载.", LocaleUtil.Type.WARN, false);
+                plugin.lang.log("&c" + getTypeName() + " &7中没有数据可供加载.", LocaleUtil.Type.WARN, false);
             }
         }
     }
@@ -72,7 +72,7 @@ public class PFolder implements PDataFolder {
 
     @Override
     public void reloadAll() {
-        plugin.getLang().logAction(LocaleUtil.RELOAD, getTypeName());
+        plugin.lang.logAction(LocaleUtil.RELOAD, getTypeName());
         init();
     }
 

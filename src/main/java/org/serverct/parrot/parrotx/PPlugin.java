@@ -1,6 +1,7 @@
 package org.serverct.parrot.parrotx;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -10,13 +11,11 @@ import org.serverct.parrot.parrotx.utils.LocaleUtil;
 
 public class PPlugin extends JavaPlugin {
 
-    @Getter
     public static PPlugin instance;
-    @Getter
     public LocaleUtil lang;
-    @Getter
     public String localeKey;
     @Getter
+    @Setter
     public PConfig pConfig;
 
     @Override
@@ -30,12 +29,15 @@ public class PPlugin extends JavaPlugin {
     }
 
     public void init() {
+        preload();
+
         lang = new LocaleUtil(this, "Chinese");
-        pConfig = new PConfig(this, "config", "主配置文件");
-        pConfig.init();
         localeKey = pConfig.getConfig().getString("Language");
 
         load();
+    }
+
+    protected void preload() {
     }
 
     protected void load() {

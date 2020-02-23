@@ -24,14 +24,14 @@ public class CommandHandler implements CommandExecutor {
         if (!commands.containsKey(cmd)) {
             commands.put(cmd, executor);
         } else {
-            plugin.getLang().logError(LocaleUtil.REGISTER, "子命令", "重复子命令注册: " + cmd);
+            plugin.lang.logError(LocaleUtil.REGISTER, "子命令", "重复子命令注册: " + cmd);
         }
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(args.length == 0) {
-            plugin.getLang().getHelp(plugin.getLocaleKey()).forEach(sender::sendMessage);
+            plugin.lang.getHelp(plugin.localeKey).forEach(sender::sendMessage);
         } else {
             if(commands.containsKey(args[0])) {
                 return commands.get(args[0]).execute(plugin, sender, args);

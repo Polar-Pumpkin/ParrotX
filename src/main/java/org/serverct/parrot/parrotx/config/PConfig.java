@@ -42,23 +42,22 @@ public class PConfig implements PConfiguration {
     public void init() {
         if (!file.exists()) {
             saveDefault();
-            plugin.getLang().log("未找到 &c" + getTypeName() + "&7, 已自动生成.", LocaleUtil.Type.WARN, false);
+            plugin.lang.log("未找到 &c" + getTypeName() + "&7, 已自动生成.", LocaleUtil.Type.WARN, false);
         }
         config = YamlConfiguration.loadConfiguration(file);
-        plugin.getLang().log("已加载 &c" + getTypeName() + "&7.", LocaleUtil.Type.INFO, false);
+        plugin.lang.log("已加载 &c" + getTypeName() + "&7.", LocaleUtil.Type.INFO, false);
 
         try {
             load(file);
         } catch (Throwable e) {
-            plugin.getLang().logError(LocaleUtil.LOAD, getTypeName(), e.toString());
+            plugin.lang.logError(LocaleUtil.LOAD, getTypeName(), e.toString());
         }
     }
 
 
     @Override
-    public boolean setFile(@NonNull File file) {
+    public void setFile(@NonNull File file) {
         this.file = file;
-        return true;
     }
 
     @Override
@@ -68,7 +67,7 @@ public class PConfig implements PConfiguration {
 
     @Override
     public void reload() {
-        plugin.getLang().logAction(LocaleUtil.RELOAD, getTypeName());
+        plugin.lang.logAction(LocaleUtil.RELOAD, getTypeName());
         init();
     }
 
@@ -77,16 +76,16 @@ public class PConfig implements PConfiguration {
         try {
             config.save(file);
         } catch (IOException e) {
-            plugin.getLang().logError(LocaleUtil.SAVE, getTypeName(), e.toString());
+            plugin.lang.logError(LocaleUtil.SAVE, getTypeName(), e.toString());
         }
     }
 
     @Override
     public void delete() {
         if (file.delete()) {
-            plugin.getLang().logAction(LocaleUtil.DELETE, getTypeName());
+            plugin.lang.logAction(LocaleUtil.DELETE, getTypeName());
         } else {
-            plugin.getLang().logError(LocaleUtil.DELETE, getTypeName(), "无法删除该文件");
+            plugin.lang.logError(LocaleUtil.DELETE, getTypeName(), "无法删除该文件");
         }
     }
 

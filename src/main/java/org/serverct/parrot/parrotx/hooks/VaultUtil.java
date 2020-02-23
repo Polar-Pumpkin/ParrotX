@@ -28,13 +28,13 @@ public class VaultUtil {
         if (hooks) {
             if (!setupEconomy()) {
                 hooks = false;
-                plugin.getLang().log("未找到 &cVault&7, 扣费功能将被禁用.", LocaleUtil.Type.WARN, false);
+                plugin.lang.log("未找到 &cVault&7, 扣费功能将被禁用.", LocaleUtil.Type.WARN, false);
             } else {
                 hooks = true;
-                plugin.getLang().log("已连接 &cVault&7.", LocaleUtil.Type.INFO, false);
+                plugin.lang.log("已连接 &cVault&7.", LocaleUtil.Type.INFO, false);
             }
         } else {
-            plugin.getLang().log("未启用与 &cVault &7的链接.", LocaleUtil.Type.INFO, false);
+            plugin.lang.log("未启用与 &cVault &7的链接.", LocaleUtil.Type.INFO, false);
         }
     }
 

@@ -7,7 +7,7 @@ import java.io.File;
 public interface FileSaved {
     File getFile();
 
-    boolean setFile(@NonNull File file);
+    void setFile(@NonNull File file);
 
     void load(@NonNull File file);
 

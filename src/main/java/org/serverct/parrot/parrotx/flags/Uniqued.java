@@ -6,5 +6,5 @@ import org.serverct.parrot.parrotx.data.PID;
 public interface Uniqued {
     PID getID();
 
-    boolean setID(@NonNull PID pid);
+    void setID(@NonNull PID pid);
 }

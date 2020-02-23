@@ -7,5 +7,5 @@ public interface Owned {
         return getOwner().equals(name);
     }
 
-    boolean setOwner(String name);
+    void setOwner(String name);
 }
