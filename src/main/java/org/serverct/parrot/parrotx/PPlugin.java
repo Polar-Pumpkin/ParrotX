@@ -11,6 +11,7 @@ import org.serverct.parrot.parrotx.utils.LocaleUtil;
 
 public class PPlugin extends JavaPlugin {
 
+    @Getter
     public static PPlugin instance;
     public LocaleUtil lang;
     public String localeKey;
