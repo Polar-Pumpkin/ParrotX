@@ -6,8 +6,8 @@ import org.serverct.parrot.parrotx.flags.Timestamp;
 public class PMember implements Timestamp {
 
     @Getter
-    private String username;
-    private long joinTime;
+    protected String username;
+    protected long joinTime;
 
     @Override
     public long getTimestamp() {
