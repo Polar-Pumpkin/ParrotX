@@ -7,6 +7,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.serverct.parrot.parrotx.PPlugin;
+import parsii.eval.Expression;
+import parsii.eval.Parser;
+import parsii.eval.Scope;
+import parsii.eval.Variable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +76,21 @@ public class BasicUtil {
     public static String formatLocation(@NonNull Location location) {
         String result = "&c" + location.getBlockX() + "&7, &c" + location.getBlockY() + "&7, &c" + location.getBlockZ();
         return ChatColor.translateAlternateColorCodes('&', result);
+    }
+
+    public static double calculateExpression(@NonNull PPlugin plugin, String expression, int xValue) {
+        try {
+            Scope scope = Scope.create();
+            Variable x = scope.getVariable("x");
+            Expression expr = Parser.parse(expression, scope);
+            x.setValue(xValue);
+            double result = expr.evaluate();
+            plugin.lang.logAction(LocaleUtil.CALCULATE, "数学表达式(" + expression + ", x = " + xValue + ", 值 = " + result + ")");
+            return result;
+        } catch (Throwable e) {
+            plugin.lang.logError(LocaleUtil.CALCULATE, "数学表达式(" + expression + ", x = " + xValue + ")", e.toString());
+        }
+        return 0;
     }
 
     public static void openInventory(PPlugin plugin, Player user, Inventory inventory) {

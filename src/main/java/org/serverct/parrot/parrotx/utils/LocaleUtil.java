@@ -23,6 +23,7 @@ public class LocaleUtil {
     public static final String REGISTER = "注册";
     public static final String RELOAD = "重载";
     public static final String DELETE = "删除";
+    public static final String CALCULATE = "计算";
     private String Tool_Prefix = "&7[&b&lEP's &aLocale Tool&7] ";
     private String Tool_INFO = "&a&l> ";
     private String Tool_WARN = "&e&l> ";
