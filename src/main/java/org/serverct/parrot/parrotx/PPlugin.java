@@ -30,9 +30,10 @@ public class PPlugin extends JavaPlugin {
     }
 
     public void init() {
+        lang = new LocaleUtil(this, "Chinese");
+
         preload();
 
-        lang = new LocaleUtil(this, "Chinese");
         localeKey = pConfig.getConfig().getString("Language");
 
         load();
