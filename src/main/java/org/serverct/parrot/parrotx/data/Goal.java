@@ -20,6 +20,10 @@ public class Goal implements Timestamp, Uniqued {
     private PID id;
     private long startTime;
     @Getter
+    private Map<Type, Integer> digitalGoal = new HashMap<>();
+    @Getter
+    private Map<Material, Integer> itemGoal = new HashMap<>();
+    @Getter
     private Map<Type, Integer> digitalRemain = new HashMap<>();
     @Getter
     private Map<Material, Integer> itemRemain = new HashMap<>();
@@ -27,7 +31,9 @@ public class Goal implements Timestamp, Uniqued {
     public Goal(PID id, Map<Type, Integer> digital, Map<Material, Integer> item) {
         this.id = id;
         this.plugin = id.getPlugin();
+        this.digitalGoal = digital;
         this.digitalRemain = digital;
+        this.itemGoal = item;
         this.itemRemain = item;
         this.startTime = System.currentTimeMillis();
     }
@@ -47,9 +53,28 @@ public class Goal implements Timestamp, Uniqued {
         this.id = id;
         this.plugin = id.getPlugin();
         this.startTime = section.getLong("StartTime");
-        ConfigurationSection remain = section.getConfigurationSection("Remain");
-        if (remain != null) {
-            try {
+
+        try {
+            ConfigurationSection goal = section.getConfigurationSection("All");
+            if (goal == null) {
+                plugin.lang.logError(LocaleUtil.LOAD, "目标(" + id.getKey() + ")", "All 数据节为 null.");
+                return;
+            }
+            ConfigurationSection digitalAll = goal.getConfigurationSection("Digital");
+            if (digitalAll != null) {
+                for (String type : digitalAll.getKeys(false)) {
+                    digitalRemain.put(Type.valueOf(type.toUpperCase()), digitalAll.getInt(type));
+                }
+            }
+            ConfigurationSection itemAll = goal.getConfigurationSection("Items");
+            if (itemAll != null) {
+                for (String material : itemAll.getKeys(false)) {
+                    itemRemain.put(Material.valueOf(material.toUpperCase()), itemAll.getInt(material));
+                }
+            }
+
+            ConfigurationSection remain = section.getConfigurationSection("Remain");
+            if (remain != null) {
                 ConfigurationSection digital = remain.getConfigurationSection("Digital");
                 if (digital != null) {
                     for (String type : digital.getKeys(false)) {
@@ -62,14 +87,24 @@ public class Goal implements Timestamp, Uniqued {
                         itemRemain.put(Material.valueOf(material.toUpperCase()), item.getInt(material));
                     }
                 }
-            } catch (Throwable e) {
-                plugin.lang.logError(LocaleUtil.LOAD, "目标(" + id.getKey() + ")", e.toString());
             }
+        } catch (Throwable e) {
+            plugin.lang.logError(LocaleUtil.LOAD, "目标(" + id.getKey() + ")", e.toString());
         }
     }
 
     public void save(@NonNull ConfigurationSection section) {
         section.set("StartTime", startTime);
+        ConfigurationSection all = section.createSection("All");
+        ConfigurationSection digitalAll = all.createSection("Digital");
+        for (Type type : digitalGoal.keySet()) {
+            digitalAll.set(type.toString(), digitalGoal.get(type));
+        }
+        ConfigurationSection itemAll = all.createSection("Items");
+        for (Material material : itemGoal.keySet()) {
+            itemAll.set(material.toString(), itemGoal.get(material));
+        }
+
         ConfigurationSection remain = section.createSection("Remain");
         ConfigurationSection digital = remain.createSection("Digital");
         for (Type type : digitalRemain.keySet()) {
