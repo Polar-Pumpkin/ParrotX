@@ -171,7 +171,7 @@ public class Goal implements Timestamp, Uniqued {
                         if (remain == value) {
                             result.add(prefix + "&f[  &f] &7" + type.getName() + " ▶ &c" + value);
                         } else {
-                            result.add(prefix + "&f[  &f] &7" + type.getName() + " ▶ &c" + value + " &7(还剩余 &c" + remain + "&7)");
+                            result.add(prefix + "&f[  &f] &7" + type.getName() + " ▶ &c" + value + " &7(还需 &c" + remain + "&7)");
                         }
                     }
                 }
@@ -188,7 +188,7 @@ public class Goal implements Timestamp, Uniqued {
                             if (remain == value) {
                                 result.add(prefix + "&f[  &f] &7" + name + " ▶ &c" + value);
                             } else {
-                                result.add(prefix + "&f[  &f] &7" + name + " ▶ &c" + value + " &7(还剩余 &c" + remain + "&7)");
+                                result.add(prefix + "&f[  &f] &7" + name + " ▶ &c" + value + " &7(还需 &c" + remain + "&7)");
                             }
                         }
                     }
