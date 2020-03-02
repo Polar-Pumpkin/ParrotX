@@ -167,7 +167,11 @@ public class Goal implements Timestamp, Uniqued {
                     if (remain == 0) {
                         result.add(prefix + "&f[&a&l✔&f] &a&m" + type.getName() + " ▶ " + value);
                     } else {
-                        result.add(prefix + "&f[  &f] &7" + type.getName() + " ▶ &c" + value + " &7(已提交 &c" + remain + "&7)");
+                        if (remain == value) {
+                            result.add(prefix + "&f[  &f] &7" + type.getName() + " ▶ &c" + value);
+                        } else {
+                            result.add(prefix + "&f[  &f] &7" + type.getName() + " ▶ &c" + value + " &7(还剩余 &c" + remain + "&7)");
+                        }
                     }
                 }
         );
@@ -180,7 +184,11 @@ public class Goal implements Timestamp, Uniqued {
                         if (remain == 0) {
                             result.add(prefix + "&f[&a&l✔&f] &a&m" + name + " ▶ " + value);
                         } else {
-                            result.add(prefix + "&f[  &f] &7" + name + " ▶ &c" + value + " &7(已提交 &c" + remain + "&7)");
+                            if (remain == value) {
+                                result.add(prefix + "&f[  &f] &7" + name + " ▶ &c" + value);
+                            } else {
+                                result.add(prefix + "&f[  &f] &7" + name + " ▶ &c" + value + " &7(还剩余 &c" + remain + "&7)");
+                            }
                         }
                     }
                 }
