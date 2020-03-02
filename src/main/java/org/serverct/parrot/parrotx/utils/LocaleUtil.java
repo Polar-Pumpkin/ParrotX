@@ -26,6 +26,9 @@ public class LocaleUtil {
     public static final String CALCULATE = "计算";
     public static final String PROTECT = "保护";
     public static final String UPGRADE = "升级";
+    public static final String PARSE = "赋值变量";
+    public static final String GET = "获取值";
+    public static final String SET = "设置值";
     private String Tool_Prefix = "&7[&b&lEP's &aLocale Tool&7] ";
     private String Tool_INFO = "&a&l> ";
     private String Tool_WARN = "&e&l> ";

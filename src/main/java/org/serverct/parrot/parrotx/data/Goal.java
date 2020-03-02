@@ -2,16 +2,20 @@ package org.serverct.parrot.parrotx.data;
 
 import lombok.Getter;
 import lombok.NonNull;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.flags.Timestamp;
 import org.serverct.parrot.parrotx.flags.Uniqued;
 import org.serverct.parrot.parrotx.utils.LocaleUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Goal implements Timestamp, Uniqued {
@@ -155,6 +159,36 @@ public class Goal implements Timestamp, Uniqued {
         return result;
     }
 
+    public List<String> list(String prefix) {
+        List<String> result = new ArrayList<>();
+        this.digitalGoal.forEach(
+                (type, value) -> {
+                    int remain = digitalRemain.getOrDefault(type, 0);
+                    if (remain == 0) {
+                        result.add(prefix + "&f[&a&l✔&f] &a&m" + type.getName() + " ▶ " + value);
+                    } else {
+                        result.add(prefix + "&f[  &f] &7" + type.getName() + " ▶ &c" + value + " &7(已提交 &c" + remain + "&7)");
+                    }
+                }
+        );
+        this.itemGoal.forEach(
+                (material, value) -> {
+                    int remain = itemRemain.getOrDefault(material, 0);
+                    ItemMeta meta = Bukkit.getItemFactory().getItemMeta(material);
+                    if (meta != null) {
+                        String name = meta.hasLocalizedName() ? meta.getLocalizedName() : material.toString();
+                        if (remain == 0) {
+                            result.add(prefix + "&f[&a&l✔&f] &a&m" + name + " ▶ " + value);
+                        } else {
+                            result.add(prefix + "&f[  &f] &7" + name + " ▶ &c" + value + " &7(已提交 &c" + remain + "&7)");
+                        }
+                    }
+                }
+        );
+        result.replaceAll(s -> plugin.lang.color(s));
+        return result;
+    }
+
     public boolean isFinish() {
         return digitalRemain.isEmpty() && itemRemain.isEmpty();
     }
@@ -180,6 +214,19 @@ public class Goal implements Timestamp, Uniqued {
     }
 
     public enum Type {
-        ITEM, MONEY, EXPERIENCE, POINT;
+        ITEM("物品"),
+        MONEY("金钱"),
+        EXPERIENCE("经验等级"),
+        POINT("点数");
+
+        private String name;
+
+        Type(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 }
