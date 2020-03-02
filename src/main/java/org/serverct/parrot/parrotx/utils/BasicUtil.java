@@ -93,7 +93,7 @@ public class BasicUtil {
         return 0;
     }
 
-    public static void openInventory(PPlugin plugin, Player user, Inventory inventory) {
+    public static void openInventory(@NonNull PPlugin plugin, @NonNull Player user, @NonNull Inventory inventory) {
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -102,13 +102,22 @@ public class BasicUtil {
         }.runTask(plugin);
     }
 
-    public static void closeInventory(PPlugin plugin, Player user) {
+    public static void closeInventory(@NonNull PPlugin plugin, @NonNull Player user) {
         new BukkitRunnable() {
             @Override
             public void run() {
                 user.closeInventory();
             }
         }.runTask(plugin);
+    }
+
+    public static void send(@NonNull PPlugin plugin, @NonNull Player user, String msg) {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                user.sendMessage(plugin.lang.color(msg));
+            }
+        }.runTaskLater(plugin, 1);
     }
 
 }

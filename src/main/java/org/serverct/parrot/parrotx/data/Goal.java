@@ -142,9 +142,9 @@ public class Goal implements Timestamp, Uniqued {
                 if (itemRemain.containsKey(material)) {
                     inventory.removeItem(item);
                     int resultAmount = itemRemain.get(material) - item.getAmount();
-                    result.put(material, item.getAmount());
                     if (resultAmount < 0) {
                         item.setAmount(resultAmount * -1);
+                        result.put(material, itemRemain.get(material));
                         inventory.addItem(item);
                     }
                     if (resultAmount <= 0) {
@@ -152,6 +152,7 @@ public class Goal implements Timestamp, Uniqued {
                     }
                     if (resultAmount > 0) {
                         itemRemain.put(material, resultAmount);
+                        result.put(material, item.getAmount());
                     }
                 }
             }
