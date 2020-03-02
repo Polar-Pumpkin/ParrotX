@@ -67,13 +67,13 @@ public class Goal implements Timestamp, Uniqued {
             ConfigurationSection digitalAll = goal.getConfigurationSection("Digital");
             if (digitalAll != null) {
                 for (String type : digitalAll.getKeys(false)) {
-                    digitalRemain.put(Type.valueOf(type.toUpperCase()), digitalAll.getInt(type));
+                    digitalGoal.put(Type.valueOf(type.toUpperCase()), digitalAll.getInt(type));
                 }
             }
             ConfigurationSection itemAll = goal.getConfigurationSection("Item");
             if (itemAll != null) {
                 for (String material : itemAll.getKeys(false)) {
-                    itemRemain.put(Material.valueOf(material.toUpperCase()), itemAll.getInt(material));
+                    itemGoal.put(Material.valueOf(material.toUpperCase()), itemAll.getInt(material));
                 }
             }
 
@@ -147,11 +147,11 @@ public class Goal implements Timestamp, Uniqued {
                         inventory.addItem(item);
                     }
                     if (resultAmount <= 0) {
-                        result.put(material, itemRemain.get(material));
+                        result.put(material, result.getOrDefault(material, 0) + itemRemain.get(material));
                         itemRemain.remove(material);
                     }
                     if (resultAmount > 0) {
-                        result.put(material, item.getAmount());
+                        result.put(material, result.getOrDefault(material, 0) + item.getAmount());
                         itemRemain.put(material, resultAmount);
                     }
                 }
