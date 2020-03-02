@@ -70,7 +70,7 @@ public class Goal implements Timestamp, Uniqued {
                     digitalRemain.put(Type.valueOf(type.toUpperCase()), digitalAll.getInt(type));
                 }
             }
-            ConfigurationSection itemAll = goal.getConfigurationSection("Items");
+            ConfigurationSection itemAll = goal.getConfigurationSection("Item");
             if (itemAll != null) {
                 for (String material : itemAll.getKeys(false)) {
                     itemRemain.put(Material.valueOf(material.toUpperCase()), itemAll.getInt(material));
@@ -85,7 +85,7 @@ public class Goal implements Timestamp, Uniqued {
                         digitalRemain.put(Type.valueOf(type.toUpperCase()), digital.getInt(type));
                     }
                 }
-                ConfigurationSection item = remain.getConfigurationSection("Items");
+                ConfigurationSection item = remain.getConfigurationSection("Item");
                 if (item != null) {
                     for (String material : item.getKeys(false)) {
                         itemRemain.put(Material.valueOf(material.toUpperCase()), item.getInt(material));
@@ -104,7 +104,7 @@ public class Goal implements Timestamp, Uniqued {
         for (Type type : digitalGoal.keySet()) {
             digitalAll.set(type.toString(), digitalGoal.get(type));
         }
-        ConfigurationSection itemAll = all.createSection("Items");
+        ConfigurationSection itemAll = all.createSection("Item");
         for (Material material : itemGoal.keySet()) {
             itemAll.set(material.toString(), itemGoal.get(material));
         }
@@ -114,7 +114,7 @@ public class Goal implements Timestamp, Uniqued {
         for (Type type : digitalRemain.keySet()) {
             digital.set(type.toString(), digitalRemain.get(type));
         }
-        ConfigurationSection item = remain.createSection("Items");
+        ConfigurationSection item = remain.createSection("Item");
         for (Material material : itemRemain.keySet()) {
             item.set(material.toString(), itemRemain.get(material));
         }
@@ -144,15 +144,15 @@ public class Goal implements Timestamp, Uniqued {
                     int resultAmount = itemRemain.get(material) - item.getAmount();
                     if (resultAmount < 0) {
                         item.setAmount(resultAmount * -1);
-                        result.put(material, itemRemain.get(material));
                         inventory.addItem(item);
                     }
                     if (resultAmount <= 0) {
+                        result.put(material, itemRemain.get(material));
                         itemRemain.remove(material);
                     }
                     if (resultAmount > 0) {
-                        itemRemain.put(material, resultAmount);
                         result.put(material, item.getAmount());
+                        itemRemain.put(material, resultAmount);
                     }
                 }
             }
