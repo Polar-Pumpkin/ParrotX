@@ -34,7 +34,12 @@ public class CommandHandler implements CommandExecutor {
             plugin.lang.getHelp(plugin.localeKey).forEach(sender::sendMessage);
         } else {
             if(commands.containsKey(args[0])) {
-                return commands.get(args[0]).execute(plugin, sender, args);
+                PCommand pCommand = commands.get(args[0]);
+                if (sender.hasPermission(pCommand.getPermission())) {
+                    return pCommand.execute(plugin, sender, args);
+                } else {
+                    sender.sendMessage(plugin.lang.build(plugin.localeKey, LocaleUtil.Type.WARN, "您没有权限这么做."));
+                }
             }
         }
         return false;
