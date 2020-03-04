@@ -49,20 +49,19 @@ public class PFolder implements PDataFolder {
             } else {
                 plugin.lang.log("尝试生成 &c" + getTypeName() + " &7失败.", LocaleUtil.Type.ERROR, false);
             }
+        }
+        File[] files = folder.listFiles(pathname -> pathname.getName().endsWith(".yml"));
+        if (files == null || files.length == 0) {
+            releaseDefaultData();
+            files = folder.listFiles(pathname -> pathname.getName().endsWith(".yml"));
+        }
+        if (files != null && files.length != 0) {
+            for (File file : files) {
+                load(file);
+            }
+            plugin.lang.log("共加载 &c" + getTypeName() + " &7中的 &c" + files.length + " &7个数据文件.", LocaleUtil.Type.INFO, false);
         } else {
-            File[] files = folder.listFiles(pathname -> pathname.getName().endsWith(".yml"));
-            if (files == null || files.length == 0) {
-                releaseDefaultData();
-                files = folder.listFiles(pathname -> pathname.getName().endsWith(".yml"));
-            }
-            if (files != null && files.length != 0) {
-                for (File file : files) {
-                    load(file);
-                }
-                plugin.lang.log("共加载 &c" + getTypeName() + " &7中的 &c" + files.length + " &7个数据文件.", LocaleUtil.Type.INFO, false);
-            } else {
-                plugin.lang.log("&c" + getTypeName() + " &7中没有数据可供加载.", LocaleUtil.Type.WARN, false);
-            }
+            plugin.lang.log("&c" + getTypeName() + " &7中没有数据可供加载.", LocaleUtil.Type.WARN, false);
         }
     }
 
