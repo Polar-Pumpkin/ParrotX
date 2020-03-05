@@ -133,6 +133,13 @@ public class LocaleUtil {
         log(message, Type.ERROR, false);
     }
 
+    public void logError(String action, String object, Throwable e) {
+        logError(action, object, e.toString());
+        log("=============== &c&l以下是堆栈跟踪 &7===============", Type.ERROR, false);
+        e.printStackTrace();
+        log("=============== &c&l请反馈给开发者 &7===============", Type.ERROR, false);
+    }
+
     public String get(String key, Type type, String section, String path) {
         FileConfiguration data = locales.containsKey(key) ? locales.get(key) : locales.get(defaultLocaleKey);
 
