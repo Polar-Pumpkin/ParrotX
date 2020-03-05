@@ -127,8 +127,8 @@ public class Goal implements Timestamp, Uniqued {
         }
         int result = digitalRemain.get(type) - amount;
         if (result <= 0) {
-            digitalRemain.remove(type);
-            return result * -1;
+            digitalRemain.put(type, 0);
+            return -result;
         }
         digitalRemain.put(type, result);
         return 0;
@@ -143,14 +143,12 @@ public class Goal implements Timestamp, Uniqued {
                     inventory.removeItem(item);
                     int resultAmount = itemRemain.get(material) - item.getAmount();
                     if (resultAmount < 0) {
-                        item.setAmount(resultAmount * -1);
+                        item.setAmount(-resultAmount);
                         inventory.addItem(item);
-                    }
-                    if (resultAmount <= 0) {
                         result.put(material, result.getOrDefault(material, 0) + itemRemain.get(material));
-                        itemRemain.remove(material);
+                        itemRemain.put(material, 0);
                     }
-                    if (resultAmount > 0) {
+                    if (resultAmount >= 0) {
                         result.put(material, result.getOrDefault(material, 0) + item.getAmount());
                         itemRemain.put(material, resultAmount);
                     }
@@ -199,7 +197,17 @@ public class Goal implements Timestamp, Uniqued {
     }
 
     public boolean isFinish() {
-        return digitalRemain.isEmpty() && itemRemain.isEmpty();
+        for (int digital : digitalRemain.values()) {
+            if (digital > 0) {
+                return false;
+            }
+        }
+        for (int item : itemRemain.values()) {
+            if (item > 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

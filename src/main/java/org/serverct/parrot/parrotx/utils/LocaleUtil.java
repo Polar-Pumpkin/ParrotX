@@ -135,9 +135,17 @@ public class LocaleUtil {
 
     public void logError(String action, String object, Throwable e) {
         logError(action, object, e.toString());
-        log("=============== &c&l以下是堆栈跟踪 &7===============", Type.ERROR, false);
+        log("==================== &c&l以下是堆栈跟踪 &7====================", Type.ERROR, false);
+        log("&d▶ &7异常类型: &c" + e.getCause().toString(), Type.ERROR, false);
+        for (StackTraceElement element : e.getStackTrace()) {
+            log(
+                    "&d▶ &7于类 &c" + element.getClassName() + " &7中 &c" + element.getMethodName() + "&7方法的第 &c" + element.getLineNumber() + " &7行处. (&c" + element.getFileName() + "&7)",
+                    Type.ERROR,
+                    false
+            );
+        }
         e.printStackTrace();
-        log("=============== &c&l请反馈给开发者 &7===============", Type.ERROR, false);
+        log("==================== &c&l请反馈给开发者 &7====================", Type.ERROR, false);
     }
 
     public String get(String key, Type type, String section, String path) {
