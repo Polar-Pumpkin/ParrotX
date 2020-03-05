@@ -32,14 +32,17 @@ public class CommandHandler implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(args.length == 0) {
             plugin.lang.getHelp(plugin.localeKey).forEach(sender::sendMessage);
+            return true;
         } else {
-            if(commands.containsKey(args[0])) {
+            if (commands.containsKey(args[0])) {
                 PCommand pCommand = commands.get(args[0]);
                 if (sender.hasPermission(pCommand.getPermission())) {
                     return pCommand.execute(plugin, sender, args);
                 } else {
                     sender.sendMessage(plugin.lang.build(plugin.localeKey, LocaleUtil.Type.WARN, "您没有权限这么做."));
                 }
+            } else {
+                plugin.lang.logError(LocaleUtil.LOAD, "子命令", sender.getName() + " 尝试执行未注册子命令: " + args[0]);
             }
         }
         return false;
