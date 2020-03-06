@@ -100,9 +100,12 @@ public class LocaleUtil {
         }
     }
 
+    public void logRaw(String message) {
+        Bukkit.getConsoleSender().sendMessage(color(message));
+    }
+
     public void log(String message, Type type, boolean viaTool) {
         if (type != Type.DEBUG) {
-            String result;
             String level;
 
             switch (type) {
@@ -118,13 +121,7 @@ public class LocaleUtil {
                     break;
             }
 
-            if (viaTool) {
-                result = color(Tool_Prefix + level + ChatColor.GRAY + message);
-            } else {
-                result = build(null, type, message);
-            }
-
-            Bukkit.getConsoleSender().sendMessage(result);
+            logRaw(viaTool ? color(Tool_Prefix + level + ChatColor.GRAY + message) : build(null, type, message));
         } else {
             debug(message, viaTool);
         }
@@ -147,22 +144,26 @@ public class LocaleUtil {
 
     public void logError(String action, String object, Throwable e) {
         logError(action, object, e.toString());
-        log("==================== &c&l以下是堆栈跟踪 &7====================", Type.ERROR, false);
-        log("&d▶ &7异常类型: &c" + e.toString(), Type.ERROR, false);
+        logRaw("==================== &c&l以下是堆栈跟踪 &7====================");
+        logRaw("&d▶ &7异常类型: &c" + e.toString());
+        String lastPackage = null;
         for (StackTraceElement element : e.getStackTrace()) {
-            String className = element.getClassName();
+            String key = element.getClassName();
+            Class<? extends StackTraceElement> targetClass = element.getClass();
+            String packageName = targetClass.getPackage().getName();
+            String className = targetClass.getSimpleName();
             String methodName = element.getMethodName();
             int lineNumber = element.getLineNumber();
             String fileName = element.getFileName();
-            if (className.contains("serverct")) {
-                log(
-                        "&d▶ &7于类 &c" + className + " &7中 &c" + methodName + " &7方法处. (&c" + fileName + "&7:&c" + lineNumber + "&7)",
-                        Type.ERROR,
-                        false
-                );
+            if (key.contains("serverct")) {
+                if (!packageName.equals(lastPackage)) {
+                    lastPackage = packageName;
+                    logRaw("&c" + packageName + " &7包 ▶");
+                }
+                logRaw("&d▶ &7于类 &c" + className + " &7中 &c" + methodName + " &7方法处. (&c" + fileName + "&7, 第 &c" + lineNumber + " &7行)");
             }
         }
-        log("==================== &c&l请反馈给开发者 &7====================", Type.ERROR, false);
+        logRaw("==================== &c&l请反馈给开发者 &7====================");
     }
 
     public boolean hasKey(String key) {
