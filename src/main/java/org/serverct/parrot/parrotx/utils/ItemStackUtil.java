@@ -8,8 +8,11 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.serverct.parrot.parrotx.PPlugin;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class ItemStackUtil {
 
@@ -68,5 +71,13 @@ public class ItemStackUtil {
             }
         }
         return new ItemStack(Material.AIR);
+    }
+
+    public static String getName(PPlugin plugin, Material material) {
+        if (plugin.lang.hasKey("Material")) {
+            String result = plugin.lang.getRaw("Material", "Material", material.name());
+            return result.contains("错误") ? material.name() : result;
+        }
+        return material.name();
     }
 }

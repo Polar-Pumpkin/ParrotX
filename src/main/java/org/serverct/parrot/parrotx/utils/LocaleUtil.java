@@ -148,8 +148,30 @@ public class LocaleUtil {
         log("==================== &c&l请反馈给开发者 &7====================", Type.ERROR, false);
     }
 
+    public boolean hasKey(String key) {
+        return locales.containsKey(key);
+    }
+
+    public String getRaw(String key, String section, String path) {
+        FileConfiguration data = hasKey(key) ? locales.get(key) : locales.get(defaultLocaleKey);
+
+        if (data.getKeys(false).contains(section)) {
+            String message = data.getConfigurationSection(section).getString(path);
+            if (message != null && !message.equalsIgnoreCase("")) {
+                return color(message);
+            }
+        }
+
+        log("尝试获取原始语言数据时遇到错误." + "\n"
+                + "&7语言: &c" + key + "\n"
+                + "&7节: &c" + section + "\n"
+                + "&7路径: &c" + path
+                + "&7.", Type.ERROR, true);
+        return color("&c&l错误&7(获取语言数据时遇到错误, 请联系管理员解决该问题.)");
+    }
+
     public String get(String key, Type type, String section, String path) {
-        FileConfiguration data = locales.containsKey(key) ? locales.get(key) : locales.get(defaultLocaleKey);
+        FileConfiguration data = hasKey(key) ? locales.get(key) : locales.get(defaultLocaleKey);
 
         if (data.getKeys(false).contains(section)) {
             String message = data.getConfigurationSection(section).getString(path);

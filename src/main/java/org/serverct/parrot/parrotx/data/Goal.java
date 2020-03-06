@@ -24,10 +24,6 @@ public class Goal implements Timestamp, Uniqued {
     private PID id;
     private long startTime;
     @Getter
-    private Map<Type, Integer> digitalGoal = new HashMap<>();
-    @Getter
-    private Map<Material, Integer> itemGoal = new HashMap<>();
-    @Getter
     private Map<Type, Integer> digitalRemain = new HashMap<>();
     @Getter
     private Map<Material, Integer> itemRemain = new HashMap<>();
@@ -35,9 +31,7 @@ public class Goal implements Timestamp, Uniqued {
     public Goal(PID id, Map<Type, Integer> digital, Map<Material, Integer> item) {
         this.id = id;
         this.plugin = id.getPlugin();
-        this.digitalGoal = digital;
         this.digitalRemain = digital;
-        this.itemGoal = item;
         this.itemRemain = item;
         this.startTime = System.currentTimeMillis();
     }
@@ -59,24 +53,6 @@ public class Goal implements Timestamp, Uniqued {
         this.startTime = section.getLong("StartTime");
 
         try {
-            ConfigurationSection goal = section.getConfigurationSection("All");
-            if (goal == null) {
-                plugin.lang.logError(LocaleUtil.LOAD, "目标(" + id.getKey() + ")", "All 数据节为 null.");
-                return;
-            }
-            ConfigurationSection digitalAll = goal.getConfigurationSection("Digital");
-            if (digitalAll != null) {
-                for (String type : digitalAll.getKeys(false)) {
-                    digitalGoal.put(Type.valueOf(type.toUpperCase()), digitalAll.getInt(type));
-                }
-            }
-            ConfigurationSection itemAll = goal.getConfigurationSection("Item");
-            if (itemAll != null) {
-                for (String material : itemAll.getKeys(false)) {
-                    itemGoal.put(Material.valueOf(material.toUpperCase()), itemAll.getInt(material));
-                }
-            }
-
             ConfigurationSection remain = section.getConfigurationSection("Remain");
             if (remain != null) {
                 ConfigurationSection digital = remain.getConfigurationSection("Digital");
@@ -99,16 +75,6 @@ public class Goal implements Timestamp, Uniqued {
 
     public void save(@NonNull ConfigurationSection section) {
         section.set("StartTime", startTime);
-        ConfigurationSection all = section.createSection("All");
-        ConfigurationSection digitalAll = all.createSection("Digital");
-        for (Type type : digitalGoal.keySet()) {
-            digitalAll.set(type.toString(), digitalGoal.get(type));
-        }
-        ConfigurationSection itemAll = all.createSection("Item");
-        for (Material material : itemGoal.keySet()) {
-            itemAll.set(material.toString(), itemGoal.get(material));
-        }
-
         ConfigurationSection remain = section.createSection("Remain");
         ConfigurationSection digital = remain.createSection("Digital");
         for (Type type : digitalRemain.keySet()) {
@@ -160,34 +126,24 @@ public class Goal implements Timestamp, Uniqued {
 
     public List<String> list(String prefix) {
         List<String> result = new ArrayList<>();
-        this.digitalGoal.forEach(
+        this.digitalRemain.forEach(
                 (type, value) -> {
-                    int remain = digitalRemain.getOrDefault(type, 0);
-                    if (remain == 0) {
+                    if (value == 0) {
                         result.add(prefix + "&f[&a&l✔&f] &a&m" + type.getName() + " ▶ " + value);
                     } else {
-                        if (remain == value) {
-                            result.add(prefix + "&f[  &f] &7" + type.getName() + " ▶ &c" + value);
-                        } else {
-                            result.add(prefix + "&f[  &f] &7" + type.getName() + " ▶ &c" + value + " &7(还需 &c" + remain + "&7)");
-                        }
+                        result.add(prefix + "&f[  &f] &7" + type.getName() + " ▶ &c" + value);
                     }
                 }
         );
-        this.itemGoal.forEach(
+        this.itemRemain.forEach(
                 (material, value) -> {
-                    int remain = itemRemain.getOrDefault(material, 0);
                     ItemMeta meta = Bukkit.getItemFactory().getItemMeta(material);
                     if (meta != null) {
                         String name = meta.hasLocalizedName() ? meta.getLocalizedName() : material.toString();
-                        if (remain == 0) {
+                        if (value == 0) {
                             result.add(prefix + "&f[&a&l✔&f] &a&m" + name + " ▶ " + value);
                         } else {
-                            if (remain == value) {
-                                result.add(prefix + "&f[  &f] &7" + name + " ▶ &c" + value);
-                            } else {
-                                result.add(prefix + "&f[  &f] &7" + name + " ▶ &c" + value + " &7(还需 &c" + remain + "&7)");
-                            }
+                            result.add(prefix + "&f[  &f] &7" + name + " ▶ &c" + value);
                         }
                     }
                 }
