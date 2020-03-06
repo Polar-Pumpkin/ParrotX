@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class LocaleUtil {
 
-    public static final String TOOL_VERSION = "v1.7.3";
+    public static final String TOOL_VERSION = "v1.7.4";
     public static final String LOAD = "加载";
     public static final String SAVE = "保存";
     public static final String REGISTER = "注册";
@@ -51,13 +51,25 @@ public class LocaleUtil {
 
     public void init() {
         if (!dataFolder.exists()) {
-            dataFolder.mkdirs();
-            plugin.saveResource("Locales/" + defaultLocaleKey + ".yml", false);
-            log("未找到语言文件夹, 已自动生成.", Type.WARN, true);
-        } else {
-            if (dataFolder.listFiles() == null || dataFolder.listFiles().length == 0) {
+            if (dataFolder.mkdirs()) {
                 plugin.saveResource("Locales/" + defaultLocaleKey + ".yml", false);
-                log("未找到默认语言文件, 已自动生成.", Type.WARN, true);
+                log("未找到语言文件夹, 已自动生成.", Type.WARN, true);
+            } else {
+                log("尝试生成语言文件夹失败.", Type.ERROR, true);
+            }
+        }
+        File[] files = dataFolder.listFiles(pathname -> pathname.getName().endsWith(".yml"));
+        if (files == null || files.length == 0) {
+            plugin.saveResource("Locales/" + defaultLocaleKey + ".yml", false);
+            log("未找到默认语言文件, 已自动生成.", Type.WARN, true);
+            files = dataFolder.listFiles(pathname -> pathname.getName().endsWith(".yml"));
+        }
+        if (files != null && files.length > 0) {
+            for (File file : files) {
+                if (!getNoExFileName(file.getName()).equals(defaultLocaleKey)) {
+                    plugin.saveResource("Locales/" + defaultLocaleKey + ".yml", false);
+                    log("未找到默认语言文件, 已自动生成.", Type.WARN, true);
+                }
             }
         }
         load();
@@ -65,12 +77,8 @@ public class LocaleUtil {
 
     private void load() {
         log("版本: &c" + TOOL_VERSION, Type.INFO, true);
-        File[] localeDataFiles = dataFolder.listFiles(pathname -> {
-            String fileName = pathname.getName();
-            return fileName.endsWith(".yml");
-        });
-
-        if (localeDataFiles != null) {
+        File[] localeDataFiles = dataFolder.listFiles(pathname -> pathname.getName().endsWith(".yml"));
+        if (localeDataFiles != null && localeDataFiles.length > 0) {
             for (File dataFile : localeDataFiles) {
                 locales.put(getNoExFileName(dataFile.getName()), YamlConfiguration.loadConfiguration(dataFile));
             }
