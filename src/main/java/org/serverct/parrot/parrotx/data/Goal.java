@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.flags.Timestamp;
 import org.serverct.parrot.parrotx.flags.Uniqued;
+import org.serverct.parrot.parrotx.utils.ItemStackUtil;
 import org.serverct.parrot.parrotx.utils.LocaleUtil;
 
 import java.util.ArrayList;
@@ -139,7 +140,7 @@ public class Goal implements Timestamp, Uniqued {
                 (material, value) -> {
                     ItemMeta meta = Bukkit.getItemFactory().getItemMeta(material);
                     if (meta != null) {
-                        String name = meta.hasLocalizedName() ? meta.getLocalizedName() : material.toString();
+                        String name = ItemStackUtil.getName(plugin, material);
                         if (value == 0) {
                             result.add(prefix + "&f[&a&l✔&f] &a&m" + name + " ▶ " + value);
                         } else {
