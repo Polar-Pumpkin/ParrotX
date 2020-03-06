@@ -150,13 +150,18 @@ public class LocaleUtil {
         log("==================== &c&l以下是堆栈跟踪 &7====================", Type.ERROR, false);
         log("&d▶ &7异常类型: &c" + e.toString(), Type.ERROR, false);
         for (StackTraceElement element : e.getStackTrace()) {
-            log(
-                    "&d▶ &7于类 &c" + element.getClassName() + " &7中 &c" + element.getMethodName() + "&7方法的第 &c" + element.getLineNumber() + " &7行处. (&c" + element.getFileName() + "&7)",
-                    Type.ERROR,
-                    false
-            );
+            String className = element.getClassName();
+            String methodName = element.getMethodName();
+            int lineNumber = element.getLineNumber();
+            String fileName = element.getFileName();
+            if (className.contains("serverct")) {
+                log(
+                        "&d▶ &7于类 &c" + className + " &7中 &c" + methodName + " &7方法处. (&c" + fileName + "&7:&c" + lineNumber + "&7)",
+                        Type.ERROR,
+                        false
+                );
+            }
         }
-        e.printStackTrace();
         log("==================== &c&l请反馈给开发者 &7====================", Type.ERROR, false);
     }
 
