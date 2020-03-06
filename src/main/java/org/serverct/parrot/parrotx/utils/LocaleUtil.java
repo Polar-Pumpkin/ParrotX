@@ -65,11 +65,15 @@ public class LocaleUtil {
             files = dataFolder.listFiles(pathname -> pathname.getName().endsWith(".yml"));
         }
         if (files != null && files.length > 0) {
+            boolean check = false;
             for (File file : files) {
-                if (!getNoExFileName(file.getName()).equals(defaultLocaleKey)) {
-                    plugin.saveResource("Locales/" + defaultLocaleKey + ".yml", false);
-                    log("未找到默认语言文件, 已自动生成.", Type.WARN, true);
+                if (getNoExFileName(file.getName()).equals(defaultLocaleKey)) {
+                    check = true;
                 }
+            }
+            if (!check) {
+                plugin.saveResource("Locales/" + defaultLocaleKey + ".yml", false);
+                log("未找到默认语言文件, 已自动生成.", Type.WARN, true);
             }
         }
         load();
@@ -144,7 +148,7 @@ public class LocaleUtil {
     public void logError(String action, String object, Throwable e) {
         logError(action, object, e.toString());
         log("==================== &c&l以下是堆栈跟踪 &7====================", Type.ERROR, false);
-        log("&d▶ &7异常类型: &c" + e.getCause().toString(), Type.ERROR, false);
+        log("&d▶ &7异常类型: &c" + e.toString(), Type.ERROR, false);
         for (StackTraceElement element : e.getStackTrace()) {
             log(
                     "&d▶ &7于类 &c" + element.getClassName() + " &7中 &c" + element.getMethodName() + "&7方法的第 &c" + element.getLineNumber() + " &7行处. (&c" + element.getFileName() + "&7)",
