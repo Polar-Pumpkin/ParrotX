@@ -70,7 +70,7 @@ public class Goal implements Timestamp, Uniqued {
                 }
             }
         } catch (Throwable e) {
-            plugin.lang.logError(I18n.LOAD, "目标(" + id.getKey() + ")", e.toString());
+            plugin.lang.logError(I18n.LOAD, "目标(" + id.getKey() + ")", e, null);
         }
     }
 
@@ -149,7 +149,7 @@ public class Goal implements Timestamp, Uniqued {
                     }
                 }
         );
-        result.replaceAll(s -> plugin.lang.color(s));
+        result.replaceAll(s -> I18n.color(s));
         return result;
     }
 

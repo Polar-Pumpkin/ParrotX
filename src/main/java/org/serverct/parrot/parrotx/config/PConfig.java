@@ -50,7 +50,7 @@ public class PConfig implements PConfiguration {
         try {
             load(file);
         } catch (Throwable e) {
-            plugin.lang.logError(I18n.LOAD, getTypeName(), e.toString());
+            plugin.lang.logError(I18n.LOAD, getTypeName(), e, null);
         }
     }
 
@@ -76,7 +76,7 @@ public class PConfig implements PConfiguration {
         try {
             config.save(file);
         } catch (IOException e) {
-            plugin.lang.logError(I18n.SAVE, getTypeName(), e.toString());
+            plugin.lang.logError(I18n.SAVE, getTypeName(), e, null);
         }
     }
 
@@ -85,7 +85,7 @@ public class PConfig implements PConfiguration {
         if (file.delete()) {
             plugin.lang.logAction(I18n.DELETE, getTypeName());
         } else {
-            plugin.lang.logError(I18n.DELETE, getTypeName(), "无法删除该文件");
+            plugin.lang.logError(I18n.DELETE, getTypeName(), "无法删除该文件.");
         }
     }
 

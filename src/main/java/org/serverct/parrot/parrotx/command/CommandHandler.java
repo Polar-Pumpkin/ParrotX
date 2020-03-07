@@ -33,16 +33,19 @@ public class CommandHandler implements TabExecutor {
             plugin.lang.getHelp(plugin.localeKey).forEach(sender::sendMessage);
             return true;
         } else {
-            if (commands.containsKey(args[0])) {
+            for (String subCmd : commands.keySet()) {
+                if (!subCmd.equalsIgnoreCase(args[0])) {
+                    continue;
+                }
                 PCommand pCommand = commands.get(args[0]);
                 if (sender.hasPermission(pCommand.getPermission())) {
                     return pCommand.execute(plugin, sender, args);
                 } else {
                     sender.sendMessage(plugin.lang.build(plugin.localeKey, I18n.Type.WARN, "您没有权限这么做."));
+                    return true;
                 }
-            } else {
-                plugin.lang.logError(I18n.LOAD, "子命令", sender.getName() + " 尝试执行未注册子命令: " + args[0]);
             }
+            plugin.lang.logError(I18n.LOAD, "子命令", sender.getName() + " 尝试执行未注册子命令: " + args[0]);
         }
         return false;
     }

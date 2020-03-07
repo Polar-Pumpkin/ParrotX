@@ -88,7 +88,7 @@ public class BasicUtil {
             plugin.lang.logAction(I18n.CALCULATE, "数学表达式(" + expression + ", x = " + xValue + ", 值 = " + result + ")");
             return result;
         } catch (Throwable e) {
-            plugin.lang.logError(I18n.CALCULATE, "数学表达式(" + expression + ", x = " + xValue + ")", e.toString());
+            plugin.lang.logError(I18n.CALCULATE, "数学表达式(" + expression + ", x = " + xValue + ")", e, null);
         }
         return 0;
     }
@@ -115,7 +115,7 @@ public class BasicUtil {
         new BukkitRunnable() {
             @Override
             public void run() {
-                user.sendMessage(plugin.lang.color(msg));
+                user.sendMessage(I18n.color(msg));
             }
         }.runTaskLater(plugin, 1);
     }

@@ -11,7 +11,7 @@ public interface PData extends PConfiguration, Uniqued {
         if (getFile().delete()) {
             plugin.lang.logAction(I18n.DELETE, getTypeName());
         } else {
-            plugin.lang.logError(I18n.DELETE, getTypeName(), "无法删除该文件");
+            plugin.lang.logError(I18n.DELETE, getTypeName(), "无法删除该文件.");
         }
     }
 }

@@ -24,7 +24,7 @@ public class ReloadCommand implements PCommand {
             plugin.init();
             sender.sendMessage(plugin.lang.build(plugin.localeKey, I18n.Type.INFO, "重载配置文件成功."));
         } catch (Throwable e) {
-            plugin.lang.logError(I18n.RELOAD, "配置文件", e.toString());
+            plugin.lang.logError(I18n.RELOAD, "配置文件", e, null);
         }
         return true;
     }

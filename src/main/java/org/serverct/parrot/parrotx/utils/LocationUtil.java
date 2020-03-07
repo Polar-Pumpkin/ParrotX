@@ -37,7 +37,7 @@ public class LocationUtil {
             }
         }
         pos.sort(Comparator.comparingInt(a -> a.x * a.x + a.y * a.y + a.z * a.z));
-        VOLUME = pos.<Vector3D>toArray(new Vector3D[0]);
+        VOLUME = pos.toArray(new Vector3D[0]);
     }
 
     public static void setIsWaterSafe(boolean isWaterSafe) {

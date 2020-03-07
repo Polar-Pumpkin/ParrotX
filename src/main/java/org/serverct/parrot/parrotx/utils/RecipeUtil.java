@@ -40,7 +40,7 @@ public class RecipeUtil {
                 try {
                     plugin.getServer().addRecipe(recipe);
                 } catch (Throwable e) {
-                    plugin.lang.logError(I18n.LOAD, "自定义配方(" + namespacedKey.toString() + ")", e.toString());
+                    plugin.lang.logError(I18n.LOAD, "自定义配方(" + namespacedKey.toString() + ")", e, null);
                 }
             }
         }

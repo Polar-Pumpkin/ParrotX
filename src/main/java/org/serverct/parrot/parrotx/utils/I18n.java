@@ -397,6 +397,6 @@ public class I18n {
     }
 
     public enum Type {
-        INFO, WARN, ERROR, DEBUG;
+        INFO, WARN, ERROR, DEBUG
     }
 }
