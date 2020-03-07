@@ -52,6 +52,7 @@ public class PPlugin extends JavaPlugin {
         PluginCommand command = Bukkit.getPluginCommand(cmd);
         if (command != null) {
             command.setExecutor(handler);
+            command.setTabCompleter(handler);
         } else {
             lang.logError(LocaleUtil.REGISTER, "命令", "无法获取插件主命令.");
         }

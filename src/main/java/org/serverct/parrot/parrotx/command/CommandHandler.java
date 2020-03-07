@@ -2,23 +2,22 @@ package org.serverct.parrot.parrotx.command;
 
 import lombok.NonNull;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.utils.LocaleUtil;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
-public class CommandHandler implements CommandExecutor {
+public class CommandHandler implements TabExecutor {
 
     protected PPlugin plugin;
+    protected Map<String, PCommand> commands = new HashMap<>();
 
     public CommandHandler(@NonNull PPlugin plugin) {
         this.plugin = plugin;
     }
-
-    protected Map<String, PCommand> commands = new HashMap<>();
 
     protected void registerSubCommand(String cmd, PCommand executor) {
         if (!commands.containsKey(cmd)) {
@@ -30,7 +29,7 @@ public class CommandHandler implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(args.length == 0) {
+        if (args.length == 0) {
             plugin.lang.getHelp(plugin.localeKey).forEach(sender::sendMessage);
             return true;
         } else {
@@ -46,5 +45,19 @@ public class CommandHandler implements CommandExecutor {
             }
         }
         return false;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+        Set<String> subCommands = commands.keySet();
+        if (args.length == 0) {
+            return new ArrayList<>(subCommands);
+        }
+
+        if (args.length > 1) {
+            return new ArrayList<>();
+        }
+
+        return Arrays.stream(subCommands.toArray(new String[subCommands.size()])).filter(s -> s.startsWith(args[0])).collect(Collectors.toList());
     }
 }
