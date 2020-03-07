@@ -161,7 +161,7 @@ public class LocaleUtil {
                     lastPackage = packageName;
                     logRaw("于 &c" + packageName + " &7包 ▶");
                 }
-                logRaw("&d▶ &7于类 &c" + className + " &7中 &c" + methodName + " &7方法处. (&c" + fileName + "&7, 第 &c" + lineNumber + " &7行)");
+                logRaw("于类 &c" + className + " &7中 &c" + methodName + " &7方法处. (&c" + fileName + "&7, 第 &c" + lineNumber + " &7行)");
             }
         }
         logRaw("========================= &c&l请反馈给开发者 &7=========================");
