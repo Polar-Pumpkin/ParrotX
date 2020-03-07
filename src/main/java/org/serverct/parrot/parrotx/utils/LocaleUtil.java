@@ -144,26 +144,27 @@ public class LocaleUtil {
 
     public void logError(String action, String object, Throwable e) {
         logError(action, object, e.toString());
-        logRaw("==================== &c&l以下是堆栈跟踪 &7====================");
-        logRaw("&d▶ &7异常类型: &c" + e.toString());
+        logRaw("========================= &c&l以下是堆栈跟踪 &7=========================");
+        logRaw("异常类型 ▶");
+        logRaw(e.toString());
+        logRaw("");
         String lastPackage = null;
         for (StackTraceElement element : e.getStackTrace()) {
             String key = element.getClassName();
-            Class<? extends StackTraceElement> targetClass = element.getClass();
-            String packageName = targetClass.getPackage().getName();
-            String className = targetClass.getSimpleName();
+            String className = key.substring(key.lastIndexOf("."));
+            String packageName = key.replace("." + className, "");
             String methodName = element.getMethodName();
             int lineNumber = element.getLineNumber();
             String fileName = element.getFileName();
             if (key.contains("serverct")) {
                 if (!packageName.equals(lastPackage)) {
                     lastPackage = packageName;
-                    logRaw("&c" + packageName + " &7包 ▶");
+                    logRaw("于 &c" + packageName + " &7包 ▶");
                 }
                 logRaw("&d▶ &7于类 &c" + className + " &7中 &c" + methodName + " &7方法处. (&c" + fileName + "&7, 第 &c" + lineNumber + " &7行)");
             }
         }
-        logRaw("==================== &c&l请反馈给开发者 &7====================");
+        logRaw("========================= &c&l请反馈给开发者 &7=========================");
     }
 
     public boolean hasKey(String key) {
