@@ -293,21 +293,34 @@ public class I18n {
         logRaw("异常类型 ▶");
         logRaw(exception.toString());
         logRaw("");
-        String lastPackage = null;
+        // org.serverct.parrot.plugin.Plugin
+        String lastPackage = "";
         for (StackTraceElement elem : exception.getStackTrace()) {
             String key = elem.getClassName();
-            String className = key.substring(key.lastIndexOf("."));
-            String packageName = key.replace("." + className, "");
 
             boolean pass = true;
             if (packageFilter != null) {
                 pass = key.contains(packageFilter);
             }
 
+            String[] nameSet = key.split("[.]");
+            String className = nameSet[nameSet.length - 1];
+            String[] packageSet = new String[]{};
+            System.arraycopy(nameSet, 0, packageSet, 0, nameSet.length - 2);
+
+            StringBuilder packageName = new StringBuilder();
+            int counter = 0;
+            for (String nameElem : packageSet) {
+                packageName.append(nameElem);
+                if (counter < packageSet.length - 1) {
+                    packageName.append(".");
+                }
+                counter++;
+            }
+
             if (pass) {
-                if (!packageName.equals(lastPackage)) {
-                    lastPackage = packageName;
-                    logRaw("");
+                if (!packageName.toString().equals(lastPackage)) {
+                    lastPackage = packageName.toString();
                     logRaw("于 &c" + packageName + " &7包 ▶");
                 }
                 logRaw("于类 &c" + className + " &7中 &c" + elem.getMethodName() + " &7方法处. (&c" + elem.getFileName() + "&7, 第 &c" + elem.getLineNumber() + " &7行)");
