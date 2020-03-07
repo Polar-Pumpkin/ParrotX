@@ -11,8 +11,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.flags.Timestamp;
 import org.serverct.parrot.parrotx.flags.Uniqued;
+import org.serverct.parrot.parrotx.utils.I18n;
 import org.serverct.parrot.parrotx.utils.ItemStackUtil;
-import org.serverct.parrot.parrotx.utils.LocaleUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,7 +70,7 @@ public class Goal implements Timestamp, Uniqued {
                 }
             }
         } catch (Throwable e) {
-            plugin.lang.logError(LocaleUtil.LOAD, "目标(" + id.getKey() + ")", e.toString());
+            plugin.lang.logError(I18n.LOAD, "目标(" + id.getKey() + ")", e.toString());
         }
     }
 
@@ -89,7 +89,7 @@ public class Goal implements Timestamp, Uniqued {
 
     public int contribute(Type type, int amount) {
         if (type == Type.ITEM) {
-            plugin.lang.logError(LocaleUtil.LOAD, "目标(" + id.getKey() + ")", "尝试数字化提交物品.");
+            plugin.lang.logError(I18n.LOAD, "目标(" + id.getKey() + ")", "尝试数字化提交物品.");
             return 0;
         }
         int result = digitalRemain.get(type) - amount;

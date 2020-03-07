@@ -7,13 +7,13 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.serverct.parrot.parrotx.command.CommandHandler;
 import org.serverct.parrot.parrotx.config.PConfig;
-import org.serverct.parrot.parrotx.utils.LocaleUtil;
+import org.serverct.parrot.parrotx.utils.I18n;
 
 public class PPlugin extends JavaPlugin {
 
     @Getter
     public static PPlugin instance;
-    public LocaleUtil lang;
+    public I18n lang;
     public String localeKey;
     @Getter
     @Setter
@@ -30,7 +30,7 @@ public class PPlugin extends JavaPlugin {
     }
 
     public void init() {
-        lang = new LocaleUtil(this, "Chinese");
+        lang = new I18n(this, "Chinese");
 
         preload();
 
@@ -54,7 +54,7 @@ public class PPlugin extends JavaPlugin {
             command.setExecutor(handler);
             command.setTabCompleter(handler);
         } else {
-            lang.logError(LocaleUtil.REGISTER, "命令", "无法获取插件主命令.");
+            lang.logError(I18n.REGISTER, "命令", "无法获取插件主命令.");
         }
     }
 

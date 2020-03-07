@@ -5,7 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.serverct.parrot.parrotx.PPlugin;
-import org.serverct.parrot.parrotx.utils.LocaleUtil;
+import org.serverct.parrot.parrotx.utils.I18n;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,7 +23,7 @@ public class CommandHandler implements TabExecutor {
         if (!commands.containsKey(cmd)) {
             commands.put(cmd, executor);
         } else {
-            plugin.lang.logError(LocaleUtil.REGISTER, "子命令", "重复子命令注册: " + cmd);
+            plugin.lang.logError(I18n.REGISTER, "子命令", "重复子命令注册: " + cmd);
         }
     }
 
@@ -38,10 +38,10 @@ public class CommandHandler implements TabExecutor {
                 if (sender.hasPermission(pCommand.getPermission())) {
                     return pCommand.execute(plugin, sender, args);
                 } else {
-                    sender.sendMessage(plugin.lang.build(plugin.localeKey, LocaleUtil.Type.WARN, "您没有权限这么做."));
+                    sender.sendMessage(plugin.lang.build(plugin.localeKey, I18n.Type.WARN, "您没有权限这么做."));
                 }
             } else {
-                plugin.lang.logError(LocaleUtil.LOAD, "子命令", sender.getName() + " 尝试执行未注册子命令: " + args[0]);
+                plugin.lang.logError(I18n.LOAD, "子命令", sender.getName() + " 尝试执行未注册子命令: " + args[0]);
             }
         }
         return false;

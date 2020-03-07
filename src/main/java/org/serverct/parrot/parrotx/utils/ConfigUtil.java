@@ -12,7 +12,7 @@ public class ConfigUtil {
         } catch (Throwable e) {
             plugin.lang.log(
                     "尝试获取值时遇到错误(&c" + e.toString() + "&7), 配置文件: &c" + data + " &7, 路径: &c" + path + " &7, 默认值: &c" + defaultValue + "&7.",
-                    LocaleUtil.Type.WARN,
+                    I18n.Type.WARN,
                     false);
             return defaultValue;
         }
@@ -24,7 +24,7 @@ public class ConfigUtil {
         } catch (Throwable e) {
             plugin.lang.log(
                     "尝试获取值时遇到错误(&c" + e.toString() + "&7), 配置文件: &c" + section + " &7, 路径: &c" + path + " &7, 默认值: &c" + defaultValue + "&7.",
-                    LocaleUtil.Type.WARN,
+                    I18n.Type.WARN,
                     false);
             return defaultValue;
         }
@@ -36,7 +36,7 @@ public class ConfigUtil {
         } catch (Throwable e) {
             plugin.lang.log(
                     "尝试获取值时遇到错误(&c" + e.toString() + "&7), 配置文件: &c" + section + " &7, 路径: &c" + path + " &7, 默认值: &c" + defaultValue + "&7.",
-                    LocaleUtil.Type.WARN,
+                    I18n.Type.WARN,
                     false);
             return defaultValue;
         }
