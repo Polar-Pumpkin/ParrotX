@@ -305,7 +305,7 @@ public class I18n {
 
             String[] nameSet = key.split("[.]");
             String className = nameSet[nameSet.length - 1];
-            String[] packageSet = new String[]{};
+            String[] packageSet = new String[nameSet.length - 2];
             System.arraycopy(nameSet, 0, packageSet, 0, nameSet.length - 2);
 
             StringBuilder packageName = new StringBuilder();
