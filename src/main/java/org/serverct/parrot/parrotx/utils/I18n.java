@@ -289,9 +289,9 @@ public class I18n {
      * @param packageFilter 包名关键词过滤，不需要可以填写 null。
      */
     public void printStackTrace(Throwable exception, String packageFilter) {
-        logRaw("========================= &c&l以下是堆栈跟踪 &7=========================");
-        logRaw("异常类型 ▶");
-        logRaw(exception.toString());
+        logRaw("========================= &c&lprintStackTrace &7=========================");
+        logRaw("Exception Type ▶");
+        logRaw(ChatColor.RED + exception.toString());
         logRaw("");
         // org.serverct.parrot.plugin.Plugin
         String lastPackage = "";
@@ -322,12 +322,12 @@ public class I18n {
                 if (!packageName.toString().equals(lastPackage)) {
                     lastPackage = packageName.toString();
                     logRaw("");
-                    logRaw("于 &c" + packageName + " &7包 ▶");
+                    logRaw("Package &c" + packageName + " &7 ▶");
                 }
-                logRaw("  ▶ 类 &c" + className + " &7中 &c" + elem.getMethodName() + " &7方法处. (&c" + elem.getFileName() + "&7, 第 &c" + elem.getLineNumber() + " &7行)");
+                logRaw("  ▶ at Class &c" + className + " &7, Method &c" + elem.getMethodName() + "&7. (&c" + elem.getFileName() + "&7, Line &c" + elem.getLineNumber() + "&7)");
             }
         }
-        logRaw("========================= &c&l请反馈给开发者 &7=========================");
+        logRaw("========================= &c&lprintStackTrace &7=========================");
     }
 
     /**
