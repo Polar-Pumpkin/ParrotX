@@ -97,7 +97,7 @@ public class I18n {
      * @return 上色后的文本。
      */
     public static String color(String text) {
-        return ChatColor.translateAlternateColorCodes('&', text);
+        return ChatColor.translateAlternateColorCodes('&', "&7" + text);
     }
 
     /**
@@ -321,9 +321,10 @@ public class I18n {
             if (pass) {
                 if (!packageName.toString().equals(lastPackage)) {
                     lastPackage = packageName.toString();
+                    logRaw("");
                     logRaw("于 &c" + packageName + " &7包 ▶");
                 }
-                logRaw("于类 &c" + className + " &7中 &c" + elem.getMethodName() + " &7方法处. (&c" + elem.getFileName() + "&7, 第 &c" + elem.getLineNumber() + " &7行)");
+                logRaw("  ▶ 类 &c" + className + " &7中 &c" + elem.getMethodName() + " &7方法处. (&c" + elem.getFileName() + "&7, 第 &c" + elem.getLineNumber() + " &7行)");
             }
         }
         logRaw("========================= &c&l请反馈给开发者 &7=========================");
@@ -352,17 +353,18 @@ public class I18n {
 
         if (testGet != null && !testGet.equalsIgnoreCase("")) {
             message = testGet;
+        } else {
+            String[] getError = {
+                    "尝试获取原始语言数据时遇到错误 ▶",
+                    "目标语言 ▶ &c" + key,
+                    "节 ▶ &c" + (section == null ? "无" : section),
+                    "路径 ▶ &c" + path,
+                    "------------------------------"
+            };
+            log(getError, Type.ERROR, true);
         }
 
-        String[] getError = {
-                "尝试获取原始语言数据时遇到错误 ▶",
-                "目标语言 ▶ &c" + key,
-                "节 ▶ &c" + (section == null ? "无" : section),
-                "路径 ▶ &c" + path,
-                "------------------------------"
-        };
-        log(getError, Type.ERROR, true);
-        return color(message);
+        return color(ChatColor.GRAY + message);
     }
 
     /**
