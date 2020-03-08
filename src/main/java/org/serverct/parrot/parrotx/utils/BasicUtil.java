@@ -36,9 +36,9 @@ public class BasicUtil {
         List<Long> copy = new ArrayList<>(list);
         long temp;
         int size = copy.size();
-        for(int time = 1; time < size; time++) {
-            for(int index = 0; index < size - time; index++) {
-                if(copy.get(index) < copy.get(index + 1)) {
+        for (int time = 1; time < size; time++) {
+            for (int index = 0; index < size - time; index++) {
+                if (copy.get(index) < copy.get(index + 1)) {
                     temp = copy.get(index);
                     copy.set(index, copy.get(index + 1));
                     copy.set(index + 1, temp);
@@ -91,6 +91,59 @@ public class BasicUtil {
             plugin.lang.logError(I18n.CALCULATE, "数学表达式(" + expression + ", x = " + xValue + ")", e, null);
         }
         return 0;
+    }
+
+    public static String getRomanNumerals(int number) {
+        String numberStr = String.valueOf(number);
+        char[] chars = numberStr.toCharArray();
+        if (number <= 10) {
+            return getRomanBelowTen(number);
+        } else if (number < 100) {
+            StringBuilder result = new StringBuilder();
+            int digits1 = Integer.parseInt(String.valueOf(chars[1]));
+            int digits2 = Integer.parseInt(String.valueOf(chars[0]));
+            if (digits2 >= 5) {
+                digits2 -= 5;
+                result.append("L");
+            }
+            for (int i = 0; i < digits2; i++) {
+                result.append(getRomanBelowTen(10));
+            }
+            return result.append(getRomanBelowTen(digits1)).toString();
+        }
+        return String.valueOf(number);
+    }
+
+    private static String getRomanBelowTen(int number) {
+        if (number > 10) {
+            return String.valueOf(number);
+        }
+        switch (number) {
+            case 0:
+                return "0";
+            case 1:
+                return "I";
+            case 2:
+                return "II";
+            case 3:
+                return "III";
+            case 4:
+                return "IV";
+            case 5:
+                return "V";
+            case 6:
+                return "VI";
+            case 7:
+                return "VII";
+            case 8:
+                return "VIII";
+            case 9:
+                return "IX";
+            case 10:
+                return "X";
+            default:
+                return String.valueOf(number);
+        }
     }
 
     public static void openInventory(@NonNull PPlugin plugin, @NonNull Player user, @NonNull Inventory inventory) {
