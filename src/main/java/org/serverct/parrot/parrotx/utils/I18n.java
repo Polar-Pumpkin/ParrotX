@@ -322,9 +322,9 @@ public class I18n {
                 if (!packageName.toString().equals(lastPackage)) {
                     lastPackage = packageName.toString();
                     logRaw("");
-                    logRaw("Package &c" + packageName + " &7 ▶");
+                    logRaw("Package &c" + packageName + " &7▶");
                 }
-                logRaw("  ▶ at Class &c" + className + " &7, Method &c" + elem.getMethodName() + "&7. (&c" + elem.getFileName() + "&7, Line &c" + elem.getLineNumber() + "&7)");
+                logRaw("  ▶ at Class &c" + className + "&7, Method &c" + elem.getMethodName() + "&7. (&c" + elem.getFileName() + "&7, Line &c" + elem.getLineNumber() + "&7)");
             }
         }
         logRaw("========================= &c&lprintStackTrace &7=========================");

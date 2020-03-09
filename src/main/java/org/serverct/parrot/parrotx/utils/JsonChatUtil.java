@@ -21,6 +21,9 @@ public class JsonChatUtil {
     }
 
     public static void sendMap(PPlugin plugin, Player target, String msg, String header, String format, Map<?, String> map) {
+        if (map.isEmpty()) {
+            return;
+        }
         TextComponent text = getFromLegacy(msg.replace("%amount%", String.valueOf(map.size())));
         StringBuilder list = new StringBuilder(I18n.color(header.replace("%amount%", String.valueOf(map.size())) + "\n"));
         List<?> keys = new ArrayList<>(map.keySet());
