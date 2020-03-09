@@ -20,7 +20,7 @@ public class JsonChatUtil {
         return text;
     }
 
-    public static void sendMap(PPlugin plugin, Player target, String msg, String header, String format, Map<?, String> map) {
+    public static void sendMap(PPlugin plugin, Player target, String msg, String header, String format, Map<?, ?> map) {
         if (map.isEmpty()) {
             return;
         }
@@ -29,16 +29,24 @@ public class JsonChatUtil {
         List<?> keys = new ArrayList<>(map.keySet());
         for (int index = 0; index < keys.size(); index++) {
             Object key = keys.get(index);
+            Object value = map.get(key);
 
-            String name = key.toString();
+            String keyName = key.toString();
             if (key instanceof Material) {
                 Material material = (Material) key;
-                name = plugin.lang.hasKey("Material") ? plugin.lang.getRaw("Material", "Material", material.name()) : material.name();
+                keyName = plugin.lang.hasKey("Material") ? plugin.lang.getRaw("Material", "Material", material.name()) : material.name();
             } else if (key instanceof String) {
-                name = (String) key;
+                keyName = (String) key;
             }
 
-            list.append(I18n.color(format.replace("%k%", name).replace("%v%", map.get(key))));
+            String valueName = key.toString();
+            if (value instanceof String) {
+                valueName = (String) value;
+            } else if (value instanceof Integer) {
+                valueName = String.valueOf((int) value);
+            }
+
+            list.append(I18n.color(format.replace("%k%", keyName).replace("%v%", valueName)));
 
             if (index != keys.size() - 1) {
                 list.append("\n");
