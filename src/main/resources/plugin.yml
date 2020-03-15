@@ -1,7 +1,6 @@
-name: ANOHANACore
+name: ParrotX
 version: ${project.version}
-main: org.serverct.parrot.anohanacore.ANOHANACore
+main: org.serverct.parrot.parrotx.ParrotX
 api-version: 1.13
-prefix: ACore
 softdepend: [Vault]
 authors: [EntityParrot_]

@@ -1,18 +1,7 @@
 package org.serverct.parrot.parrotx;
 
-public final class ParrotX extends PPlugin {
+import org.bukkit.plugin.java.JavaPlugin;
 
-    @Override
-    public void onEnable() {
-        super.onEnable();
-    }
+public final class ParrotX extends JavaPlugin {
 
-    public void init() {
-
-    }
-
-    @Override
-    public void onDisable() {
-        super.onDisable();
-    }
 }
