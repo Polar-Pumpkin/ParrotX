@@ -76,7 +76,7 @@ public class ItemStackUtil {
     public static String getName(PPlugin plugin, Material material) {
         if (plugin.lang.hasKey("Material")) {
             String result = plugin.lang.getRaw("Material", "Material", material.name());
-            return result.contains("错误") ? material.name() : result;
+            return result.contains("错误") ? material.name() : ChatColor.stripColor(result);
         }
         return material.name();
     }
