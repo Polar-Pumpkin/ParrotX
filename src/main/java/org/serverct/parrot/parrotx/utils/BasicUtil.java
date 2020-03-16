@@ -150,6 +150,7 @@ public class BasicUtil {
         new BukkitRunnable() {
             @Override
             public void run() {
+                user.closeInventory();
                 user.openInventory(inventory);
             }
         }.runTask(plugin);

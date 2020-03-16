@@ -356,6 +356,7 @@ public class I18n {
         } else {
             String[] getError = {
                     "尝试获取原始语言数据时遇到错误 ▶",
+                    "插件名 ▶ &c" + plugin.getName(),
                     "目标语言 ▶ &c" + key,
                     "节 ▶ &c" + (section == null ? "无" : section),
                     "路径 ▶ &c" + path,
