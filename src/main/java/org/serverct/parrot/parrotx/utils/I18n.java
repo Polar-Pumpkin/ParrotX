@@ -37,6 +37,10 @@ public class I18n {
     public static final String GET = "获取值";
     public static final String SET = "设置值";
     public static final String MSG = "发送消息";
+    public static final String BUILD = "构建";
+    public static final String LOG = "记录";
+    public static final String CONTRIBUTE = "贡献";
+    public static final String EXECUTE = "执行";
     private String Tool_Prefix = "&7[&b&lEP's &aLocale Tool&7] ";
     private String Tool_INFO = "&a&l> ";
     private String Tool_WARN = "&e&l> ";

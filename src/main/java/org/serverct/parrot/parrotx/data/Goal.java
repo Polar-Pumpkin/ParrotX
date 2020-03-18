@@ -2,16 +2,15 @@ package org.serverct.parrot.parrotx.data;
 
 import lombok.Getter;
 import lombok.NonNull;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.flags.Timestamp;
 import org.serverct.parrot.parrotx.flags.Uniqued;
+import org.serverct.parrot.parrotx.utils.EnumUtil;
 import org.serverct.parrot.parrotx.utils.I18n;
+import org.serverct.parrot.parrotx.utils.InventoryUtil;
 import org.serverct.parrot.parrotx.utils.ItemStackUtil;
 
 import java.util.ArrayList;
@@ -57,20 +56,14 @@ public class Goal implements Timestamp, Uniqued {
             ConfigurationSection remain = section.getConfigurationSection("Remain");
             if (remain != null) {
                 ConfigurationSection digital = remain.getConfigurationSection("Digital");
-                if (digital != null) {
-                    for (String type : digital.getKeys(false)) {
-                        digitalRemain.put(Type.valueOf(type.toUpperCase()), digital.getInt(type));
-                    }
-                }
+                if (digital != null) for (String type : digital.getKeys(false))
+                    digitalRemain.put(EnumUtil.valueOf(Type.class, type.toUpperCase()), digital.getInt(type));
                 ConfigurationSection item = remain.getConfigurationSection("Item");
-                if (item != null) {
-                    for (String material : item.getKeys(false)) {
-                        itemRemain.put(Material.valueOf(material.toUpperCase()), item.getInt(material));
-                    }
-                }
+                if (item != null) for (String material : item.getKeys(false))
+                    itemRemain.put(EnumUtil.getMaterial(material.toUpperCase()), item.getInt(material));
             }
         } catch (Throwable e) {
-            plugin.lang.logError(I18n.LOAD, "目标(" + id.getKey() + ")", e, null);
+            plugin.lang.logError(I18n.LOAD, "目标/" + id.getKey(), e, null);
         }
     }
 
@@ -78,22 +71,18 @@ public class Goal implements Timestamp, Uniqued {
         section.set("StartTime", startTime);
         ConfigurationSection remain = section.createSection("Remain");
         ConfigurationSection digital = remain.createSection("Digital");
-        for (Type type : digitalRemain.keySet()) {
-            digital.set(type.toString(), digitalRemain.get(type));
-        }
+        digitalRemain.forEach((type, amount) -> digital.set(type.toString(), amount));
         ConfigurationSection item = remain.createSection("Item");
-        for (Material material : itemRemain.keySet()) {
-            item.set(material.toString(), itemRemain.get(material));
-        }
+        itemRemain.forEach((material, amount) -> item.set(material.name(), amount));
     }
 
     public int contribute(Type type, int amount) {
         if (type == Type.ITEM) {
-            plugin.lang.logError(I18n.LOAD, "目标(" + id.getKey() + ")", "尝试数字化提交物品.");
+            plugin.lang.logError(I18n.CONTRIBUTE, "目标/" + id.getKey(), "尝试数字化提交物品");
             return 0;
         }
         int result = digitalRemain.get(type) - amount;
-        if (result <= 0) {
+        if (result < 0) {
             digitalRemain.put(type, 0);
             return -result;
         }
@@ -103,25 +92,26 @@ public class Goal implements Timestamp, Uniqued {
 
     public Map<Material, Integer> contribute(Inventory inventory) {
         Map<Material, Integer> result = new HashMap<>();
-        for (ItemStack item : inventory.getContents()) {
-            if (item != null && item.getType() != Material.AIR) {
-                Material material = item.getType();
-                if (itemRemain.containsKey(material)) {
-                    inventory.removeItem(item);
-                    int resultAmount = itemRemain.get(material) - item.getAmount();
-                    if (resultAmount < 0) {
-                        item.setAmount(-resultAmount);
-                        inventory.addItem(item);
-                        result.put(material, result.getOrDefault(material, 0) + itemRemain.get(material));
-                        itemRemain.put(material, 0);
-                    }
-                    if (resultAmount >= 0) {
-                        result.put(material, result.getOrDefault(material, 0) + item.getAmount());
-                        itemRemain.put(material, resultAmount);
+        InventoryUtil.inventoryFilter(inventory, item -> item != null && item.getType() != Material.AIR).forEach(
+                (slot, item) -> {
+                    Material material = item.getType();
+                    int contributed = result.getOrDefault(material, 0);
+                    if (itemRemain.containsKey(material)) {
+                        int remained = itemRemain.get(material) - item.getAmount();
+                        if (remained < 0) {
+                            item.setAmount(-remained);
+                            inventory.setItem(slot, item);
+                            contributed += itemRemain.get(material);
+                            remained = 0;
+                        } else {
+                            inventory.removeItem(item);
+                            contributed += item.getAmount();
+                        }
+                        itemRemain.put(material, remained);
+                        result.put(material, contributed);
                     }
                 }
-            }
-        }
+        );
         return result;
     }
 
@@ -129,41 +119,24 @@ public class Goal implements Timestamp, Uniqued {
         List<String> result = new ArrayList<>();
         this.digitalRemain.forEach(
                 (type, value) -> {
-                    if (value == 0) {
-                        result.add(prefix + "&f[&a&l✔&f] &a&m" + type.getName() + " ▶ " + value);
-                    } else {
-                        result.add(prefix + "&f[  &f] &7" + type.getName() + " ▶ &c" + value);
-                    }
+                    if (value == 0) result.add(prefix + "&f[&a&l✔&f] &a&m" + type.getName() + " ▶ " + value);
+                    else result.add(prefix + "&f[  &f] &7" + type.getName() + " ▶ &c" + value);
                 }
         );
         this.itemRemain.forEach(
                 (material, value) -> {
-                    ItemMeta meta = Bukkit.getItemFactory().getItemMeta(material);
-                    if (meta != null) {
-                        String name = ItemStackUtil.getName(plugin, material);
-                        if (value == 0) {
-                            result.add(prefix + "&f[&a&l✔&f] &a&m" + name + " ▶ " + value);
-                        } else {
-                            result.add(prefix + "&f[  &f] &7" + name + " ▶ &c" + value);
-                        }
-                    }
+                    String name = ItemStackUtil.getName(plugin, material);
+                    if (value == 0) result.add(prefix + "&f[&a&l✔&f] &a&m" + name + " ▶ " + value);
+                    else result.add(prefix + "&f[  &f] &7" + name + " ▶ &c" + value);
                 }
         );
-        result.replaceAll(s -> I18n.color(s));
+        result.replaceAll(I18n::color);
         return result;
     }
 
     public boolean isFinish() {
-        for (int digital : digitalRemain.values()) {
-            if (digital > 0) {
-                return false;
-            }
-        }
-        for (int item : itemRemain.values()) {
-            if (item > 0) {
-                return false;
-            }
-        }
+        for (int digital : digitalRemain.values()) if (digital > 0) return false;
+        for (int item : itemRemain.values()) if (item > 0) return false;
         return true;
     }
 
@@ -193,14 +166,11 @@ public class Goal implements Timestamp, Uniqued {
         EXPERIENCE("经验等级"),
         POINT("点数");
 
+        @Getter
         private String name;
 
         Type(String name) {
             this.name = name;
-        }
-
-        public String getName() {
-            return name;
         }
     }
 }

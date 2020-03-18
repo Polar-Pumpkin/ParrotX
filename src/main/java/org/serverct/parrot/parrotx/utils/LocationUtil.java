@@ -22,30 +22,21 @@ public class LocationUtil {
     private static final Set<Material> TRANSPARENT_MATERIALS = new HashSet<>();
 
     static {
-        for (Material mat : Material.values()) {
-            if (mat.isTransparent()) {
-                HOLLOW_MATERIALS.add(mat);
-            }
-        }
+        for (Material mat : Material.values()) if (mat.isTransparent()) HOLLOW_MATERIALS.add(mat);
         TRANSPARENT_MATERIALS.addAll(HOLLOW_MATERIALS);
         TRANSPARENT_MATERIALS.addAll(WATER_TYPES);
         List<Vector3D> pos = new ArrayList<>();
-        for (int x = -3; x <= 3; x++) {
-            for (int y = -3; y <= 3; y++) {
+        for (int x = -3; x <= 3; x++)
+            for (int y = -3; y <= 3; y++)
                 for (int z = -3; z <= 3; z++)
                     pos.add(new Vector3D(x, y, z));
-            }
-        }
         pos.sort(Comparator.comparingInt(a -> a.x * a.x + a.y * a.y + a.z * a.z));
         VOLUME = pos.toArray(new Vector3D[0]);
     }
 
     public static void setIsWaterSafe(boolean isWaterSafe) {
-        if (isWaterSafe) {
-            HOLLOW_MATERIALS.addAll(WATER_TYPES);
-        } else {
-            HOLLOW_MATERIALS.removeAll(WATER_TYPES);
-        }
+        if (isWaterSafe) HOLLOW_MATERIALS.addAll(WATER_TYPES);
+        else HOLLOW_MATERIALS.removeAll(WATER_TYPES);
     }
 
     public static ItemStack convertBlockToItem(Block block) {
@@ -56,10 +47,9 @@ public class LocationUtil {
         Block block = null;
         try {
             block = entity.getTargetBlock(TRANSPARENT_MATERIALS, 300);
-        } catch (NoSuchMethodError ignored) {}
-        if (block == null) {
-            throw new Exception("Not targeting a block");
+        } catch (NoSuchMethodError ignored) {
         }
+        if (block == null) throw new Exception("Not targeting a block");
         return block.getLocation();
     }
 
@@ -68,12 +58,9 @@ public class LocationUtil {
     }
 
     public static boolean isBlockUnsafeForUser(Player user, World world, int x, int y, int z) {
-        if (user.isOnline() && world.equals(user.getWorld()) && (user.getGameMode() == GameMode.CREATIVE || user.getGameMode() == GameMode.SPECTATOR) && user.getAllowFlight()) {
-            return false;
-        }
-        if (isBlockDamaging(world, x, y, z)) {
-            return true;
-        }
+        if (user.isOnline() && world.equals(user.getWorld()) && (user.getGameMode() == GameMode.CREATIVE
+                || user.getGameMode() == GameMode.SPECTATOR) && user.getAllowFlight()) return false;
+        if (isBlockDamaging(world, x, y, z)) return true;
         return isBlockAboveAir(world, x, y, z);
     }
 
@@ -83,23 +70,15 @@ public class LocationUtil {
 
     public static boolean isBlockDamaging(World world, int x, int y, int z) {
         Block below = world.getBlockAt(x, y - 1, z);
-        switch (below.getType()) {
-            case LAVA:
-            case FIRE:
-                return true;
-        }
-        if (MaterialUtil.isBed(below.getType())) {
-            return true;
-        }
+        Material type = below.getType();
+        if (type == Material.LAVA || type == Material.FIRE) return true;
+        if (MaterialUtil.isBed(below.getType())) return true;
         try {
-            if (below.getType() == Material.valueOf("FLOWING_LAVA")) {
-                return true;
-            }
-        } catch (Exception ignored) {}
-        Material PORTAL = EnumUtil.getMaterial("NETHER_PORTAL", "PORTAL");
-        if (world.getBlockAt(x, y, z).getType() == PORTAL) {
-            return true;
+            if (below.getType() == Material.valueOf("FLOWING_LAVA")) return true;
+        } catch (Exception ignored) {
         }
+        Material PORTAL = EnumUtil.getMaterial("NETHER_PORTAL", "PORTAL");
+        if (world.getBlockAt(x, y, z).getType() == PORTAL) return true;
         return (!HOLLOW_MATERIALS.contains(world.getBlockAt(x, y, z).getType()) || !HOLLOW_MATERIALS.contains(world.getBlockAt(x, y + 1, z).getType()));
     }
 
@@ -111,20 +90,16 @@ public class LocationUtil {
         return new Location(world, x + 0.5D, y, z + 0.5D, loc.getYaw(), loc.getPitch());
     }
 
-    public static Location getSafeDestination(Player user, Location loc) throws Exception {
+    /*public static Location getSafeDestination(Player user, Location loc) throws Exception {
         if (user.isOnline() && loc.getWorld().equals(user.getWorld()) && (user.getGameMode() == GameMode.CREATIVE) && user.getAllowFlight()) {
-            if (shouldFly(loc)) {
-                user.setFlying(true);
-            }
+            if (shouldFly(loc)) user.setFlying(true);
             return getRoundedDestination(loc);
         }
         return getSafeDestination(loc);
-    }
+    }*/
 
     public static Location getSafeDestination(Location loc) throws Exception {
-        if (loc == null || loc.getWorld() == null) {
-            throw new Exception("destinationNotSet");
-        }
+        if (loc == null || loc.getWorld() == null) throw new Exception("destinationNotSet");
         World world = loc.getWorld();
         int x = loc.getBlockX();
         int y = (int) Math.round(loc.getY());
@@ -186,15 +161,16 @@ public class LocationUtil {
         while (isBlockUnsafe(world, x, y, z) && y > -1) {
             y--;
             count++;
-            if (count > 2) {
-                return true;
-            }
+            if (count > 2) return true;
         }
 
         return (y < 0);
     }
 
-    public static ConfigurationSection save(Location loc, ConfigurationSection section) {
+    public static void save(Location loc, ConfigurationSection section) {
+        if (loc.getWorld() == null) {
+            return;
+        }
         String worldName = loc.getWorld().getName();
         double x = loc.getX();
         double y = loc.getY();
@@ -204,8 +180,6 @@ public class LocationUtil {
         section.set("X", x);
         section.set("Y", y);
         section.set("Z", z);
-
-        return section;
     }
 
     public static Location get(PPlugin plugin, ConfigurationSection section) {
@@ -214,7 +188,7 @@ public class LocationUtil {
         double y;
         double z;
 
-        worldName = section.getString("World");
+        worldName = section.getString("World", "world");
         World world = plugin.getServer().getWorld(worldName);
         x = section.getDouble("X");
         y = section.getDouble("Y");
@@ -223,7 +197,7 @@ public class LocationUtil {
         try {
             return new Location(world, x, y, z);
         } catch (Throwable e) {
-            e.printStackTrace();
+            plugin.lang.logError(I18n.SAVE, "Location", e, null);
             return null;
         }
     }

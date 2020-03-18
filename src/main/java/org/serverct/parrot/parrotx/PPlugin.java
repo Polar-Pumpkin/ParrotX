@@ -1,7 +1,6 @@
 package org.serverct.parrot.parrotx;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -12,12 +11,12 @@ import org.serverct.parrot.parrotx.utils.I18n;
 public class PPlugin extends JavaPlugin {
 
     @Getter
-    public static PPlugin instance;
+    private static PPlugin instance;
     public I18n lang;
     public String localeKey;
-    @Getter
-    @Setter
     public PConfig pConfig;
+    @Getter
+    private CommandHandler cmdHandler;
 
     @Override
     public void onEnable() {
@@ -51,6 +50,7 @@ public class PPlugin extends JavaPlugin {
     protected void registerCommand(String cmd, CommandHandler handler) {
         PluginCommand command = Bukkit.getPluginCommand(cmd);
         if (command != null) {
+            this.cmdHandler = handler;
             command.setExecutor(handler);
             command.setTabCompleter(handler);
         } else {

@@ -23,14 +23,14 @@ public class PConfig implements PConfiguration {
 
     public PConfig(@NonNull PPlugin plugin, String fileName, String typeName) {
         this.plugin = plugin;
-        this.file = new File(plugin.getDataFolder() + File.separator + fileName + ".yml");
+        this.file = new File(plugin.getDataFolder(), fileName + ".yml");
         this.id = fileName;
         this.name = typeName;
     }
 
     @Override
     public String getTypeName() {
-        return name + "(" + id + ")";
+        return name + "/" + id;
     }
 
     @Override
@@ -85,7 +85,7 @@ public class PConfig implements PConfiguration {
         if (file.delete()) {
             plugin.lang.logAction(I18n.DELETE, getTypeName());
         } else {
-            plugin.lang.logError(I18n.DELETE, getTypeName(), "无法删除该文件.");
+            plugin.lang.logError(I18n.DELETE, getTypeName(), "无法删除该文件");
         }
     }
 

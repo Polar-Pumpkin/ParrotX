@@ -94,6 +94,4 @@ public final class TimeUtil {
     public static String getChineseDateFormat(Date date) {
         return getFormattedDate(date, new SimpleDateFormat(CHINESE_DATE_FORMAT));
     }
-
-
 }

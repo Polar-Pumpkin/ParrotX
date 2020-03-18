@@ -9,40 +9,40 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class EnumUtil {
-  public static <T extends Enum> T valueOf(Class<T> enumClass, String... names) {
-    for (String name : names) {
-      try {
-        Field enumField = enumClass.getDeclaredField(name);
-        if (enumField.isEnumConstant())
-          return (T) enumField.get(null);
-      } catch (NoSuchFieldException | IllegalAccessException ignored) {
-      }
+    public static <T extends Enum> T valueOf(Class<T> enumClass, String... names) {
+        for (String name : names) {
+            try {
+                Field enumField = enumClass.getDeclaredField(name);
+                if (enumField.isEnumConstant())
+                    return (T) enumField.get(null);
+            } catch (NoSuchFieldException | IllegalAccessException ignored) {
+            }
+        }
+        return null;
     }
-    return null;
-  }
 
-  public static <T extends Enum> Set<T> getAllMatching(Class<T> enumClass, String... names) {
-    Set<T> set = new HashSet<>();
-    for (String name : names) {
-      try {
-        Field enumField = enumClass.getDeclaredField(name);
-        if (enumField.isEnumConstant())
-          set.add((T) enumField.get(null));
-      } catch (NoSuchFieldException | IllegalAccessException ignored) {
-      }
+    public static <T extends Enum> Set<T> getAllMatching(Class<T> enumClass, String... names) {
+        Set<T> set = new HashSet<>();
+        for (String name : names) {
+            try {
+                Field enumField = enumClass.getDeclaredField(name);
+                if (enumField.isEnumConstant())
+                    set.add((T) enumField.get(null));
+            } catch (NoSuchFieldException | IllegalAccessException ignored) {
+            }
+        }
+        return set;
     }
-    return set;
-  }
 
-  public static Material getMaterial(String... names) {
-    return valueOf(Material.class, names);
-  }
+    public static Material getMaterial(String... names) {
+        return valueOf(Material.class, names);
+    }
 
-  public static Statistic getStatistic(String... names) {
-    return valueOf(Statistic.class, names);
-  }
+    public static Statistic getStatistic(String... names) {
+        return valueOf(Statistic.class, names);
+    }
 
-  public static EntityType getEntityType(String... names) {
-    return valueOf(EntityType.class, names);
-  }
+    public static EntityType getEntityType(String... names) {
+        return valueOf(EntityType.class, names);
+    }
 }

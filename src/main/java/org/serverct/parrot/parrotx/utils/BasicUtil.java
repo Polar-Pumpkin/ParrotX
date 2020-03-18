@@ -74,7 +74,7 @@ public class BasicUtil {
     }
 
     public static String formatLocation(@NonNull Location location) {
-        String result = "&c" + location.getBlockX() + "&7, &c" + location.getBlockY() + "&7, &c" + location.getBlockZ();
+        String result = "&c" + location.getBlockX() + "&7, &c" + location.getBlockY() + "&7, &c" + location.getBlockZ() + "&7";
         return ChatColor.translateAlternateColorCodes('&', result);
     }
 
@@ -85,10 +85,10 @@ public class BasicUtil {
             Expression expr = Parser.parse(expression, scope);
             x.setValue(xValue);
             double result = expr.evaluate();
-            plugin.lang.logAction(I18n.CALCULATE, "数学表达式(" + expression + ", x = " + xValue + ", 值 = " + result + ")");
+            plugin.lang.logAction(I18n.CALCULATE, "数学表达式(" + expression + ", x=" + xValue + ", 值=" + result + ")");
             return result;
         } catch (Throwable e) {
-            plugin.lang.logError(I18n.CALCULATE, "数学表达式(" + expression + ", x = " + xValue + ")", e, null);
+            plugin.lang.logError(I18n.CALCULATE, "数学表达式(" + expression + ", x=" + xValue + ")", e, null);
         }
         return 0;
     }
