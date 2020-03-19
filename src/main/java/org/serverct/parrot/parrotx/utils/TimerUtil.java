@@ -17,8 +17,20 @@ public class TimerUtil {
         REGISTEREDTASK = new HashMap<>();
     }
 
-    public static TimerTask get(PID pid) {
+    public static TimerTask get(@NonNull PID pid) {
         return REGISTEREDTASK.getOrDefault(pid, null);
+    }
+
+    public static void cancel(@NonNull PID id) {
+        TimerTask task = get(id);
+        if (task != null) task.cancel();
+    }
+
+    public static boolean restart(@NonNull PID id, String refreshTime) {
+        TimerTask task = get(id);
+        cancel(id);
+        if (task != null) return startTask(id, task, refreshTime);
+        else return false;
     }
 
     public static boolean startTask(@NonNull PID id, @NonNull TimerTask task, String refreshTime) {
