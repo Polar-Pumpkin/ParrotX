@@ -28,7 +28,7 @@ public class PFolder implements PDataFolder {
 
     @Override
     public String getTypeName() {
-        return name + "(" + id + ")";
+        return name + "/" + id;
     }
 
     @Override
@@ -76,11 +76,21 @@ public class PFolder implements PDataFolder {
     }
 
     @Override
+    public void saveAll() {
+        plugin.lang.logAction(I18n.SAVE, getTypeName());
+    }
+
+    @Override
     public void reload(String id) {
-        load(new File(folder.getAbsolutePath() + File.separator + id + ".yml"));
+        load(new File(folder.getAbsolutePath(), id + ".yml"));
     }
 
     @Override
     public void delete(String id) {
+    }
+
+    @Override
+    public void save(@NonNull String id) {
+
     }
 }

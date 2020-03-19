@@ -17,7 +17,11 @@ public interface PDataFolder {
 
     void reloadAll();
 
+    void saveAll();
+
     void reload(@NonNull String id);
 
     void delete(@NonNull String id);
+
+    void save(@NonNull String id);
 }
