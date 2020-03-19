@@ -15,7 +15,6 @@ public class HelpCommand implements PCommand {
     public HelpCommand(PPlugin plugin, String perm) {
         this.plugin = plugin;
         this.permission = perm;
-        this.subCommands = plugin.getCmdHandler().getCommands();
     }
 
     @Override
@@ -41,6 +40,7 @@ public class HelpCommand implements PCommand {
     @Override
     public String[] getParams(int arg) {
         if (arg == 0) {
+            this.subCommands = plugin.getCmdHandler().getCommands();
             return subCommands.keySet().toArray(new String[0]);
         }
         return new String[0];
