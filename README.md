@@ -1,0 +1,2 @@
+# ParrotX
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/cd083fd4063b4b13a38587fea63b75b4)](https://app.codacy.com/manual/Polar-Pumpkin/ParrotX?utm_source=github.com&utm_medium=referral&utm_content=Polar-Pumpkin/ParrotX&utm_campaign=Badge_Grade_Dashboard)
