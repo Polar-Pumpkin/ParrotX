@@ -1,7 +1,7 @@
 package org.serverct.parrot.parrotx.data;
 
 import org.serverct.parrot.parrotx.PPlugin;
-import org.serverct.parrot.parrotx.flags.Uniqued;
+import org.serverct.parrot.parrotx.data.flags.Uniqued;
 import org.serverct.parrot.parrotx.utils.I18n;
 
 public interface PData extends PConfiguration, Uniqued {

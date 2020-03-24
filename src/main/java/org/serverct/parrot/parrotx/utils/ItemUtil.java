@@ -14,29 +14,29 @@ import org.serverct.parrot.parrotx.PPlugin;
 
 import java.util.List;
 
-public class ItemStackUtil {
+public class ItemUtil {
 
     public static ItemStack build(PPlugin plugin, @NonNull ConfigurationSection section) {
         ConfigurationSection itemSection = section.getConfigurationSection("ItemStack");
         if (itemSection != null) {
             try {
-                ItemStack result = new ItemStack(EnumUtil.getMaterial(section.getString("Material", "AIR").toUpperCase()));
+                ItemStack result = new ItemStack(EnumUtil.getMaterial(itemSection.getString("Material", "AIR").toUpperCase()));
                 ItemMeta meta = result.getItemMeta();
 
                 if (meta == null) meta = Bukkit.getItemFactory().getItemMeta(result.getType());
                 if (meta == null) return result;
 
-                String display = section.getString("Display");
+                String display = itemSection.getString("Display");
                 if (display != null) meta.setDisplayName(I18n.color(display));
 
-                List<String> lore = section.getStringList("Lore");
+                List<String> lore = itemSection.getStringList("Lore");
                 if (!lore.isEmpty()) {
                     lore.replaceAll(I18n::color);
                     meta.setLore(lore);
                 }
 
-                if (section.isConfigurationSection("Enchants")) {
-                    ConfigurationSection enchant = section.getConfigurationSection("Enchants");
+                if (itemSection.isConfigurationSection("Enchants")) {
+                    ConfigurationSection enchant = itemSection.getConfigurationSection("Enchants");
                     if (enchant != null) {
                         for (String name : enchant.getKeys(false)) {
                             Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(name.toLowerCase()));
@@ -49,7 +49,7 @@ public class ItemStackUtil {
                     }
                 }
 
-                List<String> itemFlag = section.getStringList("ItemFlags");
+                List<String> itemFlag = itemSection.getStringList("ItemFlags");
                 if (!itemFlag.isEmpty()) {
                     for (String flagName : itemFlag) {
                         ItemFlag flag = EnumUtil.valueOf(ItemFlag.class, flagName.toUpperCase());

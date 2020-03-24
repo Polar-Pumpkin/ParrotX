@@ -6,12 +6,12 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.serverct.parrot.parrotx.PPlugin;
-import org.serverct.parrot.parrotx.flags.Timestamp;
-import org.serverct.parrot.parrotx.flags.Uniqued;
+import org.serverct.parrot.parrotx.data.flags.Timestamp;
+import org.serverct.parrot.parrotx.data.flags.Uniqued;
 import org.serverct.parrot.parrotx.utils.EnumUtil;
 import org.serverct.parrot.parrotx.utils.I18n;
 import org.serverct.parrot.parrotx.utils.InventoryUtil;
-import org.serverct.parrot.parrotx.utils.ItemStackUtil;
+import org.serverct.parrot.parrotx.utils.ItemUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -125,7 +125,7 @@ public class Goal implements Timestamp, Uniqued {
         );
         this.itemRemain.forEach(
                 (material, value) -> {
-                    String name = ItemStackUtil.getName(plugin, material);
+                    String name = ItemUtil.getName(plugin, material);
                     if (value == 0) result.add(prefix + "&f[&a&l✔&f] &a&m" + name + " ▶ " + value);
                     else result.add(prefix + "&f[  &f] &7" + name + " ▶ &c" + value);
                 }

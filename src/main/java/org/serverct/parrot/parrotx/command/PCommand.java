@@ -22,10 +22,10 @@ public interface PCommand {
     boolean execute(PPlugin plugin, CommandSender sender, String[] args);
 
     default String optionalParam(String param) {
-        return I18n.color("&7[&c" + param + "&7]");
+        return I18n.color("&7[&c" + param + "&7] ");
     }
 
     default String requiredParam(String param) {
-        return I18n.color("&7<&c" + param + "&7>");
+        return I18n.color("&7<&c" + param + "&7> ");
     }
 }

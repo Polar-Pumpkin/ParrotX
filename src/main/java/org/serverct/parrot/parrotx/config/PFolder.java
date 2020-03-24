@@ -2,7 +2,6 @@ package org.serverct.parrot.parrotx.config;
 
 import lombok.Getter;
 import lombok.NonNull;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PDataFolder;
 import org.serverct.parrot.parrotx.utils.I18n;
@@ -14,14 +13,12 @@ public class PFolder implements PDataFolder {
     protected PPlugin plugin;
     @Getter
     protected File folder;
-    @Getter
-    protected FileConfiguration config;
     private String id;
     private String name;
 
     public PFolder(@NonNull PPlugin plugin, String folderName, String typeName) {
         this.plugin = plugin;
-        this.folder = new File(plugin.getDataFolder() + File.separator + folderName);
+        this.folder = new File(plugin.getDataFolder(), folderName);
         this.id = folderName;
         this.name = typeName;
     }
@@ -77,7 +74,6 @@ public class PFolder implements PDataFolder {
 
     @Override
     public void saveAll() {
-        plugin.lang.logAction(I18n.SAVE, getTypeName());
     }
 
     @Override
@@ -91,6 +87,5 @@ public class PFolder implements PDataFolder {
 
     @Override
     public void save(@NonNull String id) {
-
     }
 }

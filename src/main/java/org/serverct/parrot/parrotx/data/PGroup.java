@@ -1,9 +1,9 @@
 package org.serverct.parrot.parrotx.data;
 
-import org.serverct.parrot.parrotx.flags.FileSaved;
-import org.serverct.parrot.parrotx.flags.Owned;
-import org.serverct.parrot.parrotx.flags.Timestamp;
-import org.serverct.parrot.parrotx.flags.Uniqued;
+import org.serverct.parrot.parrotx.data.flags.FileSaved;
+import org.serverct.parrot.parrotx.data.flags.Owned;
+import org.serverct.parrot.parrotx.data.flags.Timestamp;
+import org.serverct.parrot.parrotx.data.flags.Uniqued;
 
 import java.util.List;
 

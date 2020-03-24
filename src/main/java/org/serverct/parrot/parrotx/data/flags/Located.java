@@ -1,4 +1,4 @@
-package org.serverct.parrot.parrotx.flags;
+package org.serverct.parrot.parrotx.data.flags;
 
 import lombok.NonNull;
 import org.bukkit.Location;

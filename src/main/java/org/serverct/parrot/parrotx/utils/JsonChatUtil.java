@@ -28,7 +28,7 @@ public class JsonChatUtil {
             Object value = map.get(key);
 
             String keyName = key.toString();
-            if (key instanceof Material) keyName = ItemStackUtil.getName(plugin, (Material) key);
+            if (key instanceof Material) keyName = ItemUtil.getName(plugin, (Material) key);
             else if (key instanceof String) keyName = (String) key;
 
             String valueName = key.toString();
