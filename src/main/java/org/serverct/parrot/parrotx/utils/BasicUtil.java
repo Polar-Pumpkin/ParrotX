@@ -96,9 +96,8 @@ public class BasicUtil {
     public static String getRomanNumerals(int number) {
         String numberStr = String.valueOf(number);
         char[] chars = numberStr.toCharArray();
-        if (number <= 10) {
-            return getRomanBelowTen(number);
-        } else if (number < 100) {
+        if (number <= 10) return getRomanBelowTen(number);
+        else if (number < 100) {
             StringBuilder result = new StringBuilder();
             int digits1 = Integer.parseInt(String.valueOf(chars[1]));
             int digits2 = Integer.parseInt(String.valueOf(chars[0]));
@@ -106,18 +105,14 @@ public class BasicUtil {
                 digits2 -= 5;
                 result.append("L");
             }
-            for (int i = 0; i < digits2; i++) {
-                result.append(getRomanBelowTen(10));
-            }
+            for (int i = 0; i < digits2; i++) result.append(getRomanBelowTen(10));
             return result.append(getRomanBelowTen(digits1)).toString();
         }
         return String.valueOf(number);
     }
 
     private static String getRomanBelowTen(int number) {
-        if (number > 10) {
-            return String.valueOf(number);
-        }
+        if (number > 10) return String.valueOf(number);
         switch (number) {
             case 0:
                 return "0";
@@ -141,6 +136,43 @@ public class BasicUtil {
                 return "IX";
             case 10:
                 return "X";
+            default:
+                return String.valueOf(number);
+        }
+    }
+
+    public static String getSimpleNumber(int number) {
+        StringBuilder result = new StringBuilder();
+        for (char character : String.valueOf(number).toCharArray())
+            result.append(getSimpleNumberBelowTen(Integer.parseInt(String.valueOf(character))));
+        return result.toString();
+    }
+
+    private static String getSimpleNumberBelowTen(int number) {
+        if (number > 10) return String.valueOf(number);
+        switch (number) {
+            case 0:
+                return "零";
+            case 1:
+                return "一";
+            case 2:
+                return "二";
+            case 3:
+                return "三";
+            case 4:
+                return "四";
+            case 5:
+                return "五";
+            case 6:
+                return "六";
+            case 7:
+                return "七";
+            case 8:
+                return "八";
+            case 9:
+                return "九";
+            case 10:
+                return "十";
             default:
                 return String.valueOf(number);
         }
