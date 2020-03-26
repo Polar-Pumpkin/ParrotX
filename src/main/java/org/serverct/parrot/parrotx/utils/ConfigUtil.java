@@ -2,44 +2,26 @@ package org.serverct.parrot.parrotx.utils;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.serverct.parrot.parrotx.PPlugin;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class ConfigUtil {
 
-    public static Object getOrDefault(PPlugin plugin, FileConfiguration data, String path, Object defaultValue) {
-        try {
-            return data.get(path);
-        } catch (Throwable e) {
-            plugin.lang.log(
-                    "尝试获取值时遇到错误(&c" + e.toString() + "&7), 配置文件: &c" + data + " &7, 路径: &c" + path + " &7, 默认值: &c" + defaultValue + "&7.",
-                    I18n.Type.WARN,
-                    false);
-            return defaultValue;
-        }
+    public static Map<String, Object> getMap(FileConfiguration data, String path) {
+        Map<String, Object> result = new HashMap<>();
+        ConfigurationSection section = data.getConfigurationSection(path);
+        if (section == null) return result;
+        for (String key : section.getKeys(false)) result.put(key, section.get(key));
+        return result;
     }
 
-    public static Object getOrDefault(PPlugin plugin, ConfigurationSection section, String path, Object defaultValue) {
-        try {
-            return section.get(path);
-        } catch (Throwable e) {
-            plugin.lang.log(
-                    "尝试获取值时遇到错误(&c" + e.toString() + "&7), 配置文件: &c" + section + " &7, 路径: &c" + path + " &7, 默认值: &c" + defaultValue + "&7.",
-                    I18n.Type.WARN,
-                    false);
-            return defaultValue;
-        }
-    }
-
-    public static double getOrDefault(PPlugin plugin, ConfigurationSection section, String path, double defaultValue) {
-        try {
-            return section.getDouble(path);
-        } catch (Throwable e) {
-            plugin.lang.log(
-                    "尝试获取值时遇到错误(&c" + e.toString() + "&7), 配置文件: &c" + section + " &7, 路径: &c" + path + " &7, 默认值: &c" + defaultValue + "&7.",
-                    I18n.Type.WARN,
-                    false);
-            return defaultValue;
-        }
+    public static Map<String, Object> getMap(ConfigurationSection section, String path) {
+        Map<String, Object> result = new HashMap<>();
+        ConfigurationSection targetSection = section.getConfigurationSection(path);
+        if (targetSection == null) return result;
+        for (String key : targetSection.getKeys(false)) result.put(key, targetSection.get(key));
+        return result;
     }
 
 }
