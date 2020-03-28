@@ -16,4 +16,8 @@ public interface Owned {
     default boolean isOwner(String uuid) {
         return getOwner().equals(Bukkit.getOfflinePlayer(uuid).getUniqueId());
     }
+
+    default String getOwnerName() {
+        return Bukkit.getOfflinePlayer(getOwner()).getName();
+    }
 }

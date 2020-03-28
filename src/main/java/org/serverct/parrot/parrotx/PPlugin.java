@@ -1,6 +1,7 @@
 package org.serverct.parrot.parrotx;
 
 import lombok.Getter;
+import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -47,8 +48,8 @@ public class PPlugin extends JavaPlugin {
     protected void registerListener() {
     }
 
-    protected void registerCommand(String cmd, CommandHandler handler) {
-        PluginCommand command = Bukkit.getPluginCommand(cmd);
+    protected void registerCommand(@NonNull CommandHandler handler) {
+        PluginCommand command = Bukkit.getPluginCommand(handler.mainCmd);
         if (command != null) {
             this.cmdHandler = handler;
             command.setExecutor(handler);
