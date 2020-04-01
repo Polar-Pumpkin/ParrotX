@@ -6,10 +6,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PConfiguration;
+import org.serverct.parrot.parrotx.data.annotations.*;
 import org.serverct.parrot.parrotx.utils.I18n;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 
 public class PConfig implements PConfiguration {
 
@@ -48,12 +51,41 @@ public class PConfig implements PConfiguration {
         plugin.lang.log("已加载 &c" + getTypeName() + "&7.", I18n.Type.INFO, false);
 
         try {
+            parseAnnotations();
             load(file);
         } catch (Throwable e) {
             plugin.lang.logError(I18n.LOAD, getTypeName(), e, null);
         }
     }
 
+    private void parseAnnotations() {
+        try {
+            Class<? extends PConfig> configClass = this.getClass();
+            for (Field field : configClass.getFields()) {
+                for (Annotation annotation : field.getDeclaredAnnotations()) {
+                    Class<? extends Annotation> type = annotation.annotationType();
+                    if (type.equals(PConfigString.class)) {
+                        PConfigString string = (PConfigString) annotation;
+                        field.set(this, config.getString(string.path(), string.defaultValue()));
+                    } else if (type.equals(PConfigBoolean.class)) {
+                        PConfigBoolean bool = (PConfigBoolean) annotation;
+                        field.set(this, config.getBoolean(bool.path(), bool.defaultValue()));
+                    } else if (type.equals(PConfigInt.class)) {
+                        PConfigInt integer = (PConfigInt) annotation;
+                        field.set(this, config.getInt(integer.path(), integer.defaultValue()));
+                    } else if (type.equals(PConfigDouble.class)) {
+                        PConfigInt doubleNumber = (PConfigInt) annotation;
+                        field.set(this, config.getDouble(doubleNumber.path(), doubleNumber.defaultValue()));
+                    } else if (type.equals(PConfigData.class)) {
+                        PConfigData data = (PConfigData) annotation;
+                        field.set(this, config.get(data.path(), null));
+                    }
+                }
+            }
+        } catch (Throwable e) {
+            plugin.lang.logError(I18n.LOAD, getTypeName(), e, null);
+        }
+    }
 
     @Override
     public void setFile(@NonNull File file) {
@@ -62,7 +94,6 @@ public class PConfig implements PConfiguration {
 
     @Override
     public void load(@NonNull File file) {
-
     }
 
     @Override
@@ -91,7 +122,6 @@ public class PConfig implements PConfiguration {
 
     @Override
     public void saveDefault() {
-
     }
 
 }
