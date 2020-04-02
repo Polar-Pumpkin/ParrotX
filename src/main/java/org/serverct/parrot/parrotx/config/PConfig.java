@@ -74,7 +74,7 @@ public class PConfig implements PConfiguration {
                         PConfigInt integer = (PConfigInt) annotation;
                         field.set(this, config.getInt(integer.path(), integer.defaultValue()));
                     } else if (type.equals(PConfigDouble.class)) {
-                        PConfigInt doubleNumber = (PConfigInt) annotation;
+                        PConfigDouble doubleNumber = (PConfigDouble) annotation;
                         field.set(this, config.getDouble(doubleNumber.path(), doubleNumber.defaultValue()));
                     } else if (type.equals(PConfigData.class)) {
                         PConfigData data = (PConfigData) annotation;
