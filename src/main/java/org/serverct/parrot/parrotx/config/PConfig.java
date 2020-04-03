@@ -66,16 +66,16 @@ public class PConfig implements PConfiguration {
                     Class<? extends Annotation> type = annotation.annotationType();
                     if (type.equals(PConfigString.class)) {
                         PConfigString string = (PConfigString) annotation;
-                        field.set(this, config.getString(string.path(), string.defaultValue()));
+                        field.set(this, config.getString(string.path(), string.def()));
                     } else if (type.equals(PConfigBoolean.class)) {
                         PConfigBoolean bool = (PConfigBoolean) annotation;
-                        field.set(this, config.getBoolean(bool.path(), bool.defaultValue()));
+                        field.set(this, config.getBoolean(bool.path(), bool.def()));
                     } else if (type.equals(PConfigInt.class)) {
                         PConfigInt integer = (PConfigInt) annotation;
-                        field.set(this, config.getInt(integer.path(), integer.defaultValue()));
+                        field.set(this, config.getInt(integer.path(), integer.def()));
                     } else if (type.equals(PConfigDouble.class)) {
                         PConfigDouble doubleNumber = (PConfigDouble) annotation;
-                        field.set(this, config.getDouble(doubleNumber.path(), doubleNumber.defaultValue()));
+                        field.set(this, config.getDouble(doubleNumber.path(), doubleNumber.def()));
                     } else if (type.equals(PConfigData.class)) {
                         PConfigData data = (PConfigData) annotation;
                         field.set(this, config.get(data.path(), null));
