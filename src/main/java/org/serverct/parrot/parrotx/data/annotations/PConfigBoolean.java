@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 public @interface PConfigBoolean {
     String path();
 
-    boolean defaultValue();
+    boolean def();
 }
