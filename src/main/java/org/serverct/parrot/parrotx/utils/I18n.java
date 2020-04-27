@@ -106,6 +106,17 @@ public class I18n {
     }
 
     /**
+     * 快速给文本替换颜色代码字符为替代字符。
+     *
+     * @param text               文本。
+     * @param alternateColorCode 替代颜色字符。
+     * @return 使用替代字符表示颜色代码的文本。
+     */
+    public static String deColor(String text, char alternateColorCode) {
+        return text.replace("§", String.valueOf(alternateColorCode));
+    }
+
+    /**
      * 初始化语言工具，比如生成默认语言文件啥的。
      */
     public void init() {
