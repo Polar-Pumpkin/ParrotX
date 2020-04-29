@@ -1,6 +1,7 @@
 package org.serverct.parrot.parrotx.utils;
 
 import lombok.NonNull;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -201,9 +202,17 @@ public class BasicUtil {
         new BukkitRunnable() {
             @Override
             public void run() {
-                user.sendMessage(I18n.color(msg));
+                I18n.send(user, msg);
             }
         }.runTaskLater(plugin, 1);
+    }
+
+    public static void broadcast(String msg) {
+        Bukkit.getOnlinePlayers().forEach(user -> I18n.send(user, msg));
+    }
+
+    public static void broadcastTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+        Bukkit.getOnlinePlayers().forEach(user -> user.sendTitle(title, subtitle, fadeIn * 20, stay * 20, fadeOut * 20));
     }
 
 }

@@ -1,6 +1,7 @@
 package org.serverct.parrot.parrotx.utils;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -8,6 +9,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.serverct.parrot.parrotx.PPlugin;
 
 import java.io.File;
 import java.util.Arrays;
@@ -77,6 +80,24 @@ public class I18n {
             user.sendMessage(color(message));
         }
     }
+
+    /**
+     * 异步向玩家发送信息。
+     *
+     * @param user    目标玩家。
+     * @param message 消息内容
+     */
+    public static void sendAsync(@NonNull PPlugin plugin, Player user, String message) {
+        if (user != null) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    user.sendMessage(color(message));
+                }
+            }.runTaskLater(plugin, 1);
+        }
+    }
+
 
     /**
      * 获取不带后缀名的文件名。

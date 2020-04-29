@@ -123,5 +123,4 @@ public class PConfig implements PConfiguration {
     @Override
     public void saveDefault() {
     }
-
 }
