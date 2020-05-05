@@ -78,4 +78,17 @@ public class ItemUtil {
         }
         return name;
     }
+
+    public static ItemStack replace(ItemStack item, String placeholder, String value) {
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return item;
+        if (meta.hasDisplayName()) meta.setDisplayName(meta.getDisplayName().replace(placeholder, value));
+        List<String> lore = meta.getLore();
+        if (lore != null) {
+            lore.replaceAll(s -> s.replace(placeholder, value));
+            meta.setLore(lore);
+        }
+        item.setItemMeta(meta);
+        return item;
+    }
 }
