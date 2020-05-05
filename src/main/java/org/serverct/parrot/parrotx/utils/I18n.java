@@ -123,7 +123,7 @@ public class I18n {
      * @return 上色后的文本。
      */
     public static String color(String text) {
-        return ChatColor.translateAlternateColorCodes('&', "&7" + text);
+        return ChatColor.translateAlternateColorCodes('&', text);
     }
 
     /**
