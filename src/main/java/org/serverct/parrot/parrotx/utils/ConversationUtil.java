@@ -13,6 +13,7 @@ public class ConversationUtil {
         BasicUtil.closeInventory(plugin, user);
         Conversation conversation = new ConversationFactory(plugin)
                 .withFirstPrompt(firstPrompt)
+                .withLocalEcho(false)
                 .buildConversation(user);
         conversation.begin();
         new BukkitRunnable() {
@@ -27,6 +28,7 @@ public class ConversationUtil {
         BasicUtil.closeInventory(plugin, user);
         new ConversationFactory(plugin)
                 .withFirstPrompt(firstPrompt)
+                .withLocalEcho(false)
                 .buildConversation(user)
                 .begin();
     }
