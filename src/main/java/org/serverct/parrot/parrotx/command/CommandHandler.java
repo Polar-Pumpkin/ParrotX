@@ -40,15 +40,17 @@ public class CommandHandler implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            plugin.lang.getHelp(plugin.localeKey).forEach(sender::sendMessage);
+            PCommand helpCmd = commands.getOrDefault("help", null);
+            if (helpCmd == null) plugin.lang.getHelp(plugin.localeKey).forEach(sender::sendMessage);
+            else helpCmd.execute(plugin, sender, args);
             return true;
         } else {
-            if (!commands.containsKey(args[0])) {
+            PCommand pCommand = commands.getOrDefault(args[0], null);
+            if (pCommand == null) {
                 sender.sendMessage(plugin.lang.build(plugin.localeKey, I18n.Type.WARN, "未知命令, 请检查您的命令拼写是否正确."));
                 plugin.lang.logError(I18n.EXECUTE, "子命令/" + args[0], sender.getName() + " 尝试执行未注册子命令");
                 return true;
             }
-            PCommand pCommand = commands.get(args[0]);
             boolean hasPerm = (pCommand.getPermission() == null || pCommand.getPermission().equals("")) || sender.hasPermission(pCommand.getPermission());
             if (hasPerm) return pCommand.execute(plugin, sender, args);
             else {

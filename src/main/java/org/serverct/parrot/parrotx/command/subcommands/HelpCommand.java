@@ -2,19 +2,23 @@ package org.serverct.parrot.parrotx.command.subcommands;
 
 import org.bukkit.command.CommandSender;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.command.CommandHandler;
 import org.serverct.parrot.parrotx.command.PCommand;
 import org.serverct.parrot.parrotx.utils.I18n;
 
 import java.util.Map;
 
 public class HelpCommand implements PCommand {
-    private String permission;
-    private PPlugin plugin;
-    private Map<String, PCommand> subCommands;
+    private final String permission;
+    private final PPlugin plugin;
+    private final CommandHandler commandHandler;
+    private final Map<String, PCommand> subCommands;
 
-    public HelpCommand(PPlugin plugin, String perm) {
+    public HelpCommand(PPlugin plugin, String perm, CommandHandler commandHandler) {
         this.plugin = plugin;
         this.permission = perm;
+        this.commandHandler = commandHandler;
+        this.subCommands = commandHandler.getCommands();
     }
 
     @Override
@@ -39,10 +43,7 @@ public class HelpCommand implements PCommand {
 
     @Override
     public String[] getParams(int arg) {
-        if (arg == 0) {
-            this.subCommands = plugin.getCmdHandler().getCommands();
-            return subCommands.keySet().toArray(new String[0]);
-        }
+        if (arg == 0) return subCommands.keySet().toArray(new String[0]);
         return new String[0];
     }
 
@@ -50,7 +51,7 @@ public class HelpCommand implements PCommand {
     public boolean execute(PPlugin plugin, CommandSender sender, String[] args) {
         if (args.length == 0) {
             // plugin.lang.getHelp(plugin.localeKey).forEach(sender::sendMessage);
-            plugin.getCmdHandler().formatHelp().forEach(sender::sendMessage);
+            this.commandHandler.formatHelp().forEach(sender::sendMessage);
         } else {
             if (subCommands.containsKey(args[0]))
                 for (String help : subCommands.get(args[0]).getHelp()) sender.sendMessage(I18n.color(help));
