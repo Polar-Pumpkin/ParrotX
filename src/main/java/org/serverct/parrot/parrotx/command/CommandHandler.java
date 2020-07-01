@@ -103,7 +103,7 @@ public class CommandHandler implements TabExecutor {
         result.add("");
 
         commands.forEach((cmd, pCmd) -> result.add(I18n.color("&d/" + mainCmd + " " + cmd + " &9- &7&o" + pCmd.getDescription())));
-        if (commands.containsKey("help")) result.add("&6▶ &7使用 &d/" + mainCmd + " help &7指令查看更多信息.");
+        if (commands.containsKey("help")) result.add(I18n.color("&6▶ &7使用 &d/" + mainCmd + " help &7指令查看更多信息."));
         return result;
     }
 }
