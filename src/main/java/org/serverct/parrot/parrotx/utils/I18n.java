@@ -290,6 +290,47 @@ public class I18n {
         log(message, Type.INFO, false);
     }
 
+    public String format(String key, String section, String path, Object... args) {
+        FileConfiguration data = getData(hasKey(key) ? key : null);
+        String message = "&c&l错误&7(获取语言数据时遇到错误, 请联系管理员解决该问题)";
+        String testGet = null;
+
+        if (section == null) {
+            testGet = data.getString(path);
+        } else {
+            if (data.isConfigurationSection(section)) {
+                testGet = data.getString(section + "." + path);
+            }
+        }
+
+        if (testGet != null && !testGet.equalsIgnoreCase("")) {
+            message = testGet;
+        } else {
+            String[] getError = {
+                    "尝试获取原始语言数据时遇到错误 ▶",
+                    "插件名 ▶ &c" + plugin.getName(),
+                    "目标语言 ▶ &c" + key,
+                    "节 ▶ &c" + (section == null ? "无" : section),
+                    "路径 ▶ &c" + path,
+                    "------------------------------"
+            };
+            log(getError, Type.ERROR, true);
+        }
+
+        String result = color(ChatColor.GRAY + message);
+        if (result != null) {
+            for (int i = 0; i < args.length; i++) {
+                if (args[i] == null) {
+                    args[i] = "";
+                }
+                result = result.replace("{" + i + "}", args[i].toString());
+            }
+            return result;
+        }
+
+        return "";
+    }
+
     /**
      * 快速向控制台发送带有格式化前缀的错误日志信息。
      *
