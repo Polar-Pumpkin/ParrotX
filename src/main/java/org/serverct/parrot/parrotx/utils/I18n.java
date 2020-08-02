@@ -290,6 +290,15 @@ public class I18n {
         log(message, Type.INFO, false);
     }
 
+    /**
+     * 尝试获取指定语言的指定语言信息并快速替换，不会带有格式化前缀。
+     *
+     * @param key 目标语言名，当未加载时使用默认语言名。
+     * @param section 目标节，若没有分节可以填写 null。
+     * @param path 目标路径。
+     * @param args 快速替换的文本信息。
+     * @return 不带格式化前缀的语言信息。
+     */
     public String format(String key, String section, String path, Object... args) {
         FileConfiguration data = getData(hasKey(key) ? key : null);
         String message = "&c&l错误&7(获取语言数据时遇到错误, 请联系管理员解决该问题)";
@@ -318,17 +327,14 @@ public class I18n {
         }
 
         String result = color(ChatColor.GRAY + message);
-        if (result != null) {
-            for (int i = 0; i < args.length; i++) {
-                if (args[i] == null) {
-                    args[i] = "";
-                }
-                result = result.replace("{" + i + "}", args[i].toString());
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] == null) {
+                args[i] = "";
             }
-            return result;
+            result = result.replace("{" + i + "}", args[i].toString());
         }
+        return result;
 
-        return "";
     }
 
     /**
