@@ -5,7 +5,7 @@ import lombok.NonNull;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.serverct.parrot.parrotx.PPlugin;
@@ -13,7 +13,7 @@ import org.serverct.parrot.parrotx.utils.I18n;
 
 public class VaultUtil {
 
-    private PPlugin plugin;
+    private final PPlugin plugin;
     @Getter
     private boolean hooks;
     private Economy economy;
@@ -50,7 +50,7 @@ public class VaultUtil {
         return false;
     }
 
-    public double getBalances(Player player) {
+    public double getBalances(OfflinePlayer player) {
         Plugin vault = Bukkit.getPluginManager().getPlugin("Vault");
         if (vault != null) {
             if (!vault.isEnabled()) {
@@ -61,7 +61,7 @@ public class VaultUtil {
         return 0;
     }
 
-    public boolean give(Player player, double amount) {
+    public boolean give(OfflinePlayer player, double amount) {
         Plugin vault = Bukkit.getPluginManager().getPlugin("Vault");
         if (vault != null) {
             if (vault.isEnabled()) {
@@ -72,7 +72,7 @@ public class VaultUtil {
         return false;
     }
 
-    public boolean take(Player player, double amount) {
+    public boolean take(OfflinePlayer player, double amount) {
         Plugin vault = Bukkit.getPluginManager().getPlugin("Vault");
         if (vault != null) {
             if (vault.isEnabled()) {

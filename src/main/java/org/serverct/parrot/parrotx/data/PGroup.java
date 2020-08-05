@@ -1,38 +1,47 @@
 package org.serverct.parrot.parrotx.data;
 
-import org.serverct.parrot.parrotx.data.flags.FileSaved;
+import org.serverct.parrot.parrotx.data.flags.MemberManager;
 import org.serverct.parrot.parrotx.data.flags.Owned;
 import org.serverct.parrot.parrotx.data.flags.Timestamp;
-import org.serverct.parrot.parrotx.data.flags.Uniqued;
 
+import java.io.File;
 import java.util.List;
+import java.util.UUID;
 
-public interface PGroup extends FileSaved, Uniqued, Owned, Timestamp {
-    List<PMember> getMembers();
+public abstract class PGroup extends PData implements MemberManager, Owned, Timestamp {
 
-    default int getMemberAmount() {
-        return getMembers().size();
+    protected UUID owner;
+    protected long foundTime;
+    private List<PMember> memberList;
+
+    public PGroup(File file, PID id) {
+        super(file, id);
     }
 
-    default boolean isMember(String username) {
-        for (PMember member : getMembers()) {
-            if (member.getUsername().equals(username)) {
-                return true;
-            }
-        }
-        return false;
+    @Override
+    public List<PMember> getMembers() {
+        return this.memberList;
     }
 
-    void addMember(String username);
+    @Override
+    public UUID getOwner() {
+        return this.owner;
+    }
 
-    void delMember(String username);
+    @Override
+    public void setOwner(UUID uuid) {
+        this.owner = uuid;
+    }
 
-    default PMember getMember(String username) {
-        for (PMember member : getMembers()) {
-            if (member.getUsername().equals(username)) {
-                return member;
-            }
-        }
-        return null;
+    @Override
+    public long getTimestamp() {
+        return this.foundTime;
+    }
+
+    @Override
+    public void setTime(long time) {
+        this.foundTime = time;
     }
 }
+
+

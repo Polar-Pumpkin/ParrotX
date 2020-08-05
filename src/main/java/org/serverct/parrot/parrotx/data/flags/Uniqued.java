@@ -7,4 +7,8 @@ public interface Uniqued {
     PID getID();
 
     void setID(@NonNull PID pid);
+
+    default boolean check(String id) {
+        return getID().getId().equals(id);
+    }
 }

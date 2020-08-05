@@ -13,6 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.serverct.parrot.parrotx.PPlugin;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -20,14 +21,15 @@ import java.util.Map;
 
 /**
  * @author EntityParrot_
- * @version v2.0
+ * @author Mical
+ * @version v2.1
  * <p>
  * 自己写的一个多语言管理工具。
  */
 
 public class I18n {
 
-    public static final String TOOL_VERSION = "v2.0";
+    public static final String TOOL_VERSION = "v2.1";
     public static final String LOAD = "加载";
     public static final String SAVE = "保存";
     public static final String REGISTER = "注册";
@@ -291,50 +293,29 @@ public class I18n {
     }
 
     /**
+     * 尝试获取指定语言的指定语言信息并快速替换。
+     *
+     * @param key     目标语言名，当未加载时使用默认语言名。
+     * @param section 目标节，若没有分节可以填写 null。
+     * @param path    目标路径。
+     * @param args    快速替换的文本信息。
+     * @return 带有格式化前缀的语言信息。
+     */
+    public String format(String key, Type type, String section, String path, Object... args) {
+        return MessageFormat.format(get(key, type, section, path), args);
+    }
+
+    /**
      * 尝试获取指定语言的指定语言信息并快速替换，不会带有格式化前缀。
      *
-     * @param key 目标语言名，当未加载时使用默认语言名。
+     * @param key     目标语言名，当未加载时使用默认语言名。
      * @param section 目标节，若没有分节可以填写 null。
-     * @param path 目标路径。
-     * @param args 快速替换的文本信息。
+     * @param path    目标路径。
+     * @param args    快速替换的文本信息。
      * @return 不带格式化前缀的语言信息。
      */
-    public String format(String key, String section, String path, Object... args) {
-        FileConfiguration data = getData(hasKey(key) ? key : null);
-        String message = "&c&l错误&7(获取语言数据时遇到错误, 请联系管理员解决该问题)";
-        String testGet = null;
-
-        if (section == null) {
-            testGet = data.getString(path);
-        } else {
-            if (data.isConfigurationSection(section)) {
-                testGet = data.getString(section + "." + path);
-            }
-        }
-
-        if (testGet != null && !testGet.equalsIgnoreCase("")) {
-            message = testGet;
-        } else {
-            String[] getError = {
-                    "尝试获取原始语言数据时遇到错误 ▶",
-                    "插件名 ▶ &c" + plugin.getName(),
-                    "目标语言 ▶ &c" + key,
-                    "节 ▶ &c" + (section == null ? "无" : section),
-                    "路径 ▶ &c" + path,
-                    "------------------------------"
-            };
-            log(getError, Type.ERROR, true);
-        }
-
-        String result = color(ChatColor.GRAY + message);
-        for (int i = 0; i < args.length; i++) {
-            if (args[i] == null) {
-                args[i] = "";
-            }
-            result = result.replace("{" + i + "}", args[i].toString());
-        }
-        return result;
-
+    public String formatRaw(String key, String section, String path, Object... args) {
+        return MessageFormat.format(getRaw(key, section, path), args);
     }
 
     /**
@@ -448,7 +429,6 @@ public class I18n {
             };
             log(getError, Type.ERROR, true);
         }
-
         return color(ChatColor.GRAY + message);
     }
 

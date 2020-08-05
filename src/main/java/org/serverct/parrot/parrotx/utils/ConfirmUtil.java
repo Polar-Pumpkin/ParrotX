@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ConfirmUtil {
-    private static Map<String, Map<UUID, Boolean>> confirmMap = new HashMap<>();
-    private static Map<String, Map<UUID, BukkitTask>> confirmTask = new HashMap<>();
+    private static final Map<String, Map<UUID, Boolean>> confirmMap = new HashMap<>();
+    private static final Map<String, Map<UUID, BukkitTask>> confirmTask = new HashMap<>();
 
     public static boolean confirm(String key, UUID user, int interval) {
         Map<UUID, Boolean> targetConfirm = confirmMap.getOrDefault(key, new HashMap<>());

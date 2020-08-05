@@ -1,5 +1,7 @@
 package org.serverct.parrot.parrotx.config;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -10,9 +12,13 @@ import org.serverct.parrot.parrotx.utils.I18n;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PConfig implements PConfiguration {
 
+    private final List<ConfigItem> itemList = new ArrayList<>();
     protected PPlugin plugin;
     @Getter
     protected File file;
@@ -48,41 +54,11 @@ public class PConfig implements PConfiguration {
         plugin.lang.log("已加载 &c" + getTypeName() + "&7.", I18n.Type.INFO, false);
 
         try {
-            //parseAnnotations();
             load(file);
         } catch (Throwable e) {
             plugin.lang.logError(I18n.LOAD, getTypeName(), e, null);
         }
     }
-
-    /*private void parseAnnotations() {
-        try {
-            Class<? extends PConfig> configClass = this.getClass();
-            for (Field field : configClass.getFields()) {
-                for (Annotation annotation : field.getDeclaredAnnotations()) {
-                    Class<? extends Annotation> type = annotation.annotationType();
-                    if (type.equals(PConfigString.class)) {
-                        PConfigString string = (PConfigString) annotation;
-                        field.set(this, config.getString(string.path(), string.def()));
-                    } else if (type.equals(PConfigBoolean.class)) {
-                        PConfigBoolean bool = (PConfigBoolean) annotation;
-                        field.set(this, config.getBoolean(bool.path(), bool.def()));
-                    } else if (type.equals(PConfigInt.class)) {
-                        PConfigInt integer = (PConfigInt) annotation;
-                        field.set(this, config.getInt(integer.path(), integer.def()));
-                    } else if (type.equals(PConfigDouble.class)) {
-                        PConfigDouble doubleNumber = (PConfigDouble) annotation;
-                        field.set(this, config.getDouble(doubleNumber.path(), doubleNumber.def()));
-                    } else if (type.equals(PConfigData.class)) {
-                        PConfigData data = (PConfigData) annotation;
-                        field.set(this, config.get(data.path(), null));
-                    }
-                }
-            }
-        } catch (Throwable e) {
-            plugin.lang.logError(I18n.LOAD, getTypeName(), e, null);
-        }
-    }*/
 
     @Override
     public void setFile(@NonNull File file) {
@@ -91,6 +67,20 @@ public class PConfig implements PConfiguration {
 
     @Override
     public void load(@NonNull File file) {
+        Class<? extends PConfig> configClass = this.getClass();
+        this.itemList.forEach(
+                item -> {
+                    try {
+                        Field field = configClass.getField(item.getField());
+                        field.setAccessible(true);
+                        field.set(this, config.get(item.getPath()));
+                    } catch (NoSuchFieldException e) {
+                        plugin.lang.logError(I18n.LOAD, getTypeName(), "目标配置项未找到(" + item.toString() + ")");
+                    } catch (Throwable e) {
+                        plugin.lang.logError(I18n.LOAD, getTypeName(), e, null);
+                    }
+                }
+        );
     }
 
     @Override
@@ -102,6 +92,21 @@ public class PConfig implements PConfiguration {
     @Override
     public void save() {
         try {
+            Class<? extends PConfig> configClass = this.getClass();
+            this.itemList.forEach(
+                    item -> {
+                        try {
+                            Field field = configClass.getField(item.getField());
+                            field.setAccessible(true);
+                            config.set(item.getPath(), field.get(this));
+                        } catch (NoSuchFieldException e) {
+                            plugin.lang.logError(I18n.LOAD, getTypeName(), "目标配置项未找到(" + item.toString() + ")");
+                        } catch (Throwable e) {
+                            plugin.lang.logError(I18n.LOAD, getTypeName(), e, null);
+                        }
+                    }
+            );
+
             config.save(file);
         } catch (IOException e) {
             plugin.lang.logError(I18n.SAVE, getTypeName(), e, null);
@@ -119,5 +124,32 @@ public class PConfig implements PConfiguration {
 
     @Override
     public void saveDefault() {
+    }
+
+    private void addItem(String path, ItemType type, String field) {
+        this.itemList.add(new ConfigItem(path, type, field));
+    }
+
+    public enum ItemType {
+        STRING("字符串"),
+        INT("整数"),
+        BOOLEAN("布尔值"),
+        LIST("列表"),
+        SOUND("SpigotAPI 声音(Sound)枚举"),
+        UNKNOWN("未知类型");
+
+        public final String name;
+
+        ItemType(String name) {
+            this.name = name;
+        }
+    }
+
+    public @Data
+    @AllArgsConstructor
+    class ConfigItem {
+        private String path;
+        private ItemType type;
+        private String field;
     }
 }

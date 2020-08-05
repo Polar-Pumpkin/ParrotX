@@ -13,56 +13,7 @@ import parsii.eval.Parser;
 import parsii.eval.Scope;
 import parsii.eval.Variable;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class BasicUtil {
-
-    public static int[] bubbleSort(int[] a) {
-        int temp;
-        int size = a.length;
-        for (int i = 1; i < size; i++) {
-            for (int j = 0; j < size - i; j++) {
-                if (a[j] < a[j + 1]) {
-                    temp = a[j];
-                    a[j] = a[j + 1];
-                    a[j + 1] = temp;
-                }
-            }
-        }
-        return a;
-    }
-
-    public static List<Long> bubbleSort(List<Long> list) {
-        List<Long> copy = new ArrayList<>(list);
-        long temp;
-        int size = copy.size();
-        for (int time = 1; time < size; time++) {
-            for (int index = 0; index < size - time; index++) {
-                if (copy.get(index) < copy.get(index + 1)) {
-                    temp = copy.get(index);
-                    copy.set(index, copy.get(index + 1));
-                    copy.set(index + 1, temp);
-                }
-            }
-        }
-        return copy;
-    }
-
-    public static long[] bubbleSort(long[] a) {
-        long temp;
-        int size = a.length;
-        for (int i = 1; i < size; i++) {
-            for (int j = 0; j < size - i; j++) {
-                if (a[j] < a[j + 1]) {
-                    temp = a[j];
-                    a[j] = a[j + 1];
-                    a[j + 1] = temp;
-                }
-            }
-        }
-        return a;
-    }
 
     public static String getNoExFileName(String fileName) {
         if ((fileName != null) && (fileName.length() > 0)) {
@@ -94,52 +45,43 @@ public class BasicUtil {
         return 0;
     }
 
-    public static String getRomanNumerals(int number) {
-        String numberStr = String.valueOf(number);
-        char[] chars = numberStr.toCharArray();
-        if (number <= 10) return getRomanBelowTen(number);
-        else if (number < 100) {
-            StringBuilder result = new StringBuilder();
-            int digits1 = Integer.parseInt(String.valueOf(chars[1]));
-            int digits2 = Integer.parseInt(String.valueOf(chars[0]));
-            if (digits2 >= 5) {
-                digits2 -= 5;
-                result.append("L");
+    public static String arabic2Roman(int number) {
+        String rNumber = "";
+        int[] aArray = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+        String[] rArray = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X",
+                "IX", "V", "IV", "I"};
+        if (number < 1 || number > 3999) {
+            rNumber = "-1";
+        } else {
+            for (int i = 0; i < aArray.length; i++) {
+                while (number >= aArray[i]) {
+                    rNumber += rArray[i];
+                    number -= aArray[i];
+                }
             }
-            for (int i = 0; i < digits2; i++) result.append(getRomanBelowTen(10));
-            return result.append(getRomanBelowTen(digits1)).toString();
         }
-        return String.valueOf(number);
+        return rNumber;
     }
 
-    private static String getRomanBelowTen(int number) {
-        if (number > 10) return String.valueOf(number);
-        switch (number) {
-            case 0:
-                return "0";
-            case 1:
-                return "I";
-            case 2:
-                return "II";
-            case 3:
-                return "III";
-            case 4:
-                return "IV";
-            case 5:
-                return "V";
-            case 6:
-                return "VI";
-            case 7:
-                return "VII";
-            case 8:
-                return "VIII";
-            case 9:
-                return "IX";
-            case 10:
-                return "X";
-            default:
-                return String.valueOf(number);
+    public static int roman2Arabic(String m) {
+        int[] graph = new int[400];
+        graph['I'] = 1;
+        graph['V'] = 5;
+        graph['X'] = 10;
+        graph['L'] = 50;
+        graph['C'] = 100;
+        graph['D'] = 500;
+        graph['M'] = 1000;
+        char[] num = m.toCharArray();
+        int sum = graph[num[0]];
+        for (int i = 0; i < num.length - 1; i++) {
+            if (graph[num[i]] >= graph[num[i + 1]]) {
+                sum += graph[num[i + 1]];
+            } else {
+                sum = sum + graph[num[i + 1]] - 2 * graph[num[i]];
+            }
         }
+        return sum;
     }
 
     public static String getSimpleNumber(int number) {
