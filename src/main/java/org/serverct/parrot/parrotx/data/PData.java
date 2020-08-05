@@ -1,6 +1,8 @@
 package org.serverct.parrot.parrotx.data;
 
 import lombok.NonNull;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.flags.Uniqued;
 import org.serverct.parrot.parrotx.utils.BasicUtil;
@@ -13,9 +15,11 @@ public abstract class PData implements PConfiguration, Uniqued {
     protected PPlugin plugin;
     protected PID id;
     protected File file;
+    protected FileConfiguration data;
 
     public PData(File file, PID id) {
         this.file = file;
+        this.data = YamlConfiguration.loadConfiguration(file);
         this.id = id;
         this.plugin = id.getPlugin();
     }
@@ -53,7 +57,6 @@ public abstract class PData implements PConfiguration, Uniqued {
 
     @Override
     public void delete() {
-        PPlugin plugin = getID().getPlugin();
         if (getFile().delete()) {
             plugin.lang.logAction(I18n.DELETE, getTypeName());
         } else {
