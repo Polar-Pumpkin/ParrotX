@@ -13,6 +13,8 @@ import parsii.eval.Parser;
 import parsii.eval.Scope;
 import parsii.eval.Variable;
 
+import java.util.Objects;
+
 public class BasicUtil {
 
     public static String getNoExFileName(String fileName) {
@@ -157,4 +159,11 @@ public class BasicUtil {
         Bukkit.getOnlinePlayers().forEach(user -> user.sendTitle(title, subtitle, fadeIn * 20, stay * 20, fadeOut * 20));
     }
 
+    public static boolean isNull(PPlugin plugin, Object object, String action, String name, String message) {
+        if (Objects.isNull(object)) {
+            plugin.lang.logError(action, name, message);
+            return true;
+        }
+        return false;
+    }
 }

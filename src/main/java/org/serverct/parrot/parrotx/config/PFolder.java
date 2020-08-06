@@ -62,7 +62,7 @@ public class PFolder extends PDataFolder {
 
     }
 
-    private PID buildId(String id) {
+    public PID buildId(String id) {
         return new PID(plugin, dataKey, id);
     }
 }
