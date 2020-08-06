@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class PConfig implements PConfiguration {
 
@@ -48,7 +49,8 @@ public class PConfig implements PConfiguration {
     public void init() {
         if (!file.exists()) {
             saveDefault();
-            plugin.lang.log("未找到 &c" + getTypeName() + "&7, 已自动生成.", I18n.Type.WARN, false);
+            if (file.exists()) plugin.lang.log("未找到 &c" + getTypeName() + "&7, 已自动生成.", I18n.Type.WARN, false);
+            else plugin.lang.log("无法自动生成 &c" + getTypeName() + "&7.", I18n.Type.ERROR, false);
         }
         config = YamlConfiguration.loadConfiguration(file);
         plugin.lang.log("已加载 &c" + getTypeName() + "&7.", I18n.Type.INFO, false);
@@ -124,6 +126,7 @@ public class PConfig implements PConfiguration {
 
     @Override
     public void saveDefault() {
+        if (Objects.nonNull(plugin.getResource(getFileName()))) plugin.saveResource(getFileName(), false);
     }
 
     private void addItem(String path, ItemType type, String field) {

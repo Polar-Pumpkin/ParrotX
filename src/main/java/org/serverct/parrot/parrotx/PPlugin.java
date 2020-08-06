@@ -34,6 +34,8 @@ public class PPlugin extends JavaPlugin {
 
         preload();
 
+        pConfig.init();
+
         localeKey = pConfig.getConfig().getString("Language");
 
         load();

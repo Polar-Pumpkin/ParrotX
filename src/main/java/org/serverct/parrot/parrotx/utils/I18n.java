@@ -354,10 +354,11 @@ public class I18n {
      * @param packageFilter 包名关键词过滤，不需要可以填写 null。
      */
     public void printStackTrace(Throwable exception, String packageFilter) {
+        String msg = exception.getLocalizedMessage();
         logRaw("========================= &c&lprintStackTrace &7=========================");
         logRaw("Exception Type ▶");
-        logRaw(ChatColor.RED + exception.toString());
-        logRaw("");
+        logRaw(ChatColor.RED + exception.getClass().getName());
+        logRaw(ChatColor.RED + ((msg == null || msg.length() == 0) ? "No description." : msg));
         // org.serverct.parrot.plugin.Plugin
         String lastPackage = "";
         for (StackTraceElement elem : exception.getStackTrace()) {
