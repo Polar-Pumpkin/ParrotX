@@ -35,5 +35,6 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.18.10" level="project" />
     <orderEntry type="library" name="Maven: com.scireum:parsii:1.5" level="project" />
     <orderEntry type="library" name="Maven: com.github.WesJD.AnvilGUI:anvilgui:99a504a3bb" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains:annotations:18.0.0" level="project" />
   </component>
 </module>

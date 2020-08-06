@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.Contract;
 import org.serverct.parrot.parrotx.PPlugin;
 import parsii.eval.Expression;
 import parsii.eval.Parser;
@@ -159,6 +160,7 @@ public class BasicUtil {
         Bukkit.getOnlinePlayers().forEach(user -> user.sendTitle(title, subtitle, fadeIn * 20, stay * 20, fadeOut * 20));
     }
 
+    @Contract("_, null, _, _, _ -> true; _, !null, _, _, _ -> false")
     public static boolean isNull(PPlugin plugin, Object object, String action, String name, String message) {
         if (Objects.isNull(object)) {
             plugin.lang.logError(action, name, message);
