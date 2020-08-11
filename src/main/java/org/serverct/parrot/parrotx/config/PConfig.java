@@ -129,7 +129,7 @@ public class PConfig implements PConfiguration {
         if (Objects.nonNull(plugin.getResource(getFileName()))) plugin.saveResource(getFileName(), false);
     }
 
-    private void addItem(String path, ItemType type, String field) {
+    protected void addItem(String path, ItemType type, String field) {
         this.itemList.add(new ConfigItem(path, type, field));
     }
 
@@ -148,9 +148,9 @@ public class PConfig implements PConfiguration {
         }
     }
 
-    public @Data
+    protected @Data
     @AllArgsConstructor
-    class ConfigItem {
+    static class ConfigItem {
         private String path;
         private ItemType type;
         private String field;
