@@ -13,13 +13,13 @@ import org.serverct.parrot.parrotx.utils.I18n;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class PConfig implements PConfiguration {
 
-    private final List<ConfigItem> itemList = new ArrayList<>();
+    protected final Map<String, ConfigItem> itemMap = new HashMap<>();
     protected PPlugin plugin;
     @Getter
     protected File file;
@@ -70,8 +70,8 @@ public class PConfig implements PConfiguration {
     @Override
     public void load(@NonNull File file) {
         Class<? extends PConfig> configClass = this.getClass();
-        this.itemList.forEach(
-                item -> {
+        this.itemMap.forEach(
+                (fieldName, item) -> {
                     try {
                         Field field = configClass.getField(item.getField());
                         field.setAccessible(true);
@@ -95,8 +95,8 @@ public class PConfig implements PConfiguration {
     public void save() {
         try {
             Class<? extends PConfig> configClass = this.getClass();
-            this.itemList.forEach(
-                    item -> {
+            this.itemMap.forEach(
+                    (fieldName, item) -> {
                         try {
                             Field field = configClass.getField(item.getField());
                             field.setAccessible(true);
@@ -130,7 +130,11 @@ public class PConfig implements PConfiguration {
     }
 
     protected void addItem(String path, ItemType type, String field) {
-        this.itemList.add(new ConfigItem(path, type, field));
+        this.itemMap.put(field, new ConfigItem(path, type, field));
+    }
+
+    protected void removeItem(String field) {
+        this.itemMap.remove(field);
     }
 
     public enum ItemType {
