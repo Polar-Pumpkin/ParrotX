@@ -36,5 +36,6 @@
     <orderEntry type="library" name="Maven: com.scireum:parsii:1.5" level="project" />
     <orderEntry type="library" name="Maven: com.github.WesJD.AnvilGUI:anvilgui:99a504a3bb" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains:annotations:18.0.0" level="project" />
+    <orderEntry type="library" name="Maven: com.github.cryptomorin:XSeries:7.1.3" level="project" />
   </component>
 </module>
