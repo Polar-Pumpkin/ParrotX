@@ -126,7 +126,7 @@ public class PConfig implements PConfiguration {
 
     @Override
     public void saveDefault() {
-        if (Objects.nonNull(plugin.getResource(getFileName()))) plugin.saveResource(getFileName(), false);
+        if (Objects.nonNull(plugin.getResource(file.getName()))) plugin.saveResource(file.getName(), false);
     }
 
     protected void addItem(String path, ItemType type, String field) {

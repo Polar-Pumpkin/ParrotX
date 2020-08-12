@@ -29,7 +29,7 @@ public class CommandHandler implements TabExecutor {
         this.mainCmd = mainCmd;
     }
 
-    protected void registerSubCommand(String cmd, PCommand executor) {
+    protected void addCommand(String cmd, PCommand executor) {
         if (!commands.containsKey(cmd)) {
             commands.put(cmd, executor);
         } else {
