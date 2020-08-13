@@ -60,7 +60,7 @@ public abstract class BaseCommand implements PCommand {
                     return true;
                 }
                 if (param.validate != null && !param.validate.test(args[param.position])) {
-                    plugin.getLogger().info("参数位置 " + param.position + " 未通过检测(" + param.name + ")");
+                    plugin.getLogger().info("参数位置 " + param.position + "(" + args[param.position] + ") 未通过检测(" + param.name + ")");
                     sender.sendMessage(I18n.color(param.validateMessage));
                     return true;
                 }
