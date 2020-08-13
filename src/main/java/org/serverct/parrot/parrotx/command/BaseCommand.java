@@ -37,12 +37,13 @@ public abstract class BaseCommand implements PCommand {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
+        plugin.getLogger().info("命令 " + name + " 获取到的参数列表: " + Arrays.toString(args));
         this.sender = sender;
         this.user = sender instanceof Player ? (Player) sender : null;
 
         if (mustPlayer) {
             if (Objects.isNull(user)) {
-                sender.sendMessage(plugin.lang.build(plugin.localeKey, I18n.Type.WARN, "&7该命令仅玩家可执行."));
+                sender.sendMessage(warn("&7该命令仅玩家可执行."));
                 return true;
             }
         }
@@ -53,13 +54,16 @@ public abstract class BaseCommand implements PCommand {
         }
 
         for (CommandParam param : this.paramMap.values()) {
-            if ((!param.optional && param.position >= args.length)) {
-                Arrays.asList(getHelp()).forEach(text -> sender.sendMessage(I18n.color(text)));
-                return true;
-            }
-            if (param.validate != null && !param.validate.test(args[param.position])) {
-                sender.sendMessage(I18n.color(param.validateMessage));
-                return true;
+            if (!param.optional) {
+                if (param.position >= args.length) {
+                    sender.sendMessage(I18n.color(warn("参数不足, 请查看指令帮助获取更多信息.")));
+                    return true;
+                }
+                if (param.validate != null && !param.validate.test(args[param.position])) {
+                    plugin.getLogger().info("参数位置 " + param.position + " 未通过检测(" + param.name + ")");
+                    sender.sendMessage(I18n.color(param.validateMessage));
+                    return true;
+                }
             }
         }
 
