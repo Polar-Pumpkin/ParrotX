@@ -303,8 +303,21 @@ public class I18n {
      * @param args    快速替换的文本信息。
      * @return 带有格式化前缀的语言信息。
      */
-    public String format(String key, Type type, String section, String path, Object... args) {
+    public String getWithFormat(String key, Type type, String section, String path, Object... args) {
         return MessageFormat.format(get(key, type, section, path), args);
+    }
+
+    /**
+     * 尝试构建指定语言的带有格式化前缀的文本并快速替换。
+     *
+     * @param key     目标语言名，当未加载时使用默认语言名。
+     * @param type    消息类型。
+     * @param message 消息内容。
+     * @param args    快速替换的文本信息。
+     * @return 带有格式化前缀的文本信息。
+     */
+    public String buildWithFormat(String key, Type type, String message, Object... args) {
+        return MessageFormat.format(build(key, type, message), args);
     }
 
     /**
@@ -316,7 +329,7 @@ public class I18n {
      * @param args    快速替换的文本信息。
      * @return 不带格式化前缀的语言信息。
      */
-    public String formatRaw(String key, String section, String path, Object... args) {
+    public String getRawWithFormat(String key, String section, String path, Object... args) {
         return MessageFormat.format(getRaw(key, section, path), args);
     }
 

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.utils.I18n;
 
@@ -25,8 +26,9 @@ public abstract class BaseCommand implements PCommand {
     private String desc = "没有介绍";
     private String perm = null;
     private boolean mustPlayer = false;
+    private Predicate<String[]> customValidate = null;
 
-    public BaseCommand(final PPlugin plugin, final String name, final int length) {
+    public BaseCommand(@NotNull final PPlugin plugin, final String name, final int length) {
         this.plugin = plugin;
         this.name = name;
         this.leastArgLength = length;
@@ -59,6 +61,10 @@ public abstract class BaseCommand implements PCommand {
                 sender.sendMessage(I18n.color(param.validateMessage));
                 return true;
             }
+        }
+
+        if (customValidate != null && !customValidate.test(args)) {
+            return true;
         }
 
         call(args);
@@ -119,6 +125,10 @@ public abstract class BaseCommand implements PCommand {
         }}.toArray(new String[0]);
     }
 
+    protected void validate(Predicate<String[]> validate) {
+        this.customValidate = validate;
+    }
+
     protected void mustPlayer(final boolean setting) {
         this.mustPlayer = setting;
     }
@@ -133,6 +143,30 @@ public abstract class BaseCommand implements PCommand {
 
     protected void addParam(final CommandParam param) {
         this.paramMap.put(param.position, param);
+    }
+
+    protected String info(final String text) {
+        return plugin.lang.build(plugin.localeKey, I18n.Type.INFO, text);
+    }
+
+    protected String warn(final String text) {
+        return plugin.lang.build(plugin.localeKey, I18n.Type.WARN, text);
+    }
+
+    protected String error(final String text) {
+        return plugin.lang.build(plugin.localeKey, I18n.Type.ERROR, text);
+    }
+
+    protected String info(final String text, final Object... args) {
+        return plugin.lang.buildWithFormat(plugin.localeKey, I18n.Type.INFO, text, args);
+    }
+
+    protected String warn(final String text, final Object... args) {
+        return plugin.lang.buildWithFormat(plugin.localeKey, I18n.Type.WARN, text, args);
+    }
+
+    protected String error(final String text, final Object... args) {
+        return plugin.lang.buildWithFormat(plugin.localeKey, I18n.Type.ERROR, text, args);
     }
 
     protected @Data
