@@ -37,7 +37,6 @@ public abstract class BaseCommand implements PCommand {
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        plugin.getLogger().info("命令 " + name + " 获取到的参数列表: " + Arrays.toString(args));
         this.sender = sender;
         this.user = sender instanceof Player ? (Player) sender : null;
 
