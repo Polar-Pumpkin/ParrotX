@@ -51,9 +51,12 @@ public abstract class BaseCommand implements PCommand {
         }
 
         for (CommandParam param : this.paramMap.values()) {
-            if ((!param.optional && param.position >= args.length)
-                    || (param.validate != null && !param.validate.test(args[param.position]))) {
+            if ((!param.optional && param.position >= args.length)) {
                 Arrays.asList(getHelp()).forEach(text -> sender.sendMessage(I18n.color(text)));
+                return true;
+            }
+            if (param.validate != null && !param.validate.test(args[param.position])) {
+                sender.sendMessage(I18n.color(param.validateMessage));
                 return true;
             }
         }
@@ -140,6 +143,7 @@ public abstract class BaseCommand implements PCommand {
         private boolean optional;
         private String description;
         private Predicate<String> validate;
+        private String validateMessage;
         private int position;
         private ParamSuggester suggest;
     }

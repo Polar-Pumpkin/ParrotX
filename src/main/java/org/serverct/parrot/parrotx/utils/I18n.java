@@ -47,6 +47,8 @@ public class I18n {
     public static final String CONTRIBUTE = "贡献";
     public static final String EXECUTE = "执行";
     public static final String INIT = "初始化";
+    public static final String CREATE = "创建";
+    public static final String GENERATE = "生成";
     private String Tool_Prefix = "&7[&b&lEP's &aLocale Tool&7] ";
     private String Tool_INFO = "&a&l> ";
     private String Tool_WARN = "&e&l> ";

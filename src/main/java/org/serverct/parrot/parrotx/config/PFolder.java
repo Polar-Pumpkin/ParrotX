@@ -6,6 +6,7 @@ import org.serverct.parrot.parrotx.data.PID;
 import org.serverct.parrot.parrotx.utils.I18n;
 
 import java.io.File;
+import java.io.IOException;
 
 public class PFolder extends PDataFolder {
 
@@ -51,6 +52,13 @@ public class PFolder extends PDataFolder {
 
     @Override
     public void saveDefault() {
+        try {
+            if (!folder.createNewFile()) {
+                plugin.lang.logError(I18n.GENERATE, getTypeName(), "自动生成失败");
+            }
+        } catch (IOException e) {
+            plugin.lang.logError(I18n.GENERATE, getTypeName(), e, null);
+        }
     }
 
     @Override

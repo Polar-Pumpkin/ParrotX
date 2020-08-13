@@ -144,6 +144,15 @@ public class PConfig implements PConfiguration {
     @Override
     public void saveDefault() {
         if (Objects.nonNull(plugin.getResource(file.getName()))) plugin.saveResource(file.getName(), false);
+        else {
+            try {
+                if (!file.createNewFile()) {
+                    plugin.lang.logError(I18n.GENERATE, getTypeName(), "自动生成失败");
+                }
+            } catch (IOException e) {
+                plugin.lang.logError(I18n.GENERATE, getTypeName(), e, null);
+            }
+        }
     }
 
     protected void addItem(String path, ItemType type, String field) {
