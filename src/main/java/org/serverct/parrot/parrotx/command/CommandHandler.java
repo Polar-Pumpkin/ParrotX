@@ -64,7 +64,9 @@ public class CommandHandler implements TabExecutor {
         boolean hasPerm = (pCommand.getPermission() == null || pCommand.getPermission().equals("")) || sender.hasPermission(pCommand.getPermission());
         if (hasPerm) {
             String[] newArg = new String[args.length - 1];
-            System.arraycopy(args, 1, newArg, 0, args.length - 1);
+            if (args.length >= 2) {
+                System.arraycopy(args, 1, newArg, 0, args.length - 1);
+            }
             return pCommand.execute(sender, newArg);
         }
 

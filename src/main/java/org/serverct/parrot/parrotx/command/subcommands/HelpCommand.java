@@ -27,7 +27,7 @@ public class HelpCommand extends BaseCommand {
         CommandHandler handler = plugin.getCmdHandler();
         Map<String, PCommand> subCommands = handler.getCommands();
 
-        if (args.length <= 1) {
+        if (args.length <= 0) {
             // plugin.lang.getHelp(plugin.localeKey).forEach(sender::sendMessage);
             handler.formatHelp().forEach(sender::sendMessage);
         } else {
