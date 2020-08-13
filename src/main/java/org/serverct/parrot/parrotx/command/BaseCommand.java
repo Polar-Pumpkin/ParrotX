@@ -21,6 +21,7 @@ public abstract class BaseCommand implements PCommand {
     @Getter
     private final Map<Integer, CommandParam> paramMap = new HashMap<>();
     protected Player user;
+    protected CommandSender sender;
     private String desc = "没有介绍";
     private String perm = null;
     private boolean mustPlayer = false;
@@ -29,12 +30,14 @@ public abstract class BaseCommand implements PCommand {
         this.plugin = plugin;
         this.name = name;
         this.leastArgLength = length;
-        plugin.getCmdHandler().register(this);
+        // plugin.getCmdHandler().register(this);
     }
 
     @Override
     public boolean execute(CommandSender sender, String[] args) {
-        user = sender instanceof Player ? (Player) sender : null;
+        this.sender = sender;
+        this.user = sender instanceof Player ? (Player) sender : null;
+
         if (mustPlayer) {
             if (Objects.isNull(user)) {
                 sender.sendMessage(plugin.lang.build(plugin.localeKey, I18n.Type.WARN, "&7该命令仅玩家可执行."));
@@ -49,7 +52,7 @@ public abstract class BaseCommand implements PCommand {
 
         for (CommandParam param : this.paramMap.values()) {
             if ((!param.optional && param.position >= args.length)
-                    || (param.key != null && !param.key.test(args[param.position]))) {
+                    || (param.validate != null && !param.validate.test(args[param.position]))) {
                 Arrays.asList(getHelp()).forEach(text -> sender.sendMessage(I18n.color(text)));
                 return true;
             }
@@ -64,7 +67,10 @@ public abstract class BaseCommand implements PCommand {
     @Override
     public String[] getParams(int arg) {
         if (this.paramMap.containsKey(arg)) {
-            return this.paramMap.get(arg).suggests.param();
+            ParamSuggester suggester = this.paramMap.get(arg).suggest;
+            if (suggester != null) {
+                return suggester.param();
+            }
         }
         return new String[0];
     }
@@ -126,15 +132,15 @@ public abstract class BaseCommand implements PCommand {
         this.paramMap.put(param.position, param);
     }
 
-    private @Data
+    protected @Data
     @AllArgsConstructor
     @Builder
     static class CommandParam {
         private String name;
         private boolean optional;
         private String description;
-        private Predicate<String> key;
+        private Predicate<String> validate;
         private int position;
-        private ParamSuggester suggests;
+        private ParamSuggester suggest;
     }
 }
