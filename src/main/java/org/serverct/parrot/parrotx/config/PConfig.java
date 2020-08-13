@@ -75,7 +75,24 @@ public class PConfig implements PConfiguration {
                     try {
                         Field field = configClass.getField(item.getField());
                         field.setAccessible(true);
-                        field.set(this, config.get(item.getPath()));
+                        switch (item.getType()) {
+                            case INT:
+                                field.setInt(this, config.getInt(item.getPath()));
+                                break;
+                            case STRING:
+                                field.set(this, config.getString(item.getPath()));
+                                break;
+                            case BOOLEAN:
+                                field.setBoolean(this, config.getBoolean(item.getPath()));
+                                break;
+                            case LIST:
+                                field.set(this, config.getStringList(item.getPath()));
+                                break;
+                            default:
+                                field.set(this, config.get(item.getPath()));
+                                break;
+                        }
+
                     } catch (NoSuchFieldException e) {
                         plugin.lang.logError(I18n.LOAD, getTypeName(), "目标配置项未找到(" + item.toString() + ")");
                     } catch (Throwable e) {

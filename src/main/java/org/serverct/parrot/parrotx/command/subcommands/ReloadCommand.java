@@ -36,7 +36,7 @@ public class ReloadCommand implements PCommand {
     }
 
     @Override
-    public boolean execute(PPlugin plugin, CommandSender sender, String[] args) {
+    public boolean execute(CommandSender sender, String[] args) {
         try {
             plugin.init();
             sender.sendMessage(plugin.lang.build(plugin.localeKey, I18n.Type.INFO, "重载配置文件成功."));

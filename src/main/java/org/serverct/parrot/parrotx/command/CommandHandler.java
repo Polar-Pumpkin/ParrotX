@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
+import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.utils.I18n;
 import org.serverct.parrot.parrotx.utils.JsonChatUtil;
@@ -19,14 +20,19 @@ import java.util.stream.Collectors;
 
 public class CommandHandler implements TabExecutor {
 
+    public String mainCmd;
     protected PPlugin plugin;
     @Getter
     protected Map<String, PCommand> commands = new HashMap<>();
-    public String mainCmd;
+    protected String defaultCmd = null;
 
     public CommandHandler(@NonNull PPlugin plugin, String mainCmd) {
         this.plugin = plugin;
         this.mainCmd = mainCmd;
+    }
+
+    protected void defaultCommand(String cmd) {
+        this.defaultCmd = cmd;
     }
 
     protected void addCommand(String cmd, PCommand executor) {
@@ -38,42 +44,49 @@ public class CommandHandler implements TabExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (args.length == 0) {
-            PCommand helpCmd = commands.getOrDefault("help", null);
-            if (helpCmd == null) plugin.lang.getHelp(plugin.localeKey).forEach(sender::sendMessage);
-            else helpCmd.execute(plugin, sender, args);
+            PCommand helpCmd = commands.get((Objects.isNull(defaultCmd) ? "help" : defaultCmd));
+            if (helpCmd == null) {
+                // plugin.lang.getHelp(plugin.localeKey).forEach(sender::sendMessage);
+                formatHelp().forEach(sender::sendMessage);
+            } else helpCmd.execute(sender, args);
             return true;
-        } else {
-            PCommand pCommand = commands.getOrDefault(args[0], null);
-            if (pCommand == null) {
-                sender.sendMessage(plugin.lang.build(plugin.localeKey, I18n.Type.WARN, "未知命令, 请检查您的命令拼写是否正确."));
-                plugin.lang.logError(I18n.EXECUTE, "子命令/" + args[0], sender.getName() + " 尝试执行未注册子命令");
-                return true;
-            }
-            boolean hasPerm = (pCommand.getPermission() == null || pCommand.getPermission().equals("")) || sender.hasPermission(pCommand.getPermission());
-            if (hasPerm) return pCommand.execute(plugin, sender, args);
-            else {
-                String msg = plugin.lang.build(plugin.localeKey, I18n.Type.WARN, "您没有权限这么做.");
-                if (sender instanceof Player) {
-                    TextComponent text = JsonChatUtil.getFromLegacy(msg);
-                    text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color("&7所需权限 ▶ &c" + pCommand.getPermission()))));
-                    ((Player) sender).spigot().sendMessage(text);
-                } else sender.sendMessage(msg);
-                return true;
-            }
         }
+
+        PCommand pCommand = commands.get(args[0]);
+        if (pCommand == null) {
+            sender.sendMessage(plugin.lang.build(plugin.localeKey, I18n.Type.WARN, "未知命令, 请检查您的命令拼写是否正确."));
+            plugin.lang.logError(I18n.EXECUTE, "子命令/" + args[0], sender.getName() + " 尝试执行未注册子命令");
+            return true;
+        }
+
+        boolean hasPerm = (pCommand.getPermission() == null || pCommand.getPermission().equals("")) || sender.hasPermission(pCommand.getPermission());
+        if (hasPerm) {
+            String[] newArg = new String[args.length - 1];
+            System.arraycopy(args, 1, newArg, 0, args.length - 1);
+            return pCommand.execute(sender, newArg);
+        }
+
+        String msg = plugin.lang.build(plugin.localeKey, I18n.Type.WARN, "您没有权限这么做.");
+        if (sender instanceof Player) {
+            TextComponent text = JsonChatUtil.getFromLegacy(msg);
+            text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color("&7所需权限 ▶ &c" + pCommand.getPermission()))));
+            ((Player) sender).spigot().sendMessage(text);
+        } else sender.sendMessage(msg);
+
+        return true;
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
         String[] subCommands = commands.keySet().toArray(new String[0]);
         if (args.length == 0) {
             return new ArrayList<>(Arrays.asList(subCommands));
         } else {
             if (args.length == 1) {
                 if (commands.containsKey(args[0]))
-                    return Arrays.asList(commands.get(args[0]).getParams(args.length - 1));
+                    return Arrays.asList(commands.get(args[0]).getParams(0));
                 else return query(subCommands, args[0]);
             } else {
                 if (commands.containsKey(args[0]))
@@ -105,5 +118,9 @@ public class CommandHandler implements TabExecutor {
         commands.forEach((cmd, pCmd) -> result.add(I18n.color("&d/" + mainCmd + " " + cmd + " &9- &7&o" + pCmd.getDescription())));
         if (commands.containsKey("help")) result.add(I18n.color("&6▶ &7使用 &d/" + mainCmd + " help &7指令查看更多信息."));
         return result;
+    }
+
+    public void register(final BaseCommand command) {
+        addCommand(command.getName(), command);
     }
 }

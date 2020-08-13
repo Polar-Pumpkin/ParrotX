@@ -4,10 +4,14 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.serverct.parrot.parrotx.command.CommandHandler;
 import org.serverct.parrot.parrotx.config.PConfig;
 import org.serverct.parrot.parrotx.utils.I18n;
+
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public class PPlugin extends JavaPlugin {
 
@@ -15,7 +19,8 @@ public class PPlugin extends JavaPlugin {
     private static PPlugin instance;
     public I18n lang;
     public String localeKey;
-    public PConfig pConfig;
+    protected PConfig pConfig;
+    private Consumer<PluginManager> listenerRegister = null;
     @Getter
     private CommandHandler cmdHandler;
 
@@ -26,7 +31,9 @@ public class PPlugin extends JavaPlugin {
 
         init();
 
-        registerListener();
+        if (Objects.nonNull(listenerRegister)) {
+            listenerRegister.accept(Bukkit.getPluginManager());
+        }
     }
 
     public void init() {
@@ -47,7 +54,8 @@ public class PPlugin extends JavaPlugin {
     protected void load() {
     }
 
-    protected void registerListener() {
+    protected void listen(Consumer<PluginManager> register) {
+        this.listenerRegister = register;
     }
 
     protected void registerCommand(@NonNull CommandHandler handler) {

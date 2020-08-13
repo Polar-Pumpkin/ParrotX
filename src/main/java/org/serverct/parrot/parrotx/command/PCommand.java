@@ -19,7 +19,7 @@ public interface PCommand {
         return new String[0];
     }
 
-    boolean execute(PPlugin plugin, CommandSender sender, String[] args);
+    boolean execute(CommandSender sender, String[] args);
 
     default String optionalParam(String param) {
         return I18n.color("&7[&c" + param + "&7] ");

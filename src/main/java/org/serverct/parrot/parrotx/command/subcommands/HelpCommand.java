@@ -48,12 +48,12 @@ public class HelpCommand implements PCommand {
     }
 
     @Override
-    public boolean execute(PPlugin plugin, CommandSender sender, String[] args) {
-        if (args.length == 0) {
+    public boolean execute(CommandSender sender, String[] args) {
+        if (args.length <= 1) {
             // plugin.lang.getHelp(plugin.localeKey).forEach(sender::sendMessage);
             this.commandHandler.formatHelp().forEach(sender::sendMessage);
         } else {
-            if (subCommands.containsKey(args[0]))
+            if (subCommands.containsKey(args[1]))
                 for (String help : subCommands.get(args[0]).getHelp()) sender.sendMessage(I18n.color(help));
             else
                 sender.sendMessage(plugin.lang.build(plugin.localeKey, I18n.Type.WARN, "未知子命令, 输入 &d/" + plugin.getCmdHandler().mainCmd + " help &7获取插件帮助."));
