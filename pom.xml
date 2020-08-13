@@ -39,12 +39,12 @@
                             <shadedPattern>org.serverct.parrot.parrotx.utils</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>com.github.WesJD</pattern>
-                            <shadedPattern>org.serverct.parrot.parrotx.utils</shadedPattern>
+                            <pattern>net.wesjd</pattern>
+                            <shadedPattern>org.serverct.parrot.parrotx.utils.anvilgui</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>com.scireum</pattern>
-                            <shadedPattern>org.serverct.parrot.parrotx.utils</shadedPattern>
+                            <pattern>parsii</pattern>
+                            <shadedPattern>org.serverct.parrot.parrotx.utils.parsii</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -100,6 +100,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>18.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.scireum</groupId>
             <artifactId>parsii</artifactId>
             <version>1.5</version>
@@ -108,11 +114,6 @@
             <groupId>com.github.WesJD.AnvilGUI</groupId>
             <artifactId>anvilgui</artifactId>
             <version>99a504a3bb</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>18.0.0</version>
         </dependency>
         <dependency>
             <groupId>com.github.cryptomorin</groupId>
