@@ -81,18 +81,19 @@ public class CommandHandler implements TabExecutor {
     }
 
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
         String[] subCommands = commands.keySet().toArray(new String[0]);
         if (args.length == 0) {
             return new ArrayList<>(Arrays.asList(subCommands));
         } else {
+            PCommand command = commands.get(args[0]);
             if (args.length == 1) {
-                if (commands.containsKey(args[0]))
-                    return Arrays.asList(commands.get(args[0]).getParams(0));
+                if (Objects.nonNull(command))
+                    return Arrays.asList(command.getParams(0));
                 else return query(subCommands, args[0]);
             } else {
-                if (commands.containsKey(args[0]))
-                    return query(commands.get(args[0]).getParams(args.length - 1), args[args.length - 1]);
+                if (Objects.nonNull(command))
+                    return query(command.getParams(args.length - 2), args[args.length - 1]);
                 else return new ArrayList<>();
             }
         }

@@ -31,7 +31,7 @@ public class HelpCommand extends BaseCommand {
             // plugin.lang.getHelp(plugin.localeKey).forEach(sender::sendMessage);
             handler.formatHelp().forEach(sender::sendMessage);
         } else {
-            if (subCommands.containsKey(args[1]))
+            if (subCommands.containsKey(args[0]))
                 for (String help : subCommands.get(args[0]).getHelp()) sender.sendMessage(I18n.color(help));
             else
                 sender.sendMessage(plugin.lang.build(plugin.localeKey, I18n.Type.WARN, "未知子命令, 输入 &d/" + plugin.getCmdHandler().mainCmd + " help &7获取插件帮助."));

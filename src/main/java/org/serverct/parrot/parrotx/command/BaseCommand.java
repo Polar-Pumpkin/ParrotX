@@ -120,6 +120,7 @@ public abstract class BaseCommand implements PCommand {
                 add(paramLine.toString());
             });
 
+            add(" ");
             add("    &7&o" + getDescription());
             add("    &7所需权限: &c" + (getPermission() == null ? "无" : getPermission()));
         }}.toArray(new String[0]);
