@@ -143,6 +143,7 @@ public abstract class BaseCommand implements PCommand {
                 add(requiredParam("必填参数") + " " + optionalParam("选填参数"));
             }
 
+
             add(" ");
             StringBuilder commandLine = new StringBuilder("  &9▶ &d/")
                     .append(plugin.getCmdHandler().mainCmd)
@@ -157,13 +158,8 @@ public abstract class BaseCommand implements PCommand {
 
             chain.params.forEach(param -> {
                 StringBuilder paramLine = new StringBuilder("     ");
-
-                String paramPart;
-                if (param.keyword) paramPart = param.name;
-                else if (param.optional) paramPart = optionalParam(param.name);
-                else paramPart = requiredParam(param.name);
-
-                paramLine.append(paramPart);
+                if (param.optional) paramLine.append(optionalParam(param.name));
+                else paramLine.append(requiredParam(param.name));
                 paramLine.append(" &9- &7&o").append(param.description);
                 add(paramLine.toString());
             });
@@ -255,7 +251,6 @@ public abstract class BaseCommand implements PCommand {
     static class CommandParam {
         private String name;
         private boolean optional;
-        private boolean keyword;
         private String description;
         private Predicate<String> validate;
         private String validateMessage;
