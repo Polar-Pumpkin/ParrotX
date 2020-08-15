@@ -171,6 +171,24 @@ public abstract class BaseCommand implements PCommand {
         return plugin.lang.buildWithFormat(plugin.localeKey, I18n.Type.ERROR, text, args);
     }
 
+    protected Object convert(final int index, final String[] args) {
+        CommandParam param = this.paramMap.get(index);
+        if (param == null || param.converter == null) {
+            return null;
+        }
+        return param.converter.convert(args);
+    }
+
+    @FunctionalInterface
+    public interface ParamSuggester {
+        String[] param();
+    }
+
+    @FunctionalInterface
+    public interface ParamConverter<K, V> {
+        V convert(K k);
+    }
+
     protected @Data
     @AllArgsConstructor
     @Builder
@@ -182,5 +200,6 @@ public abstract class BaseCommand implements PCommand {
         private String validateMessage;
         private int position;
         private ParamSuggester suggest;
+        private ParamConverter<String[], ?> converter;
     }
 }
