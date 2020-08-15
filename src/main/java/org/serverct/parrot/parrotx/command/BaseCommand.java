@@ -258,7 +258,7 @@ public abstract class BaseCommand implements PCommand {
         private String validateMessage;
         private int position;
         private ParamSuggester suggest;
-        private ParamConverter<String, ?> converter;
+        private ParamConverter<String[], ?> converter;
     }
 
     protected @Data
