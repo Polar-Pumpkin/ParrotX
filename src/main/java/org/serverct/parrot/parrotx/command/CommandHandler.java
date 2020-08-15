@@ -89,11 +89,11 @@ public class CommandHandler implements TabExecutor {
             PCommand command = commands.get(args[0]);
             if (args.length == 1) {
                 if (Objects.nonNull(command))
-                    return Arrays.asList(command.getParams(0, args));
+                    return Arrays.asList(command.getParams(0));
                 else return query(subCommands, args[0]);
             } else {
                 if (Objects.nonNull(command))
-                    return query(command.getParams(args.length - 2, args), args[args.length - 1]);
+                    return query(command.getParams(args.length - 2), args[args.length - 1]);
                 else return new ArrayList<>();
             }
         }
