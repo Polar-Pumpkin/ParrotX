@@ -55,10 +55,12 @@ public abstract class BaseCommand implements PCommand {
 
         for (CommandChain chain : this.chains) {
             if (chain.length(false) == 0) {
-                ChainExecutor<String[], CommandChain> executor = chain.run;
-                if (executor != null) {
-                    executor.run(args, chain);
-                    return true;
+                if (args.length == 0) {
+                    ChainExecutor<String[], CommandChain> executor = chain.run;
+                    if (executor != null) {
+                        executor.run(args, chain);
+                        return true;
+                    }
                 }
             } else {
                 if (args.length > 0) {
