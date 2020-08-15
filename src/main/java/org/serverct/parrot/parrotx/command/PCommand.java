@@ -1,7 +1,6 @@
 package org.serverct.parrot.parrotx.command;
 
 import org.bukkit.command.CommandSender;
-import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.utils.I18n;
 
 public interface PCommand {
@@ -15,7 +14,7 @@ public interface PCommand {
         return new String[0];
     }
 
-    default String[] getParams(int arg) {
+    default String[] getParams(int arg, String[] args) {
         return new String[0];
     }
 

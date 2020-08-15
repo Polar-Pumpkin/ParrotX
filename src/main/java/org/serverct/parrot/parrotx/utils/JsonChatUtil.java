@@ -51,26 +51,27 @@ public class JsonChatUtil {
         return msg;
     }
 
-    public static void sendEditableList(Player user, List<String> content, String title, String add, String addCmd, String set, String setCmd, String del, String delCmd, String back, String backCmd) {
+    public static void sendEditableList(Player user, List<String> content, String title, String add, String addCmd, String set, String setCmd, String del, String delCmd, String back, String backCmd, boolean suggest) {
         user.spigot().sendMessage(getFromLegacy("\n" + title));
         TextComponent clickableAdd;
+        ClickEvent.Action action = suggest ? ClickEvent.Action.SUGGEST_COMMAND : ClickEvent.Action.RUN_COMMAND;
         if (!content.isEmpty()) {
             for (String desc : content) {
                 TextComponent result = new TextComponent("");
                 int index = content.indexOf(desc);
                 clickableAdd = buildClickText(
                         add,
-                        new ClickEvent(ClickEvent.Action.RUN_COMMAND, addCmd + (index + 1)),
+                        new ClickEvent(action, addCmd + (index + 1)),
                         new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color("&a点击在下方插入一行内容")))
                 );
                 TextComponent clickableSet = buildClickText(
                         set,
-                        new ClickEvent(ClickEvent.Action.RUN_COMMAND, setCmd + index),
+                        new ClickEvent(action, setCmd + index),
                         new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color("&e点击设置此行内容")))
                 );
                 TextComponent clickableDel = buildClickText(
                         del,
-                        new ClickEvent(ClickEvent.Action.RUN_COMMAND, delCmd + index),
+                        new ClickEvent(action, delCmd + index),
                         new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color("&c点击删除此行内容")))
                 );
                 result.addExtra(clickableAdd);
@@ -83,7 +84,7 @@ public class JsonChatUtil {
             TextComponent result = new TextComponent("");
             clickableAdd = buildClickText(
                     add,
-                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, addCmd + 0),
+                    new ClickEvent(action, addCmd + 0),
                     new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color("&a点击添加第一行内容")))
             );
             result.addExtra(clickableAdd);
