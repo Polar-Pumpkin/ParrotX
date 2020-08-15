@@ -273,7 +273,7 @@ public abstract class BaseCommand implements PCommand {
         private List<CommandParam> params;
         private ChainExecutor<String[], CommandChain> run;
 
-        public CommandChain chain(final CommandParam param) {
+        protected CommandChain chain(final CommandParam param) {
             if (this.params == null) {
                 this.params = new ArrayList<>();
             }
@@ -282,27 +282,19 @@ public abstract class BaseCommand implements PCommand {
             return this;
         }
 
-        public CommandChain sort() {
+        protected CommandChain sort() {
             this.params.sort(Comparator.comparingInt(CommandParam::getPosition));
             return this;
         }
 
-        public CommandParam get(final int index) {
+        protected CommandParam get(final int index) {
             if (this.params.size() > index) {
                 return this.params.get(index);
             }
             return null;
         }
 
-        public Object convert(final int index, final String[] args) {
-            CommandParam param = get(index);
-            if (param == null || param.converter == null) {
-                return null;
-            }
-            return param.converter.convert(args);
-        }
-
-        public int length(final boolean withOptional) {
+        protected int length(final boolean withOptional) {
             if (withOptional) {
                 return this.params.size();
             } else {
