@@ -39,6 +39,8 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
     protected final Player viewer;
     protected final File file;
     protected final FileConfiguration settings;
+    protected final String title;
+    protected final int row;
     @Getter
     private final Map<String, InventoryElement> elementMap = new HashMap<>();
     @Getter
@@ -57,15 +59,30 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
         this.viewer = user;
         this.file = file;
         this.settings = YamlConfiguration.loadConfiguration(this.file);
+
+        final ConfigurationSection settingSection = this.settings.getConfigurationSection("Settings");
+        if (BasicUtil.isNull(plugin, settingSection, I18n.BUILD, "Gui/" + this.file.getName(), "Gui 设置配置节为 null")) {
+            this.title = "未初始化 Gui - " + file.getName();
+            this.row = 6;
+        } else {
+            this.title = settingSection.getString("Title", this.file.getName());
+            this.row = settingSection.getInt("Row", 6);
+        }
+    }
+
+    public BaseInventory(PPlugin plugin, T data, Player user, String title, int row) {
+        this.plugin = plugin;
+        this.data = data;
+        this.viewer = user;
+        this.file = null;
+        this.settings = null;
+        this.title = title;
+        this.row = row;
     }
 
     @Override
     public Inventory construct() {
-        final ConfigurationSection settingSection = this.settings.getConfigurationSection("Settings");
-        if (BasicUtil.isNull(plugin, settingSection, I18n.BUILD, "Gui/" + this.file.getName(), "Gui 设置配置节为 null")) {
-            return Bukkit.createInventory(this, 6 * 9, this.file.getName() + " 未初始化 Gui");
-        }
-        final Inventory result = Bukkit.createInventory(this, settingSection.getInt("Raw") * 9, I18n.color(settingSection.getString("Title", this.file.getName())));
+        final Inventory result = Bukkit.createInventory(this, this.row * 9, I18n.color(this.title));
 
         for (InventoryElement element : this.elementMap.values()) {
             if (Objects.isNull(element.xPos) || Objects.isNull(element.yPos)) {
