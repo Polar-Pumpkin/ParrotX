@@ -167,41 +167,6 @@ public class LocationUtil {
         return (y < 0);
     }
 
-    public static void save(Location loc, ConfigurationSection section) {
-        if (loc.getWorld() == null) {
-            return;
-        }
-        String worldName = loc.getWorld().getName();
-        double x = loc.getX();
-        double y = loc.getY();
-        double z = loc.getZ();
-
-        section.set("World", worldName);
-        section.set("X", x);
-        section.set("Y", y);
-        section.set("Z", z);
-    }
-
-    public static Location get(PPlugin plugin, ConfigurationSection section) {
-        String worldName;
-        double x;
-        double y;
-        double z;
-
-        worldName = section.getString("World", "world");
-        World world = plugin.getServer().getWorld(worldName);
-        x = section.getDouble("X");
-        y = section.getDouble("Y");
-        z = section.getDouble("Z");
-
-        try {
-            return new Location(world, x, y, z);
-        } catch (Throwable e) {
-            plugin.lang.logError(I18n.SAVE, "Location", e, null);
-            return null;
-        }
-    }
-
     public static class Vector3D {
         public int x;
         public int y;

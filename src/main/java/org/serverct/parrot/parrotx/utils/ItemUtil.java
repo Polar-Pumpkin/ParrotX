@@ -12,11 +12,14 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.serverct.parrot.parrotx.PPlugin;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 public class ItemUtil {
 
-    public static ItemStack build(PPlugin plugin, @NonNull ConfigurationSection section) {
+    public static ItemStack build(final @NonNull PPlugin plugin, final @NonNull ConfigurationSection section) {
         ConfigurationSection itemSection = section.getConfigurationSection("ItemStack");
         if (itemSection != null) {
             try {
@@ -70,7 +73,34 @@ public class ItemUtil {
         return new ItemStack(Material.AIR);
     }
 
-    public static String getName(PPlugin plugin, Material material) {
+    public static void save(final @NonNull ItemStack item, final @NonNull ConfigurationSection section) {
+        final ConfigurationSection itemSection = section.createSection("ItemStack");
+        itemSection.set("Material", item.getType().name());
+
+        final ItemMeta meta = item.getItemMeta();
+        if (Objects.isNull(meta)) {
+            return;
+        }
+
+        if (meta.hasDisplayName()) {
+            itemSection.set("Display", meta.getDisplayName());
+        }
+        if (meta.hasLocalizedName()) {
+            itemSection.set("Lore", meta.getLore());
+        }
+        if (meta.hasEnchants()) {
+            final ConfigurationSection enchantSection = itemSection.createSection("Enchants");
+            meta.getEnchants().forEach((enchant, lvl) -> enchantSection.set(enchant.getKey().getKey(), lvl));
+        }
+        Set<ItemFlag> flags = meta.getItemFlags();
+        if (!flags.isEmpty()) {
+            final List<String> flagList = new ArrayList<>();
+            flags.forEach(flag -> flagList.add(flag.name()));
+            itemSection.set("ItemFlags", flagList);
+        }
+    }
+
+    public static String getName(final @NonNull PPlugin plugin, final @NonNull Material material) {
         String name = material.name();
         if (plugin.lang.hasKey("Material")) {
             String result = plugin.lang.getRaw("Material", "Material", name);
@@ -79,7 +109,7 @@ public class ItemUtil {
         return name;
     }
 
-    public static ItemStack replace(ItemStack item, String placeholder, String value) {
+    public static ItemStack replace(final @NonNull ItemStack item, final String placeholder, final String value) {
         ItemMeta meta = item.getItemMeta();
         if (meta == null) return item;
         if (meta.hasDisplayName()) meta.setDisplayName(meta.getDisplayName().replace(placeholder, value));
