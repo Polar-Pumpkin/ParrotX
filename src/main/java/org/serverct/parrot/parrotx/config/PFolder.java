@@ -52,12 +52,8 @@ public class PFolder extends PDataFolder {
 
     @Override
     public void saveDefault() {
-        try {
-            if (!folder.createNewFile()) {
-                plugin.lang.logError(I18n.GENERATE, getTypeName(), "自动生成失败");
-            }
-        } catch (IOException e) {
-            plugin.lang.logError(I18n.GENERATE, getTypeName(), e, null);
+        if (!folder.mkdirs()) {
+            plugin.lang.logError(I18n.GENERATE, getTypeName(), "自动生成失败");
         }
     }
 

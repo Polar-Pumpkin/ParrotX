@@ -49,18 +49,19 @@ public class I18n {
     public static final String INIT = "初始化";
     public static final String CREATE = "创建";
     public static final String GENERATE = "生成";
-    private String Tool_Prefix = "&7[&b&lEP's &aLocale Tool&7] ";
-    private String Tool_INFO = "&a&l> ";
-    private String Tool_WARN = "&e&l> ";
-    private String Tool_ERROR = "&c&l> ";
-    private String Tool_DEBUG = "&d&l> ";
+    private static final String Tool_Prefix = "&7[&b&lEP's &aLocale Tool&7] ";
+    private static final String Tool_INFO = "&a&l> ";
+    private static final String Tool_WARN = "&e&l> ";
+    private static final String Tool_ERROR = "&c&l> ";
+    private static final String Tool_DEBUG = "&d&l> ";
     @Getter
     @Setter
     private String defaultLocaleKey;
-    private Plugin plugin;
-    private File dataFolder;
     @Getter
-    private Map<String, FileConfiguration> locales = new HashMap<>();
+    private final Plugin plugin;
+    private final File dataFolder;
+    @Getter
+    private final Map<String, FileConfiguration> locales = new HashMap<>();
 
     /**
      * @param plugin           JavaPlugin 对象，一般为插件的主类，将用于语言工具获取插件 jar 包内的默认语言文件。
@@ -71,6 +72,10 @@ public class I18n {
         this.defaultLocaleKey = defaultLocaleKey;
         this.dataFolder = new File(plugin.getDataFolder(), "Locales");
         init();
+    }
+
+    public static String getToolVersion() {
+        return Tool_Prefix + TOOL_VERSION;
     }
 
     /**
