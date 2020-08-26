@@ -10,6 +10,7 @@ import org.serverct.parrot.parrotx.command.CommandHandler;
 import org.serverct.parrot.parrotx.config.PConfig;
 import org.serverct.parrot.parrotx.utils.I18n;
 
+import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.function.Consumer;
 
@@ -21,6 +22,7 @@ public class PPlugin extends JavaPlugin {
     public String localeKey;
     protected PConfig pConfig;
     private Consumer<PluginManager> listenerRegister = null;
+    private String timeLog = null;
     @Getter
     private CommandHandler cmdHandler;
 
@@ -28,11 +30,17 @@ public class PPlugin extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         instance = this;
+        final long timestamp = System.currentTimeMillis();
 
         init();
 
         if (Objects.nonNull(listenerRegister)) {
             listenerRegister.accept(Bukkit.getPluginManager());
+        }
+
+        if (Objects.nonNull(timeLog)) {
+            final long time = System.currentTimeMillis() - timestamp;
+            lang.logRaw(MessageFormat.format(timeLog, time));
         }
     }
 
@@ -56,6 +64,10 @@ public class PPlugin extends JavaPlugin {
 
     protected void listen(Consumer<PluginManager> register) {
         this.listenerRegister = register;
+    }
+
+    protected void setTimeLog(final String format) {
+        this.timeLog = format;
     }
 
     protected void registerCommand(@NonNull CommandHandler handler) {
