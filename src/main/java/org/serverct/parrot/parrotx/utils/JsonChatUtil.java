@@ -55,7 +55,7 @@ public class JsonChatUtil {
         return msg;
     }
 
-    public void sendEditableList(final Player user, final List<String> contents, final String title, final List<EditAction> actions, final EditAction back) {
+    public static void sendEditableList(final Player user, final List<String> contents, final String title, final List<EditAction> actions, final EditAction back) {
         user.spigot().sendMessage(getFromLegacy("\n" + title));
 
         if (!actions.isEmpty()) {
