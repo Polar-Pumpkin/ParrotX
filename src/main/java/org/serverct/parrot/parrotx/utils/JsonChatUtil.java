@@ -1,5 +1,8 @@
 package org.serverct.parrot.parrotx.utils;
 
+import lombok.Builder;
+import lombok.Data;
+import lombok.NonNull;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -11,6 +14,7 @@ import org.serverct.parrot.parrotx.PPlugin;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class JsonChatUtil {
     public static TextComponent getFromLegacy(String msg) {
@@ -51,53 +55,60 @@ public class JsonChatUtil {
         return msg;
     }
 
-    public static void sendEditableList(Player user, List<String> content, String title, String add, String addCmd, String set, String setCmd, String del, String delCmd, String back, String backCmd) {
+    public void sendEditableList(final Player user, final List<String> contents, final String title, final List<EditAction> actions, final EditAction back) {
         user.spigot().sendMessage(getFromLegacy("\n" + title));
-        TextComponent clickableAdd;
-        if (!content.isEmpty()) {
-            for (String desc : content) {
-                TextComponent result = new TextComponent("");
-                int index = content.indexOf(desc);
-                clickableAdd = buildClickText(
-                        add,
-                        new ClickEvent(ClickEvent.Action.RUN_COMMAND, addCmd + (index + 1)),
-                        new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color("&a点击在下方插入一行内容")))
-                );
-                TextComponent clickableSet = buildClickText(
-                        set,
-                        new ClickEvent(ClickEvent.Action.RUN_COMMAND, setCmd + index),
-                        new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color("&e点击设置此行内容")))
-                );
-                TextComponent clickableDel = buildClickText(
-                        del,
-                        new ClickEvent(ClickEvent.Action.RUN_COMMAND, delCmd + index),
-                        new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color("&c点击删除此行内容")))
-                );
-                result.addExtra(clickableAdd);
-                result.addExtra(clickableSet);
-                result.addExtra(clickableDel);
-                result.addExtra(getFromLegacy(desc));
-                user.spigot().sendMessage(result);
+
+        if (!actions.isEmpty()) {
+            if (!contents.isEmpty()) {
+                for (String content : contents) {
+                    final int index = contents.indexOf(content);
+                    final TextComponent line = new TextComponent("");
+                    actions.forEach(action -> {
+                        final TextComponent actionComponent = buildClickText(
+                                action.display,
+                                new ClickEvent(action.suggest ? ClickEvent.Action.SUGGEST_COMMAND : ClickEvent.Action.RUN_COMMAND, action.command + " " + index),
+                                new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color(action.hover)))
+                        );
+                        line.addExtra(actionComponent);
+                        line.addExtra(" ");
+                    });
+                    line.addExtra(getFromLegacy(I18n.color(content)));
+                    user.spigot().sendMessage(line);
+                }
+            } else {
+                final TextComponent newLine = new TextComponent("");
+                final EditAction action = actions.get(0);
+                newLine.addExtra(buildClickText(
+                        action.display,
+                        new ClickEvent(action.suggest ? ClickEvent.Action.SUGGEST_COMMAND : ClickEvent.Action.RUN_COMMAND, action.command + " 0"),
+                        new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color(action.hover)))
+                ));
+                newLine.addExtra(getFromLegacy(" &7&o无内容."));
+                user.spigot().sendMessage(newLine);
             }
         } else {
-            TextComponent result = new TextComponent("");
-            clickableAdd = buildClickText(
-                    add,
-                    new ClickEvent(ClickEvent.Action.RUN_COMMAND, addCmd + 0),
-                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color("&a点击添加第一行内容")))
-            );
-            result.addExtra(clickableAdd);
-            result.addExtra(getFromLegacy("&7无."));
-            user.spigot().sendMessage(result);
+            if (!contents.isEmpty()) {
+                contents.forEach(content -> I18n.send(user, content));
+            } else {
+                I18n.send(user, "&7&o无内容.");
+            }
         }
 
-        user.spigot().sendMessage(
-                buildClickText(
-                        back,
-                        new ClickEvent(ClickEvent.Action.RUN_COMMAND, backCmd),
-                        new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color("&a点击返回")))
-                )
-        );
-        user.sendMessage("");
+        if (Objects.nonNull(back)) {
+            user.spigot().sendMessage(buildClickText(
+                    back.display,
+                    new ClickEvent(back.suggest ? ClickEvent.Action.SUGGEST_COMMAND : ClickEvent.Action.RUN_COMMAND, back.command),
+                    new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color(back.hover)))
+            ));
+        }
+    }
+
+    public @Data
+    @Builder
+    static class EditAction {
+        private final String display;
+        private final String hover;
+        private final String command;
+        private final boolean suggest;
     }
 }
