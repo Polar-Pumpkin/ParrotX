@@ -151,7 +151,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
         }
 
         final InventoryElement element = getElement(event.getSlot());
-        if (Objects.isNull(element)) {
+        if (Objects.isNull(element) || !element.clickable) {
             event.setCancelled(true);
             return;
         }
@@ -179,7 +179,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
             if (Objects.nonNull(element.onPlace)) {
                 element.onPlace.accept(event);
             }
-        } else if (element.clickable) {
+        } else {
             event.setCancelled(true);
             if (Objects.nonNull(element.onClick)) {
                 element.onClick.accept(event);
