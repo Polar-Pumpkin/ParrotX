@@ -1,7 +1,5 @@
 package org.serverct.parrot.parrotx.data.inventory;
 
-import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -18,19 +16,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.data.inventory.element.*;
 import org.serverct.parrot.parrotx.enums.Position;
 import org.serverct.parrot.parrotx.utils.BasicUtil;
 import org.serverct.parrot.parrotx.utils.I18n;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public abstract class BaseInventory<T> implements InventoryExecutor {
 
@@ -47,13 +43,13 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
     private final Map<String, ItemStack> placedItemMap = new HashMap<>();
     @Getter
     private final Map<Integer, String> slotMap = new HashMap<>();
+    protected Inventory inventory;
     @Getter
     @Setter
     private int refreshInterval = -1;
     @Getter
     @Setter
     private BukkitTask refreshTask;
-    protected Inventory inventory;
 
     public BaseInventory(PPlugin plugin, T data, Player user, File file) {
         this.plugin = plugin;
@@ -82,50 +78,56 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
         this.row = row;
     }
 
+    public String getTypename() {
+        return "Gui/" + this.file.getName();
+    }
+
     @Override
     public Inventory construct() {
         final Inventory result = Bukkit.createInventory(this, this.row * 9, I18n.color(this.title));
 
         for (InventoryElement element : this.elementMap.values()) {
-            if (Objects.isNull(element.xPos) || Objects.isNull(element.yPos)) {
+            final BaseElement base = element.getBase();
+            if (Objects.isNull(base.getXPos()) || Objects.isNull(base.getYPos())) {
                 continue;
             }
 
-            ItemStack item = element.item;
-            if (BasicUtil.isNull(plugin, item, I18n.BUILD, "Gui/" + this.file.getName(), "Gui 元素 " + element.name + " 的显示物品为 null")) {
+            ItemStack item = base.getItem();
+            if (BasicUtil.isNull(plugin, item, I18n.BUILD, getTypename(), "Gui 元素 " + base.getName() + " 的显示物品为 null")) {
                 item = new ItemStack(Material.AIR);
             }
 
-            if (Objects.nonNull(element.condition) && !element.condition.test(viewer)) {
+            if (!base.condition(viewer)) {
                 continue;
             }
 
-            if (element.switchable) {
-                if (element.active) {
-                    item = element.activeItem;
+            if (element instanceof InventorySwitch) {
+                final InventorySwitch switchElem = (InventorySwitch) element;
+                if (switchElem.isActive()) {
+                    item = switchElem.getActiveItem();
                 }
-            } else if (element.placeable) {
-                final ItemStack placedItem = this.placedItemMap.get(element.name);
+            } else if (element instanceof InventoryPlaceholder) {
+                final ItemStack placedItem = this.placedItemMap.get(base.getName());
                 if (Objects.nonNull(placedItem)) {
                     item = placedItem;
                 }
             }
 
-            final List<Integer> slots = Position.getPositionList(element.xPos, element.yPos);
+            final List<Integer> slots = Position.getPositionList(base.getXPos(), base.getYPos());
             for (int slot : slots) {
-                this.slotMap.put(slot, element.name);
+                this.slotMap.put(slot, base.getName());
                 result.setItem(slot, item);
 
-                if (element.processable) {
-                    if (element.total > 0) {
-                        final double rate = BigDecimal.valueOf(Math.min(1.0D, element.current / ((double) element.total))).setScale(2, RoundingMode.HALF_DOWN).doubleValue();
-                        final int activeAmount = BigDecimal.valueOf(slots.size() * rate).intValue();
-                        ItemStack activeItem = element.processItem;
-                        if (BasicUtil.isNull(plugin, activeItem, I18n.BUILD, "Gui/" + this.file.getName(), "Gui 元素 " + element.name + " 被标记进度条化显示但是进度显示物品为 null")) {
-                            activeItem = new ItemStack(Material.AIR);
+                if (element instanceof InventoryProcessBar) {
+                    final InventoryProcessBar barElem = (InventoryProcessBar) element;
+                    if (barElem.getTotal() > 0) {
+                        final int processAmount = BigDecimal.valueOf(slots.size() * barElem.getRate()).intValue();
+                        ItemStack processItem = barElem.getProcessItem();
+                        if (BasicUtil.isNull(plugin, processItem, I18n.BUILD, getTypename(), "Gui 元素 " + base.getName() + " 被标记进度条化显示但是进度显示物品为 null")) {
+                            processItem = new ItemStack(Material.AIR);
                         }
-                        for (int amount = 0; amount < activeAmount; amount++) {
-                            result.setItem(slot, activeItem);
+                        for (int amount = 0; amount < processAmount; amount++) {
+                            result.setItem(slot, processItem);
                         }
                     }
                 }
@@ -158,41 +160,38 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
         }
 
         final InventoryElement element = getElement(event.getSlot());
-        if (Objects.isNull(element) || !element.clickable) {
+        if (Objects.isNull(element) || !element.isClickable()) {
             event.setCancelled(true);
             return;
         }
+        final BaseElement base = element.getBase();
         final ItemStack slotItem = event.getCurrentItem();
         final ItemStack cursorItem = event.getCursor();
 
-        if (element.switchable) {
+        if (element instanceof InventorySwitch) {
             event.setCancelled(true);
-            if (Objects.isNull(element.switchCondition) || !element.switchCondition.test(viewer)) {
+            final InventorySwitch switchElem = (InventorySwitch) element;
+            if (!switchElem.condition(viewer)) {
                 return;
             }
-            element.setActive(!element.active);
-            if (Objects.nonNull(element.onSwitch)) {
-                element.onSwitch.accept(element.active);
-            }
+            switchElem.setActive(!switchElem.isActive());
+            switchElem.onSwitch();
             refresh(inv);
-        } else if (element.placeable) {
-            if (Objects.isNull(element.validate) || !element.validate.test(cursorItem)) {
+        } else if (element instanceof InventoryPlaceholder) {
+            final InventoryPlaceholder placeholderElem = (InventoryPlaceholder) element;
+            if (!placeholderElem.validate(cursorItem)) {
                 event.setCancelled(true);
                 return;
             }
-            if (Objects.nonNull(slotItem) && Objects.nonNull(element.item) && slotItem.isSimilar(element.item)) {
+            if (Objects.nonNull(slotItem) && Objects.nonNull(base.getItem()) && slotItem.isSimilar(base.getItem())) {
                 Bukkit.getScheduler().runTaskLater(plugin, () -> event.getView().setCursor(new ItemStack(Material.AIR)), 1L);
             }
-            placedItemMap.put(element.name, cursorItem);
+            placedItemMap.put(base.getName(), cursorItem);
+            placeholderElem.place(event);
             refresh(inv);
-            if (Objects.nonNull(element.onPlace)) {
-                element.onPlace.accept(event);
-            }
-        } else {
+        } else if (element instanceof InventoryButton) {
             event.setCancelled(true);
-            if (Objects.nonNull(element.onClick)) {
-                element.onClick.accept(event);
-            }
+            ((InventoryButton) element).click(event);
         }
     }
 
@@ -206,7 +205,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
     }
 
     protected void addElement(InventoryElement element) {
-        this.elementMap.put(element.getName(), element);
+        this.elementMap.put(element.getBase().getName(), element);
     }
 
     protected InventoryElement getElement(int slot) {
@@ -215,33 +214,5 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
 
     protected InventoryElement getElement(String name) {
         return this.elementMap.get(name);
-    }
-
-    protected @Data
-    @Builder
-    static class InventoryElement {
-        private final String name;
-        private final ItemStack item;
-        private final String xPos;
-        private final String yPos;
-        private final Predicate<Player> condition;
-
-        private final boolean clickable;
-        private final Consumer<InventoryClickEvent> onClick;
-
-        private final boolean processable;
-        private final ItemStack processItem;
-        private final int current;
-        private final int total;
-
-        private final boolean switchable;
-        private final ItemStack activeItem;
-        private final Predicate<Player> switchCondition;
-        private final Consumer<Boolean> onSwitch;
-        private boolean active;
-
-        private final boolean placeable;
-        private final Predicate<ItemStack> validate;
-        private final Consumer<InventoryClickEvent> onPlace;
     }
 }
