@@ -87,6 +87,12 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
         final Inventory result = Bukkit.createInventory(this, this.row * 9, I18n.color(this.title));
 
         for (InventoryElement element : this.elementMap.values()) {
+            if (element instanceof InventoryCondition) {
+                final InventoryCondition condition = (InventoryCondition) element;
+                if (Objects.isNull(condition.getUser())) {
+                    condition.setUser(viewer);
+                }
+            }
             final BaseElement base = element.getBase();
             if (Objects.isNull(base.getXPos()) || Objects.isNull(base.getYPos())) {
                 continue;
@@ -159,11 +165,15 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
             return;
         }
 
-        final InventoryElement element = getElement(event.getSlot());
+        InventoryElement element = getElement(event.getSlot());
         if (Objects.isNull(element) || !element.isClickable()) {
             event.setCancelled(true);
             return;
         }
+        if (element instanceof InventoryCondition) {
+            element = ((InventoryCondition) element).getElement();
+        }
+
         final BaseElement base = element.getBase();
         final ItemStack slotItem = event.getCurrentItem();
         final ItemStack cursorItem = event.getCursor();
