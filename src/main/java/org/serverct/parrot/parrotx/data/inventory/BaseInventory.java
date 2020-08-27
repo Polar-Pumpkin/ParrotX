@@ -44,6 +44,8 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
     @Getter
     private final Map<String, InventoryElement> elementMap = new HashMap<>();
     @Getter
+    private final Map<String, ItemStack> placedItemMap = new HashMap<>();
+    @Getter
     private final Map<Integer, String> slotMap = new HashMap<>();
     @Getter
     @Setter
@@ -101,6 +103,11 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
             if (element.switchable) {
                 if (element.active) {
                     item = element.activeItem;
+                }
+            } else if (element.placeable) {
+                final ItemStack placedItem = this.placedItemMap.get(element.name);
+                if (Objects.nonNull(placedItem)) {
+                    item = placedItem;
                 }
             }
 
@@ -176,6 +183,8 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
             if (Objects.nonNull(slotItem) && Objects.nonNull(element.item) && slotItem.isSimilar(element.item)) {
                 Bukkit.getScheduler().runTaskLater(plugin, () -> event.getView().setCursor(new ItemStack(Material.AIR)), 1L);
             }
+            placedItemMap.put(element.name, cursorItem);
+            refresh(inv);
             if (Objects.nonNull(element.onPlace)) {
                 element.onPlace.accept(event);
             }
