@@ -39,7 +39,7 @@ class InventoryTemplate<T> implements InventoryElement {
     }
 
     @FunctionalInterface
-    protected interface TempleApplier<Temple, Data> {
+    public interface TempleApplier<Temple, Data> {
         Temple apply(Temple temple, Data data);
     }
 
