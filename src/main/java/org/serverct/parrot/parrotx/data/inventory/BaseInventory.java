@@ -23,10 +23,7 @@ import org.serverct.parrot.parrotx.utils.I18n;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public abstract class BaseInventory<T> implements InventoryExecutor {
 
@@ -41,6 +38,8 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
     private final Map<String, InventoryElement> elementMap = new HashMap<>();
     @Getter
     private final Map<String, ItemStack> placedItemMap = new HashMap<>();
+    @Getter
+    private final Map<Integer, Object> indexTemplateMap = new HashMap<>();
     @Getter
     private final Map<Integer, String> slotMap = new HashMap<>();
     protected Inventory inventory;
@@ -107,6 +106,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
                 continue;
             }
 
+            ListIterator<?> contentIterator = null;
             if (element instanceof InventorySwitch) {
                 final InventorySwitch switchElem = (InventorySwitch) element;
                 if (switchElem.isActive()) {
@@ -117,11 +117,25 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
                 if (Objects.nonNull(placedItem)) {
                     item = placedItem;
                 }
+            } else if (element instanceof InventoryTemplate) {
+                contentIterator = new ArrayList<>(((InventoryTemplate<?>) element).getContents()).listIterator();
             }
 
             final List<Integer> slots = Position.getPositionList(base.getXPos(), base.getYPos());
             for (int slot : slots) {
                 this.slotMap.put(slot, base.getName());
+
+                if (element instanceof InventoryTemplate) {
+                    final InventoryTemplate<?> listElem = (InventoryTemplate<?>) element;
+                    if (contentIterator.hasNext()) {
+                        final Object content = contentIterator.next();
+                        item = listElem.apply(content);
+                        this.indexTemplateMap.put(slot, content);
+                    } else {
+                        break;
+                    }
+                }
+
                 result.setItem(slot, item);
 
                 if (element instanceof InventoryProcessBar) {
@@ -172,6 +186,8 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
         }
         if (element instanceof InventoryCondition) {
             element = ((InventoryCondition) element).getElement();
+        } else if (element instanceof InventoryTemplate) {
+            element = ((InventoryTemplate<?>) element).getElement();
         }
 
         final BaseElement base = element.getBase();
@@ -224,5 +240,13 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
 
     protected InventoryElement getElement(String name) {
         return this.elementMap.get(name);
+    }
+
+    protected ItemStack getPlacedItem(final String elementName) {
+        return this.placedItemMap.get(elementName);
+    }
+
+    protected Object getTemplateContent(final int slot) {
+        return this.indexTemplateMap.get(slot);
     }
 }
