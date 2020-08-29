@@ -78,7 +78,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
     }
 
     public String getTypename() {
-        return "Gui/" + this.file.getName();
+        return "Gui/" + (Objects.isNull(this.file) ? this.title : this.file.getName());
     }
 
     @Override
