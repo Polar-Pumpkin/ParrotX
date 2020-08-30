@@ -52,7 +52,7 @@ public class PFolder extends PDataFolder {
 
     @Override
     public void saveDefault() {
-        if (!folder.mkdirs()) {
+        if (!folder.exists()) {
             plugin.lang.logError(I18n.GENERATE, getTypeName(), "自动生成失败");
         }
     }
