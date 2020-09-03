@@ -1,13 +1,16 @@
 package org.serverct.parrot.parrotx.enums;
 
+import org.serverct.parrot.parrotx.utils.EnumUtil;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public enum Position {
     x1, x2, x3, x4, x5, x6, x7, x8, x9,
     y1, y2, y3, y4, y5, y6;
 
-    public static List<String> resolutionLocation(String posStr) {
+    private static List<String> resolutionLocation(String posStr) {
         List<String> list = new ArrayList<>();
 
         if (posStr.contains(",")) {
@@ -23,11 +26,13 @@ public enum Position {
         return list;
     }
 
-    public static List<String> calculateInterval(String interval) {
+    private static List<String> calculateInterval(String interval) {
         List<String> list = new ArrayList<>();
         if (interval.contains("-")) {
             String[] set = interval.split("-");
-            for (int i = Integer.parseInt(set[0]); i <= Integer.parseInt(set[1]); i++) {
+            final int start = Integer.parseInt(set[0]);
+            final int end = Integer.parseInt(set[1]);
+            for (int i = start; i <= end; i++) {
                 list.add(String.valueOf(i));
             }
         } else {
@@ -36,19 +41,23 @@ public enum Position {
         return list;
     }
 
-    public static List<Integer> getPositionList(String x, String y) {
+    public static List<Integer> get(String x, String y) {
         List<Integer> list = new ArrayList<>();
         for (String ySlot : resolutionLocation(y)) {
             for (String xSlot : resolutionLocation(x)) {
-                list.add(getPosition(Integer.parseInt(xSlot), Integer.parseInt(ySlot)));
+                list.add(get(Integer.parseInt(xSlot), Integer.parseInt(ySlot)));
             }
         }
         return list;
     }
 
-    public static int getPosition(int xSlot, int ySlot) {
-        Position x = valueOf("x" + xSlot);
-        Position y = valueOf("y" + ySlot);
+    @SuppressWarnings("DuplicateBranchesInSwitch")
+    public static int get(int xSlot, int ySlot) {
+        Position x = EnumUtil.valueOf(Position.class, "x" + xSlot);
+        Position y = EnumUtil.valueOf(Position.class, "y" + ySlot);
+        if (Objects.isNull(x) || Objects.isNull(y)) {
+            return 0;
+        }
         switch (y) {
             case y1:
                 switch (x) {

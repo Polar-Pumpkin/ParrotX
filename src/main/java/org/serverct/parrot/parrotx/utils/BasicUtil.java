@@ -2,21 +2,40 @@ package org.serverct.parrot.parrotx.utils;
 
 import lombok.NonNull;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Contract;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 import parsii.eval.Expression;
 import parsii.eval.Parser;
 import parsii.eval.Scope;
 import parsii.eval.Variable;
 
+import java.io.File;
 import java.util.Objects;
 
+@SuppressWarnings({"unused", "AccessStaticViaInstance"})
 public class BasicUtil {
+
+    public static void potion(Player target, PotionEffectType type, int level, int duration) {
+        target.addPotionEffect(new PotionEffect(type, duration * 20, level), true);
+    }
+
+    public static File[] listFiles(final File folder, final String suffix) {
+        if (Objects.isNull(folder)) {
+            return new File[0];
+        }
+        return folder.listFiles(file -> file.getName().endsWith(suffix));
+    }
+
+    public static File[] getYamls(final File folder) {
+        return listFiles(folder, ".yml");
+    }
 
     public static String getNoExFileName(String fileName) {
         if ((fileName != null) && (fileName.length() > 0)) {
@@ -30,7 +49,7 @@ public class BasicUtil {
 
     public static String formatLocation(@NonNull Location location) {
         String result = "&c" + location.getBlockX() + "&7, &c" + location.getBlockY() + "&7, &c" + location.getBlockZ() + "&7";
-        return ChatColor.translateAlternateColorCodes('&', result);
+        return I18n.color(result);
     }
 
     public static double calculateExpression(@NonNull PPlugin plugin, String expression, int xValue) {
@@ -40,30 +59,30 @@ public class BasicUtil {
             Expression expr = Parser.parse(expression, scope);
             x.setValue(xValue);
             double result = expr.evaluate();
-            plugin.lang.logAction(I18n.CALCULATE, "数学表达式(" + expression + ", x=" + xValue + ", 值=" + result + ")");
+            plugin.lang.log.action(I18n.CALCULATE, "数学表达式(" + expression + ", x=" + xValue + ", 值=" + result + ")");
             return result;
         } catch (Throwable e) {
-            plugin.lang.logError(I18n.CALCULATE, "数学表达式(" + expression + ", x=" + xValue + ")", e, null);
+            plugin.lang.log.error(I18n.CALCULATE, "数学表达式(" + expression + ", x=" + xValue + ")", e, null);
         }
         return 0;
     }
 
     public static String arabic2Roman(int number) {
-        String rNumber = "";
+        StringBuilder rNumber = new StringBuilder();
         int[] aArray = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
         String[] rArray = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X",
                 "IX", "V", "IV", "I"};
         if (number < 1 || number > 3999) {
-            rNumber = "-1";
+            rNumber = new StringBuilder("-1");
         } else {
             for (int i = 0; i < aArray.length; i++) {
                 while (number >= aArray[i]) {
-                    rNumber += rArray[i];
+                    rNumber.append(rArray[i]);
                     number -= aArray[i];
                 }
             }
         }
-        return rNumber;
+        return rNumber.toString();
     }
 
     public static int roman2Arabic(String m) {
@@ -143,15 +162,6 @@ public class BasicUtil {
         }.runTask(plugin);
     }
 
-    public static void send(@NonNull PPlugin plugin, @NonNull Player user, String msg) {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                I18n.send(user, msg);
-            }
-        }.runTaskLater(plugin, 1);
-    }
-
     public static void broadcast(String msg) {
         Bukkit.getOnlinePlayers().forEach(user -> I18n.send(user, msg));
     }
@@ -163,7 +173,7 @@ public class BasicUtil {
     @Contract("_, null, _, _, _ -> true; _, !null, _, _, _ -> false")
     public static boolean isNull(PPlugin plugin, Object object, String action, String name, String message) {
         if (Objects.isNull(object)) {
-            plugin.lang.logError(action, name, message);
+            plugin.lang.log.error(action, name, message);
             return true;
         }
         return false;

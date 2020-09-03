@@ -8,7 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PConfiguration;
-import org.serverct.parrot.parrotx.utils.I18n;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,16 +17,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@SuppressWarnings("AccessStaticViaInstance")
 public class PConfig implements PConfiguration {
 
     protected final Map<String, ConfigItem> itemMap = new HashMap<>();
+    private final String id;
+    private final String name;
     protected PPlugin plugin;
     @Getter
     protected File file;
     @Getter
     protected FileConfiguration config;
-    private String id;
-    private String name;
 
     public PConfig(@NonNull PPlugin plugin, String fileName, String typeName) {
         this.plugin = plugin;
@@ -36,12 +37,12 @@ public class PConfig implements PConfiguration {
     }
 
     @Override
-    public String getTypeName() {
+    public String getTypename() {
         return name + "/" + id;
     }
 
     @Override
-    public String getFileName() {
+    public String getFilename() {
         return id;
     }
 
@@ -49,16 +50,16 @@ public class PConfig implements PConfiguration {
     public void init() {
         if (!file.exists()) {
             saveDefault();
-            if (file.exists()) plugin.lang.log("未找到 &c" + getTypeName() + "&7, 已自动生成.", I18n.Type.WARN, false);
-            else plugin.lang.log("无法自动生成 &c" + getTypeName() + "&7.", I18n.Type.ERROR, false);
+            if (file.exists()) plugin.lang.log.warn("未找到 &c" + getTypename() + "&7, 已自动生成.");
+            else plugin.lang.log.error("无法自动生成 &c" + getTypename() + "&7.");
         }
         config = YamlConfiguration.loadConfiguration(file);
-        plugin.lang.log("已加载 &c" + getTypeName() + "&7.", I18n.Type.INFO, false);
+        plugin.lang.log.info("已加载 &c" + getTypename() + "&7.");
 
         try {
             load(file);
         } catch (Throwable e) {
-            plugin.lang.logError(I18n.LOAD, getTypeName(), e, null);
+            plugin.lang.log.error(I18n.LOAD, getTypename(), e, null);
         }
     }
 
@@ -94,9 +95,9 @@ public class PConfig implements PConfiguration {
                         }
 
                     } catch (NoSuchFieldException e) {
-                        plugin.lang.logError(I18n.LOAD, getTypeName(), "目标配置项未找到(" + item.toString() + ")");
+                        plugin.lang.log.error(I18n.LOAD, getTypename(), "目标配置项未找到(" + item.toString() + ")");
                     } catch (Throwable e) {
-                        plugin.lang.logError(I18n.LOAD, getTypeName(), e, null);
+                        plugin.lang.log.error(I18n.LOAD, getTypename(), e, null);
                     }
                 }
         );
@@ -104,7 +105,7 @@ public class PConfig implements PConfiguration {
 
     @Override
     public void reload() {
-        plugin.lang.logAction(I18n.RELOAD, getTypeName());
+        plugin.lang.log.action(I18n.RELOAD, getTypename());
         init();
     }
 
@@ -119,25 +120,25 @@ public class PConfig implements PConfiguration {
                             field.setAccessible(true);
                             config.set(item.getPath(), field.get(this));
                         } catch (NoSuchFieldException e) {
-                            plugin.lang.logError(I18n.LOAD, getTypeName(), "目标配置项未找到(" + item.toString() + ")");
+                            plugin.lang.log.error(I18n.LOAD, getTypename(), "目标配置项未找到(" + item.toString() + ")");
                         } catch (Throwable e) {
-                            plugin.lang.logError(I18n.LOAD, getTypeName(), e, null);
+                            plugin.lang.log.error(I18n.LOAD, getTypename(), e, null);
                         }
                     }
             );
 
             config.save(file);
         } catch (IOException e) {
-            plugin.lang.logError(I18n.SAVE, getTypeName(), e, null);
+            plugin.lang.log.error(I18n.SAVE, getTypename(), e, null);
         }
     }
 
     @Override
     public void delete() {
         if (file.delete()) {
-            plugin.lang.logAction(I18n.DELETE, getTypeName());
+            plugin.lang.log.action(I18n.DELETE, getTypename());
         } else {
-            plugin.lang.logError(I18n.DELETE, getTypeName(), "无法删除该文件");
+            plugin.lang.log.error(I18n.DELETE, getTypename(), "无法删除该文件");
         }
     }
 
@@ -147,10 +148,10 @@ public class PConfig implements PConfiguration {
         else {
             try {
                 if (!file.createNewFile()) {
-                    plugin.lang.logError(I18n.GENERATE, getTypeName(), "自动生成失败");
+                    plugin.lang.log.error(I18n.GENERATE, getTypename(), "自动生成失败");
                 }
             } catch (IOException e) {
-                plugin.lang.logError(I18n.GENERATE, getTypeName(), e, null);
+                plugin.lang.log.error(I18n.GENERATE, getTypename(), e, null);
             }
         }
     }

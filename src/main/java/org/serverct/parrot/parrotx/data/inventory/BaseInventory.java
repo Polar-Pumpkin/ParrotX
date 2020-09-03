@@ -19,7 +19,7 @@ import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.inventory.element.*;
 import org.serverct.parrot.parrotx.enums.Position;
 import org.serverct.parrot.parrotx.utils.BasicUtil;
-import org.serverct.parrot.parrotx.utils.I18n;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -58,7 +58,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
         this.settings = YamlConfiguration.loadConfiguration(this.file);
 
         final ConfigurationSection settingSection = this.settings.getConfigurationSection("Settings");
-        if (BasicUtil.isNull(plugin, settingSection, I18n.BUILD, "Gui/" + this.file.getName(), "Gui 设置配置节为 null")) {
+        if (BasicUtil.isNull(plugin, settingSection, I18n.BUILD, getTypename(), "Gui 设置配置节为 null")) {
             this.title = "未初始化 Gui - " + file.getName();
             this.row = 6;
         } else {
@@ -83,6 +83,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
 
     @Override
     public Inventory construct() {
+
         final Inventory result = Bukkit.createInventory(this, this.row * 9, I18n.color(this.title));
 
         for (InventoryElement element : this.elementMap.values()) {
@@ -121,7 +122,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
                 contentIterator = new ArrayList<>(((InventoryTemplate<?>) element).getContents()).listIterator();
             }
 
-            final List<Integer> slots = Position.getPositionList(base.getXPos(), base.getYPos());
+            final List<Integer> slots = Position.get(base.getXPos(), base.getYPos());
             for (int slot : slots) {
                 this.slotMap.put(slot, base.getName());
 

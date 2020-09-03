@@ -3,13 +3,14 @@ package org.serverct.parrot.parrotx.utils;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@SuppressWarnings({"unused", "AccessStaticViaInstance"})
 public class ConfigUtil {
 
     public static Map<String, Object> getMap(ConfigurationSection section, String path) {
@@ -50,7 +51,7 @@ public class ConfigUtil {
         try {
             return new Location(world, x, y, z);
         } catch (Throwable e) {
-            plugin.lang.logError(I18n.SAVE, "Location", e, null);
+            plugin.lang.log.error(I18n.SAVE, "Location", e, null);
             return null;
         }
     }

@@ -9,8 +9,8 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.serverct.parrot.parrotx.PPlugin;
-import org.serverct.parrot.parrotx.utils.I18n;
 
+@SuppressWarnings({"unused", "AccessStaticViaInstance"})
 public class VaultUtil {
 
     private final PPlugin plugin;
@@ -28,13 +28,13 @@ public class VaultUtil {
         if (hooks) {
             if (!setupEconomy()) {
                 hooks = false;
-                plugin.lang.log("未找到 &cVault&7, 扣费功能将被禁用.", I18n.Type.WARN, false);
+                plugin.lang.log.warn("未找到 &cVault&7, 扣费功能将被禁用.");
             } else {
                 hooks = true;
-                plugin.lang.log("已连接 &cVault&7.", I18n.Type.INFO, false);
+                plugin.lang.log.info("已连接 &cVault&7.");
             }
         } else {
-            plugin.lang.log("未启用与 &cVault &7的链接.", I18n.Type.INFO, false);
+            plugin.lang.log.info("未启用与 &cVault &7的链接.");
         }
     }
 
@@ -45,7 +45,7 @@ public class VaultUtil {
                 return false;
             }
             economy = rsp.getProvider();
-            return economy != null;
+            return true;
         }
         return false;
     }

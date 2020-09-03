@@ -9,7 +9,7 @@ import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.flags.Timestamp;
 import org.serverct.parrot.parrotx.data.flags.Uniqued;
 import org.serverct.parrot.parrotx.utils.EnumUtil;
-import org.serverct.parrot.parrotx.utils.I18n;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 import org.serverct.parrot.parrotx.utils.InventoryUtil;
 import org.serverct.parrot.parrotx.utils.ItemUtil;
 
@@ -18,9 +18,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@SuppressWarnings({"unused", "AccessStaticViaInstance"})
 public class Goal implements Timestamp, Uniqued {
 
-    private PPlugin plugin;
+    private final PPlugin plugin;
     private PID id;
     private long startTime;
     @Getter
@@ -63,7 +64,7 @@ public class Goal implements Timestamp, Uniqued {
                     itemRemain.put(EnumUtil.getMaterial(material.toUpperCase()), item.getInt(material));
             }
         } catch (Throwable e) {
-            plugin.lang.logError(I18n.LOAD, "目标/" + id.getKey(), e, null);
+            plugin.lang.log.error(I18n.LOAD, "目标/" + id.getKey(), e, null);
         }
     }
 
@@ -78,7 +79,7 @@ public class Goal implements Timestamp, Uniqued {
 
     public int contribute(Type type, int amount) {
         if (type == Type.ITEM) {
-            plugin.lang.logError(I18n.CONTRIBUTE, "目标/" + id.getKey(), "尝试数字化提交物品");
+            plugin.lang.log.error(I18n.CONTRIBUTE, "目标/" + id.getKey(), "尝试数字化提交物品");
             return 0;
         }
         int result = digitalRemain.get(type) - amount;
@@ -167,7 +168,7 @@ public class Goal implements Timestamp, Uniqued {
         POINT("点数");
 
         @Getter
-        private String name;
+        private final String name;
 
         Type(String name) {
             this.name = name;

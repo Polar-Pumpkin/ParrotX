@@ -8,7 +8,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.serverct.parrot.parrotx.command.CommandHandler;
 import org.serverct.parrot.parrotx.config.PConfig;
-import org.serverct.parrot.parrotx.utils.I18n;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.text.MessageFormat;
 import java.util.Objects;
@@ -17,10 +17,10 @@ import java.util.function.Consumer;
 public class PPlugin extends JavaPlugin {
 
     @Getter
-    private static PPlugin instance;
-    public I18n lang;
-    public String localeKey;
+    private static PPlugin inst;
+    public String localeKey = "Chinese";
     protected PConfig pConfig;
+    public static I18n lang;
     private Consumer<PluginManager> listenerRegister = null;
     private String timeLog = null;
     @Getter
@@ -29,7 +29,7 @@ public class PPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
-        instance = this;
+        inst = this;
         final long timestamp = System.currentTimeMillis();
 
         init();
@@ -40,18 +40,19 @@ public class PPlugin extends JavaPlugin {
 
         if (Objects.nonNull(timeLog)) {
             final long time = System.currentTimeMillis() - timestamp;
-            lang.logRaw(MessageFormat.format(timeLog, time));
+            lang.log.info(MessageFormat.format(timeLog, time));
         }
     }
 
     public void init() {
-        lang = new I18n(this, "Chinese");
+        lang = new I18n(this, localeKey);
 
         preload();
 
-        pConfig.init();
-
-        localeKey = pConfig.getConfig().getString("Language");
+        if (Objects.nonNull(pConfig)) {
+            pConfig.init();
+            localeKey = pConfig.getConfig().getString("Language");
+        }
 
         load();
     }
@@ -77,7 +78,7 @@ public class PPlugin extends JavaPlugin {
             command.setExecutor(handler);
             command.setTabCompleter(handler);
         } else {
-            lang.logError(I18n.REGISTER, "命令", "无法获取插件主命令.");
+            lang.log.error(I18n.REGISTER, "命令", "无法获取插件主命令.");
         }
     }
 

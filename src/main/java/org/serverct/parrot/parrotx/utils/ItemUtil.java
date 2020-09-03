@@ -11,12 +11,14 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+@SuppressWarnings("AccessStaticViaInstance")
 public class ItemUtil {
 
     public static ItemStack build(final @NonNull PPlugin plugin, final @NonNull ConfigurationSection section) {
@@ -44,7 +46,7 @@ public class ItemUtil {
                         for (String name : enchant.getKeys(false)) {
                             Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(name.toLowerCase()));
                             if (enchantment == null) {
-                                plugin.lang.logError(I18n.BUILD, "ItemStack", "目标附魔不存在: " + name);
+                                plugin.lang.log.error(I18n.BUILD, "ItemStack", "目标附魔不存在: " + name);
                                 continue;
                             }
                             meta.addEnchant(enchantment, enchant.getInt(name), true);
@@ -57,7 +59,7 @@ public class ItemUtil {
                     for (String flagName : itemFlag) {
                         ItemFlag flag = EnumUtil.valueOf(ItemFlag.class, flagName.toUpperCase());
                         if (flag == null) {
-                            plugin.lang.logError(I18n.BUILD, "ItemStack", "目标 ItemFlag 不存在: " + flagName);
+                            plugin.lang.log.error(I18n.BUILD, "ItemStack", "目标 ItemFlag 不存在: " + flagName);
                             continue;
                         }
                         meta.addItemFlags(flag);
@@ -67,9 +69,9 @@ public class ItemUtil {
                 result.setItemMeta(meta);
                 return result;
             } catch (Throwable e) {
-                plugin.lang.logError(I18n.BUILD, "ItemStack/" + section.getName(), e, null);
+                plugin.lang.log.error(I18n.BUILD, "ItemStack/" + section.getName(), e, null);
             }
-        } else plugin.lang.logError(I18n.BUILD, "ItemStack/" + section.getName(), "未找到 ItemStack 数据节");
+        } else plugin.lang.log.error(I18n.BUILD, "ItemStack/" + section.getName(), "未找到 ItemStack 数据节");
         return new ItemStack(Material.AIR);
     }
 
@@ -102,8 +104,8 @@ public class ItemUtil {
 
     public static String getName(final @NonNull PPlugin plugin, final @NonNull Material material) {
         String name = material.name();
-        if (plugin.lang.hasKey("Material")) {
-            String result = plugin.lang.getRaw("Material", "Material", name);
+        if (plugin.lang.hasLocale("Material")) {
+            String result = plugin.lang.data.get("Material", "Material", name);
             if (!result.contains("错误")) name = ChatColor.stripColor(result);
         }
         return name;

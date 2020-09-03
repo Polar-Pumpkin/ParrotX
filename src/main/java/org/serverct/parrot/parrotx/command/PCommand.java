@@ -1,8 +1,7 @@
 package org.serverct.parrot.parrotx.command;
 
 import org.bukkit.command.CommandSender;
-import org.serverct.parrot.parrotx.PPlugin;
-import org.serverct.parrot.parrotx.utils.I18n;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 public interface PCommand {
     String getPermission();

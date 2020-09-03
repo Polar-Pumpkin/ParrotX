@@ -5,11 +5,12 @@ import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PConfiguration;
 import org.serverct.parrot.parrotx.data.PData;
 import org.serverct.parrot.parrotx.data.PID;
-import org.serverct.parrot.parrotx.utils.I18n;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
 import java.util.*;
 
+@SuppressWarnings({"unused", "AccessStaticViaInstance"})
 public abstract class PDataFolder implements PConfiguration {
 
     protected PPlugin plugin;
@@ -22,7 +23,7 @@ public abstract class PDataFolder implements PConfiguration {
     }
 
     @Override
-    public String getFileName() {
+    public String getFilename() {
         return this.folder.getName();
     }
 
@@ -67,7 +68,7 @@ public abstract class PDataFolder implements PConfiguration {
     }
 
     public void reloadAll() {
-        plugin.lang.logAction(I18n.RELOAD, getTypeName());
+        plugin.lang.log.action(I18n.RELOAD, getTypename());
         init();
     }
 
@@ -81,34 +82,34 @@ public abstract class PDataFolder implements PConfiguration {
     }
 
     public void reload(String id) {
-        String object = getTypeName() + "(" + id + ")";
+        String object = getTypename() + "(" + id + ")";
         PData data = get(id);
         if (Objects.nonNull(data)) {
-            plugin.lang.logAction(I18n.RELOAD, object);
+            plugin.lang.log.action(I18n.RELOAD, object);
             data.reload();
         } else {
-            plugin.lang.logError(I18n.RELOAD, object, "目标数据未找到。");
+            plugin.lang.log.error(I18n.RELOAD, object, "目标数据未找到。");
         }
     }
 
     public void delete(String id) {
-        String object = getTypeName() + "(" + id + ")";
+        String object = getTypename() + "(" + id + ")";
         PData data = get(id);
         if (Objects.nonNull(data)) {
             dataMap.remove(data.getID());
             data.delete();
         } else {
-            plugin.lang.logError(I18n.RELOAD, object, "目标数据未找到。");
+            plugin.lang.log.error(I18n.RELOAD, object, "目标数据未找到。");
         }
     }
 
     public void save(String id) {
-        String object = getTypeName() + "(" + id + ")";
+        String object = getTypename() + "(" + id + ")";
         PData data = get(id);
         if (Objects.nonNull(data)) {
             data.save();
         } else {
-            plugin.lang.logError(I18n.RELOAD, object, "目标数据未找到。");
+            plugin.lang.log.error(I18n.RELOAD, object, "目标数据未找到。");
         }
     }
 }

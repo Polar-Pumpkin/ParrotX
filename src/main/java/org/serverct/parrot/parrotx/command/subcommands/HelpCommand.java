@@ -4,10 +4,11 @@ import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.command.BaseCommand;
 import org.serverct.parrot.parrotx.command.CommandHandler;
 import org.serverct.parrot.parrotx.command.PCommand;
-import org.serverct.parrot.parrotx.utils.I18n;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.Map;
 
+@SuppressWarnings("AccessStaticViaInstance")
 public class HelpCommand extends BaseCommand {
 
     public HelpCommand(PPlugin plugin) {
@@ -34,7 +35,7 @@ public class HelpCommand extends BaseCommand {
             if (subCommands.containsKey(args[0]))
                 for (String help : subCommands.get(args[0]).getHelp()) sender.sendMessage(I18n.color(help));
             else
-                sender.sendMessage(plugin.lang.build(plugin.localeKey, I18n.Type.WARN, "未知子命令, 输入 &d/" + plugin.getCmdHandler().mainCmd + " help &7获取插件帮助."));
+                sender.sendMessage(plugin.lang.data.warn("未知子命令, 输入 &d/" + plugin.getCmdHandler().mainCmd + " help &7获取插件帮助."));
         }
     }
 }

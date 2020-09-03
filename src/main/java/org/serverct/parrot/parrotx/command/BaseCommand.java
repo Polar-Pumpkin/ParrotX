@@ -8,11 +8,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
-import org.serverct.parrot.parrotx.utils.I18n;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.*;
 import java.util.function.Predicate;
 
+@SuppressWarnings({"unused", "AccessStaticViaInstance"})
 public abstract class BaseCommand implements PCommand {
 
     protected final PPlugin plugin;
@@ -147,28 +148,16 @@ public abstract class BaseCommand implements PCommand {
         this.paramMap.put(param.position, param);
     }
 
-    protected String info(final String text) {
-        return plugin.lang.build(plugin.localeKey, I18n.Type.INFO, text);
-    }
-
-    protected String warn(final String text) {
-        return plugin.lang.build(plugin.localeKey, I18n.Type.WARN, text);
-    }
-
-    protected String error(final String text) {
-        return plugin.lang.build(plugin.localeKey, I18n.Type.ERROR, text);
-    }
-
     protected String info(final String text, final Object... args) {
-        return plugin.lang.buildWithFormat(plugin.localeKey, I18n.Type.INFO, text, args);
+        return plugin.lang.data.info(text, args);
     }
 
     protected String warn(final String text, final Object... args) {
-        return plugin.lang.buildWithFormat(plugin.localeKey, I18n.Type.WARN, text, args);
+        return plugin.lang.data.warn(text, args);
     }
 
     protected String error(final String text, final Object... args) {
-        return plugin.lang.buildWithFormat(plugin.localeKey, I18n.Type.ERROR, text, args);
+        return plugin.lang.data.error(text, args);
     }
 
     protected Object convert(final int index, final String[] args) {

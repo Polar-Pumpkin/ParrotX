@@ -2,6 +2,7 @@ package org.serverct.parrot.parrotx.utils;
 
 import lombok.NonNull;
 import org.serverct.parrot.parrotx.data.PID;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.*;
 
@@ -9,16 +10,16 @@ public class TimerUtil {
     // 时间间隔
     private static final long PERIOD_DAY = 24 * 60 * 60 * 1000;
 
-    private static Timer TIMER;
-    private static Map<PID, TimerTask> REGISTEREDTASK;
+    private static final Timer TIMER;
+    private static final Map<PID, TimerTask> REGISTERED_TASK;
 
     static {
         TIMER = new Timer();
-        REGISTEREDTASK = new HashMap<>();
+        REGISTERED_TASK = new HashMap<>();
     }
 
     public static TimerTask get(@NonNull PID pid) {
-        return REGISTEREDTASK.getOrDefault(pid, null);
+        return REGISTERED_TASK.getOrDefault(pid, null);
     }
 
     public static void cancel(@NonNull PID id) {
@@ -59,12 +60,12 @@ public class TimerUtil {
 
             // 安排指定的任务在指定的时间开始进行重复的固定延迟执行。
             TIMER.schedule(task, date, PERIOD_DAY);
-            REGISTEREDTASK.put(id, task);
-            id.getPlugin().lang.logAction(I18n.REGISTER, "定时刷新任务/每天 " + refreshTime);
+            REGISTERED_TASK.put(id, task);
+            id.getPlugin().lang.log.action(I18n.REGISTER, "定时刷新任务/每天 " + refreshTime);
 
             return true;
         } catch (Throwable e) {
-            id.getPlugin().lang.logError(I18n.REGISTER, "定时刷新任务", e, null);
+            id.getPlugin().lang.log.error(I18n.REGISTER, "定时刷新任务", e, null);
             return false;
         }
     }

@@ -7,6 +7,7 @@ import org.bukkit.conversations.Prompt;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.Objects;
 

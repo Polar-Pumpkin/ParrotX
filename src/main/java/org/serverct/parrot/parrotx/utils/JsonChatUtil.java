@@ -2,7 +2,6 @@ package org.serverct.parrot.parrotx.utils;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.NonNull;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -10,6 +9,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.ArrayList;
 import java.util.List;

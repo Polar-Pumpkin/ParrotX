@@ -3,11 +3,11 @@ package org.serverct.parrot.parrotx.config;
 import lombok.NonNull;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PID;
-import org.serverct.parrot.parrotx.utils.I18n;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
-import java.io.IOException;
 
+@SuppressWarnings("AccessStaticViaInstance")
 public class PFolder extends PDataFolder {
 
     protected String id;
@@ -21,8 +21,8 @@ public class PFolder extends PDataFolder {
     }
 
     @Override
-    public String getTypeName() {
-        return id + "/" + getFileName();
+    public String getTypename() {
+        return id + "/" + getFilename();
     }
 
     @Override
@@ -30,9 +30,9 @@ public class PFolder extends PDataFolder {
         if (!folder.exists()) {
             if (folder.mkdirs()) {
                 saveDefault();
-                plugin.lang.log("未找到 &c" + getTypeName() + "&7, 已重新生成.", I18n.Type.WARN, false);
+                plugin.lang.log.warn("未找到 &c" + getTypename() + "&7, 已重新生成.");
             } else {
-                plugin.lang.log("尝试生成 &c" + getTypeName() + " &7失败.", I18n.Type.ERROR, false);
+                plugin.lang.log.error("尝试生成 &c" + getTypename() + " &7失败.");
             }
         }
         File[] files = folder.listFiles(pathname -> pathname.getName().endsWith(".yml"));
@@ -44,16 +44,16 @@ public class PFolder extends PDataFolder {
             for (File file : files) {
                 load(file);
             }
-            plugin.lang.log("共加载 &c" + getTypeName() + " &7中的 &c" + dataMap.size() + " &7个数据文件.", I18n.Type.INFO, false);
+            plugin.lang.log.info("共加载 &c" + getTypename() + " &7中的 &c" + dataMap.size() + " &7个数据文件.");
         } else {
-            plugin.lang.log("&c" + getTypeName() + " &7中没有数据可供加载.", I18n.Type.WARN, false);
+            plugin.lang.log.warn("&c" + getTypename() + " &7中没有数据可供加载.");
         }
     }
 
     @Override
     public void saveDefault() {
         if (!folder.exists()) {
-            plugin.lang.logError(I18n.GENERATE, getTypeName(), "自动生成失败");
+            plugin.lang.log.error(I18n.GENERATE, getTypename(), "自动生成失败");
         }
     }
 

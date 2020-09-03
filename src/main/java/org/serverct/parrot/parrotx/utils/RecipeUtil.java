@@ -7,6 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +41,7 @@ public class RecipeUtil {
                 try {
                     plugin.getServer().addRecipe(recipe);
                 } catch (Throwable e) {
-                    plugin.lang.logError(I18n.LOAD, "自定义配方/" + namespacedKey.toString(), e, null);
+                    plugin.lang.log.error(I18n.LOAD, "自定义配方/" + namespacedKey.toString(), e, null);
                 }
             }
         }

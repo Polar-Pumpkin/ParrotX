@@ -6,10 +6,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.flags.Uniqued;
 import org.serverct.parrot.parrotx.utils.BasicUtil;
-import org.serverct.parrot.parrotx.utils.I18n;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
 
+@SuppressWarnings("AccessStaticViaInstance")
 public abstract class PData implements PConfiguration, Uniqued {
 
     protected PPlugin plugin;
@@ -25,7 +26,7 @@ public abstract class PData implements PConfiguration, Uniqued {
     }
 
     @Override
-    public String getFileName() {
+    public String getFilename() {
         return BasicUtil.getNoExFileName(this.file.getName());
     }
 
@@ -41,7 +42,7 @@ public abstract class PData implements PConfiguration, Uniqued {
 
     @Override
     public void reload() {
-        plugin.lang.logAction(I18n.RELOAD, getTypeName());
+        plugin.lang.log.action(I18n.RELOAD, getTypename());
         load(this.file);
     }
 
@@ -58,9 +59,9 @@ public abstract class PData implements PConfiguration, Uniqued {
     @Override
     public void delete() {
         if (getFile().delete()) {
-            plugin.lang.logAction(I18n.DELETE, getTypeName());
+            plugin.lang.log.action(I18n.DELETE, getTypename());
         } else {
-            plugin.lang.logError(I18n.DELETE, getTypeName(), "无法删除该文件.");
+            plugin.lang.log.error(I18n.DELETE, getTypename(), "无法删除该文件.");
         }
     }
 }
