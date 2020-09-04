@@ -91,7 +91,6 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
 
         final List<InventoryElement> elements = new ArrayList<>(this.elementMap.values());
         elements.sort(Comparator.comparingInt(InventoryElement::getPriority));
-        Collections.reverse(elements);
 
         for (InventoryElement element : elements) {
             if (element instanceof InventoryCondition) {
