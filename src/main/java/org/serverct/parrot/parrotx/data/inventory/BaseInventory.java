@@ -25,6 +25,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.util.*;
 
+@SuppressWarnings("AccessStaticViaInstance")
 public abstract class BaseInventory<T> implements InventoryExecutor {
 
     protected final PPlugin plugin;
@@ -49,9 +50,11 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
     @Getter
     @Setter
     private BukkitTask refreshTask;
+    private final I18n lang;
 
     public BaseInventory(PPlugin plugin, T data, Player user, File file) {
         this.plugin = plugin;
+        this.lang = plugin.lang;
         this.data = data;
         this.viewer = user;
         this.file = file;
@@ -69,6 +72,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
 
     public BaseInventory(PPlugin plugin, T data, Player user, String title, int row) {
         this.plugin = plugin;
+        this.lang = plugin.lang;
         this.data = data;
         this.viewer = user;
         this.file = null;
@@ -83,7 +87,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
 
     @Override
     public Inventory construct() {
-
+        lang.log.debug("&7开始构建 &c" + getTypename());
         final Inventory result = Bukkit.createInventory(this, this.row * 9, I18n.color(this.title));
 
         for (InventoryElement element : this.elementMap.values()) {
@@ -94,7 +98,9 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
                 }
             }
             final BaseElement base = element.getBase();
+            lang.log.debug("&7加载容器元素: &c" + base.getName());
             if (Objects.isNull(base.getXPos()) || Objects.isNull(base.getYPos())) {
+                lang.log.debug("&7容器元素的坐标无效, 跳过该容器元素");
                 continue;
             }
 
@@ -104,6 +110,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
             }
 
             if (!base.condition(viewer)) {
+                lang.log.debug("&7玩家未达到显示该元素的条件, 跳过该容器元素");
                 continue;
             }
 
@@ -138,6 +145,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
                 }
 
                 result.setItem(slot, item);
+                lang.log.debug("&7添加物品于 &c" + slot + "&7: &c" + item.toString());
 
                 if (element instanceof InventoryProcessBar) {
                     final InventoryProcessBar barElem = (InventoryProcessBar) element;

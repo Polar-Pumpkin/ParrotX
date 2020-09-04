@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.serverct.parrot.parrotx.PPlugin;
 
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Objects;
 
 public class PLocaleManager {
@@ -49,7 +50,7 @@ public class PLocaleManager {
                     "  路径: &c" + path,
                     "------------------------------"
             };
-            lang.log.log(getError, I18n.Type.ERROR, true);
+            lang.log.log(Arrays.asList(getError), I18n.Type.ERROR, true);
         }
         return I18n.color(MessageFormat.format(message, args));
     }

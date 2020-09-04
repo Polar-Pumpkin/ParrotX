@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.serverct.parrot.parrotx.PPlugin;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,7 +16,6 @@ public class PLogger {
         this.lang = i18n;
         this.plugin = lang.getPlugin();
     }
-
 
     /**
      * 向控制台发送日志信息，不会带有格式化前缀。
@@ -35,10 +33,6 @@ public class PLogger {
         messages.forEach(this::log);
     }
 
-    public void log(String[] messages) {
-        log(Arrays.asList(messages));
-    }
-
     /**
      * 向控制台发送 Debug 类型的信息，区别在于 Debug 类型的消息拥有特别的前缀。
      *
@@ -48,13 +42,17 @@ public class PLogger {
     public void debug(String message, boolean viaTool) {
         String result = null;
         if (viaTool) {
-            result = I18n.color(I18n.Tool_Prefix + I18n.Tool_DEBUG + message);
+            result = I18n.Tool_Prefix + I18n.Tool_DEBUG + message;
         } else {
             if (plugin.getConfig().getBoolean("Debug", true)) {
                 result = lang.data.build(I18n.Type.DEBUG, message);
             }
         }
         log(result);
+    }
+
+    public void debug(final String message) {
+        debug(message, false);
     }
 
     /**
@@ -65,39 +63,32 @@ public class PLogger {
      * @param viaTool 是否通过该语言工具来发送信息。
      */
     public void log(String message, I18n.Type type, boolean viaTool) {
-        if (type != I18n.Type.DEBUG) {
-            String level;
-            switch (type) {
-                case INFO:
-                default:
-                    level = I18n.Tool_INFO;
-                    break;
-                case WARN:
-                    level = I18n.Tool_WARN;
-                    break;
-                case ERROR:
-                    level = I18n.Tool_ERROR;
-                    break;
-            }
-            log(viaTool ? I18n.color(I18n.Tool_Prefix + level + ChatColor.GRAY + message) : lang.data.build(type, message));
-        } else {
+        if (type == I18n.Type.DEBUG) {
             debug(message, viaTool);
+            return;
         }
+
+        String level;
+        switch (type) {
+            case INFO:
+            default:
+                level = I18n.Tool_INFO;
+                break;
+            case WARN:
+                level = I18n.Tool_WARN;
+                break;
+            case ERROR:
+                level = I18n.Tool_ERROR;
+                break;
+        }
+        log(viaTool ? I18n.Tool_Prefix + level + message : lang.data.build(type, message));
     }
 
     public void log(List<String> messages, I18n.Type type, boolean viaTool) {
         messages.forEach(s -> log(s, type, viaTool));
     }
 
-    public void log(String[] messages, I18n.Type type, boolean viaTool) {
-        log(Arrays.asList(messages), type, viaTool);
-    }
-
     public void info(final String message) {
-        log(message, I18n.Type.INFO, false);
-    }
-
-    public void info(final String[] message) {
         log(message, I18n.Type.INFO, false);
     }
 
@@ -109,19 +100,11 @@ public class PLogger {
         log(message, I18n.Type.WARN, false);
     }
 
-    public void warn(final String[] message) {
-        log(message, I18n.Type.WARN, false);
-    }
-
     public void warn(final List<String> message) {
         log(message, I18n.Type.WARN, false);
     }
 
     public void error(final String message) {
-        log(message, I18n.Type.ERROR, false);
-    }
-
-    public void error(final String[] message) {
         log(message, I18n.Type.ERROR, false);
     }
 

@@ -14,7 +14,7 @@ import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class PPlugin extends JavaPlugin {
+public abstract class PPlugin extends JavaPlugin {
 
     @Getter
     private static PPlugin inst;

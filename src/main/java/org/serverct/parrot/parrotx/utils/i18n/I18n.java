@@ -12,6 +12,7 @@ import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.utils.BasicUtil;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.Objects;
  * 自己写的一个多语言管理工具。
  */
 
+@SuppressWarnings("unused")
 public class I18n {
 
     public static final String TOOL_VERSION = "v3";
@@ -48,10 +50,10 @@ public class I18n {
     public static final String CREATE = "创建";
     public static final String GENERATE = "生成";
     protected static final String Tool_Prefix = "&7[&b&lEP's &aLocale Tool&7] ";
-    protected static final String Tool_INFO = "&a&l> ";
-    protected static final String Tool_WARN = "&e&l> ";
-    protected static final String Tool_ERROR = "&c&l> ";
-    protected static final String Tool_DEBUG = "&d&l> ";
+    protected static final String Tool_INFO = "&a&l> &r";
+    protected static final String Tool_WARN = "&e&l> &r";
+    protected static final String Tool_ERROR = "&c&l> &r";
+    protected static final String Tool_DEBUG = "&d&l> &r";
     public final PLogger log;
     public final PLocaleManager data;
     public final PMessenger sender;
@@ -88,9 +90,9 @@ public class I18n {
      * @param user    目标玩家。
      * @param message 消息内容
      */
-    public static void send(Player user, String message) {
+    public static void send(Player user, String message, Object... args) {
         if (user != null) {
-            user.sendMessage(color(message));
+            user.sendMessage(MessageFormat.format(color(message), args));
         }
     }
 
@@ -100,12 +102,12 @@ public class I18n {
      * @param user    目标玩家。
      * @param message 消息内容
      */
-    public static void sendAsync(@NonNull PPlugin plugin, Player user, String message) {
+    public static void sendAsync(@NonNull PPlugin plugin, Player user, String message, Object... args) {
         if (user != null) {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    user.sendMessage(color(message));
+                    send(user, message, args);
                 }
             }.runTaskLater(plugin, 1);
         }
@@ -139,7 +141,7 @@ public class I18n {
      */
     public void init() {
         if (Objects.isNull(plugin.getResource("Locales"))) {
-            log.log("该插件无语言配置文件.", Type.WARN, true);
+            this.log.log("该插件无语言配置文件.", Type.WARN, true);
             return;
         }
         if (!dataFolder.exists()) {
@@ -148,9 +150,9 @@ public class I18n {
                 if (Objects.nonNull(plugin.getResource(path))) {
                     plugin.saveResource(path, false);
                 }
-                log.log("未找到语言文件夹, 已自动生成.", Type.WARN, true);
+                this.log.log("未找到语言文件夹, 已自动生成.", Type.WARN, true);
             } else {
-                log.log("尝试生成语言文件夹失败.", Type.ERROR, true);
+                this.log.log("尝试生成语言文件夹失败.", Type.ERROR, true);
             }
         }
         File[] files = BasicUtil.getYamls(dataFolder);
@@ -177,21 +179,21 @@ public class I18n {
      */
     public void saveDefault() {
         plugin.saveResource("Locales/" + defaultLocaleKey + ".yml", false);
-        log.log("未找到默认语言文件, 已自动生成.", Type.WARN, true);
+        this.log.log("未找到默认语言文件, 已自动生成.", Type.WARN, true);
     }
 
     /**
      * 加载语言数据，可以通过调用此方法来重载语言文件(但是不会检测/释放默认语言文件)。
      */
     public void load() {
-        log.log("版本: &c" + TOOL_VERSION, Type.INFO, true);
+        this.log.log("版本: &c" + TOOL_VERSION, Type.INFO, true);
         File[] localeDataFiles = BasicUtil.getYamls(dataFolder);
         if (localeDataFiles != null && localeDataFiles.length > 0) {
             for (File dataFile : localeDataFiles) {
                 locales.put(BasicUtil.getNoExFileName(dataFile.getName()), YamlConfiguration.loadConfiguration(dataFile));
             }
         }
-        log.log("语言数据加载成功, 共加载了 &c" + locales.size() + " &7个语言文件.", Type.INFO, true);
+        this.log.log("语言数据加载成功, 共加载了 &c" + locales.size() + " &7个语言文件.", Type.INFO, true);
     }
 
     /**
