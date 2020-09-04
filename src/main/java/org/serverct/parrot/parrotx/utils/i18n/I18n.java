@@ -21,7 +21,7 @@ import java.util.Objects;
 /**
  * @author EntityParrot_
  * @author Mical
- * @version v3
+ * @version v3.1
  * <p>
  * 自己写的一个多语言管理工具。
  */
@@ -29,7 +29,7 @@ import java.util.Objects;
 @SuppressWarnings("unused")
 public class I18n {
 
-    public static final String TOOL_VERSION = "v3";
+    public static final String TOOL_VERSION = "v3.1";
     public static final String LOAD = "加载";
     public static final String SAVE = "保存";
     public static final String REGISTER = "注册";

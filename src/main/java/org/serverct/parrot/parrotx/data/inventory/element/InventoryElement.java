@@ -6,4 +6,8 @@ public interface InventoryElement {
     @NotNull BaseElement getBase();
 
     boolean isClickable();
+
+    default int getPriority() {
+        return getBase().getPriority();
+    }
 }

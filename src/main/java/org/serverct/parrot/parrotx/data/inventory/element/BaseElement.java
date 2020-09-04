@@ -9,7 +9,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-public @Data @Builder class BaseElement implements InventoryElement {
+public @Data
+@Builder
+class BaseElement implements InventoryElement {
+    private final int priority;
     private final String name;
     private final ItemStack item;
     private final String xPos;

@@ -88,6 +88,30 @@ public class PLocaleManager {
         return get(plugin.localeKey, type, path, args);
     }
 
+    public String getInfo(final String section, final String path, final Object... args) {
+        return get(plugin.localeKey, I18n.Type.INFO, section, path, args);
+    }
+
+    public String getInfo(final String path, final Object... args) {
+        return get(plugin.localeKey, I18n.Type.INFO, path, args);
+    }
+
+    public String getWarn(final String section, final String path, final Object... args) {
+        return get(plugin.localeKey, I18n.Type.WARN, section, path, args);
+    }
+
+    public String getWarn(final String path, final Object... args) {
+        return get(plugin.localeKey, I18n.Type.WARN, path, args);
+    }
+
+    public String getError(final String section, final String path, final Object... args) {
+        return get(plugin.localeKey, I18n.Type.ERROR, section, path, args);
+    }
+
+    public String getError(final String path, final Object... args) {
+        return get(plugin.localeKey, I18n.Type.ERROR, path, args);
+    }
+
     /**
      * 构建带有格式化前缀的文本。
      *
