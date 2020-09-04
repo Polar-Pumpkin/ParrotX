@@ -3,6 +3,8 @@ package org.serverct.parrot.parrotx.data.inventory.element;
 import lombok.Builder;
 import lombok.Data;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.serverct.parrot.parrotx.data.inventory.BaseInventory;
+import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -13,7 +15,9 @@ class InventoryButton implements InventoryElement {
     private final BaseElement base;
     private final Consumer<InventoryClickEvent> onClick;
 
-    public void click(final InventoryClickEvent event) {
+    @Override
+    public void click(final BaseInventory<?> holder, final InventoryClickEvent event) {
+        event.setCancelled(true);
         if (Objects.isNull(onClick)) {
             return;
         }

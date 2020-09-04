@@ -3,7 +3,10 @@ package org.serverct.parrot.parrotx.data.inventory.element;
 import lombok.Builder;
 import lombok.Data;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.jetbrains.annotations.NotNull;
+import org.serverct.parrot.parrotx.data.inventory.BaseInventory;
+import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -26,17 +29,22 @@ class InventoryCondition implements InventoryElement {
 
     @Override
     public @NotNull BaseElement getBase() {
-        if (Objects.isNull(condition)) {
-            return baseElement.getBase();
-        }
-        return (condition.test(user) ? passElement.getBase() : baseElement.getBase());
+        return getElement().getBase();
     }
 
     @Override
     public boolean isClickable() {
-        if (Objects.isNull(condition)) {
-            return baseElement.isClickable();
-        }
-        return (condition.test(user) ? passElement.isClickable() : baseElement.isClickable());
+        return getElement().isClickable();
+    }
+
+    @Override
+    public BaseElement preload(BaseInventory<?> inv) {
+        this.user = inv.getViewer();
+        return getBase();
+    }
+
+    @Override
+    public void click(final BaseInventory<?> holder, final InventoryClickEvent event) {
+        getElement().click(holder, event);
     }
 }

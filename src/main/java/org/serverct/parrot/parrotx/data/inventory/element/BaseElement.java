@@ -3,9 +3,15 @@ package org.serverct.parrot.parrotx.data.inventory.element;
 import lombok.Builder;
 import lombok.Data;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.serverct.parrot.parrotx.data.inventory.BaseInventory;
+import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
+import org.serverct.parrot.parrotx.enums.Position;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -31,5 +37,28 @@ class BaseElement implements InventoryElement {
     @Override
     public boolean isClickable() {
         return false;
+    }
+
+    @Override
+    public List<Integer> getPositions() {
+        if (Objects.isNull(xPos) || Objects.isNull(yPos)) {
+            return new ArrayList<>();
+        }
+        return Position.get(xPos, yPos);
+    }
+
+    @Override
+    public ItemStack parseItem(BaseInventory<?> inv, int slot) {
+        return this.item;
+    }
+
+    @Override
+    public BaseElement preload(BaseInventory<?> inv) {
+        return this;
+    }
+
+    @Override
+    public void click(final BaseInventory<?> holder, final InventoryClickEvent event) {
+        event.setCancelled(true);
     }
 }

@@ -3,7 +3,10 @@ package org.serverct.parrot.parrotx.data.inventory.element;
 import lombok.Builder;
 import lombok.Data;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.serverct.parrot.parrotx.data.inventory.BaseInventory;
+import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
 
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -32,5 +35,21 @@ class InventorySwitch implements InventoryElement {
     @Override
     public boolean isClickable() {
         return true;
+    }
+
+    @Override
+    public ItemStack parseItem(BaseInventory<?> inv, int slot) {
+        return active ? activeItem : base.getItem();
+    }
+
+    @Override
+    public void click(final BaseInventory<?> holder, final InventoryClickEvent event) {
+        event.setCancelled(true);
+        if (!condition(holder.getViewer())) {
+            return;
+        }
+        this.active = !this.active;
+        onSwitch();
+        holder.refresh(event.getInventory());
     }
 }
