@@ -52,7 +52,10 @@ public class PLocaleManager {
             };
             lang.log.log(Arrays.asList(getError), I18n.Type.ERROR, true);
         }
-        return I18n.color(MessageFormat.format(message, args));
+        if (args.length > 0) {
+            message = MessageFormat.format(message, args);
+        }
+        return I18n.color(message);
     }
 
     public String get(final String key, final String path, final Object... args) {
@@ -104,7 +107,10 @@ public class PLocaleManager {
             lang.log.warn("试图读取未加载的语言: &c" + key);
         }
         String result = pluginPrefix + typePrefix + ChatColor.RESET + message;
-        return I18n.color(MessageFormat.format(result, args));
+        if (args.length > 0) {
+            result = MessageFormat.format(result, args);
+        }
+        return I18n.color(result);
     }
 
     public String build(final I18n.Type type, final String message, final Object... args) {
