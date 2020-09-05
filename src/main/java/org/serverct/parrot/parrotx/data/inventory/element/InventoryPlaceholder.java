@@ -93,7 +93,7 @@ class InventoryPlaceholder implements InventoryElement {
                     new BukkitRunnable() {
                         @Override
                         public void run() {
-                            event.getView().setCursor(new ItemStack(Material.AIR));
+                            event.getView().setCursor(null);
                         }
                     }.runTaskLater(holder.getPlugin(), 1L);
                 }
@@ -107,6 +107,7 @@ class InventoryPlaceholder implements InventoryElement {
                 break;
             default:
                 event.setCancelled(true);
+                break;
         }
 
         holder.refresh(event.getInventory());
