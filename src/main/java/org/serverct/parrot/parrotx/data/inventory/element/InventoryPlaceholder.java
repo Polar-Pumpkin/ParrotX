@@ -81,7 +81,7 @@ class InventoryPlaceholder implements InventoryElement {
                 event.setCancelled(true);
                 break;
             case SWAP_WITH_CURSOR:
-                if (!validate(cursorItem)) {
+                if (!validate(cursorItem) || Objects.isNull(cursorItem)) {
                     event.setCancelled(true);
                     return;
                 }
@@ -90,15 +90,15 @@ class InventoryPlaceholder implements InventoryElement {
                 place(event);
 
                 if (Objects.nonNull(slotItem) && slotItem.isSimilar(base.getItem())) {
-                    Bukkit.getScheduler().runTaskLater(holder.getPlugin(), () -> event.getView().setCursor(new ItemStack(Material.AIR)), 1L);
+                    Bukkit.getScheduler().runTaskLater(holder.getPlugin(), () -> event.getView().setCursor(null), 1L);
                 }
                 break;
             case PICKUP_ALL:
-                if (Objects.nonNull(slotItem) && !slotItem.isSimilar(base.getItem())) {
-                    this.placedMap.remove(event.getSlot());
+                if (Objects.isNull(slotItem) || slotItem.isSimilar(base.getItem())) {
+                    event.setCancelled(true);
                     break;
                 }
-                event.setCancelled(true);
+                this.placedMap.remove(event.getSlot());
                 break;
             default:
                 event.setCancelled(true);
