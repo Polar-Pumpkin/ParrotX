@@ -6,9 +6,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.serverct.parrot.parrotx.data.inventory.BaseInventory;
 import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -59,6 +59,12 @@ class InventoryPlaceholder implements InventoryElement {
     public void click(final BaseInventory<?> holder, final InventoryClickEvent event) {
         final ItemStack slotItem = event.getCurrentItem();
         final ItemStack cursorItem = event.getCursor();
+
+        @SuppressWarnings("AccessStaticViaInstance") final I18n lang = holder.getPlugin().lang;
+        lang.log.debug("(ParrotX) InventoryPlaceholder " + getBase().getName() + " 已被点击:");
+        lang.log.debug("(ParrotX) 槽位内物品: " + slotItem);
+        lang.log.debug("(ParrotX) 指针上物品: " + cursorItem);
+        lang.log.debug("(ParrotX) 点击操作: " + event.getAction());
 
         switch (event.getAction()) {
             case PLACE_ALL:
