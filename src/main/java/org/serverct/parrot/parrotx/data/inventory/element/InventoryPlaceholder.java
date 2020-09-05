@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.serverct.parrot.parrotx.data.inventory.BaseInventory;
 import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
 
@@ -40,6 +41,10 @@ class InventoryPlaceholder implements InventoryElement {
         return Objects.isNull(validate) || validate.test(item);
     }
 
+    public ItemStack getPlaced(final int slot) {
+        return this.placedMap.get(slot);
+    }
+
     @Override
     public boolean isClickable() {
         return true;
@@ -70,14 +75,16 @@ class InventoryPlaceholder implements InventoryElement {
                 event.setCancelled(true);
                 break;
             case SWAP_WITH_CURSOR:
+                if (!validate(cursorItem)) {
+                    event.setCancelled(true);
+                    return;
+                }
+
                 if (Objects.nonNull(slotItem) && slotItem.isSimilar(base.getItem())) {
                     Bukkit.getScheduler().runTaskLater(holder.getPlugin(), () -> event.getView().setCursor(new ItemStack(Material.AIR)), 1L);
-
-                    this.placedMap.put(event.getSlot(), cursorItem);
-                    place(event);
-                    break;
                 }
-                event.setCancelled(true);
+                this.placedMap.put(event.getSlot(), cursorItem);
+                place(event);
                 break;
             case PICKUP_ALL:
                 if (Objects.nonNull(slotItem) && !slotItem.isSimilar(base.getItem())) {
@@ -85,7 +92,7 @@ class InventoryPlaceholder implements InventoryElement {
                     break;
                 }
                 event.setCancelled(true);
-                return;
+                break;
             default:
                 event.setCancelled(true);
         }

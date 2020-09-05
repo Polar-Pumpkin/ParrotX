@@ -20,7 +20,7 @@ public class DebugCommand extends BaseCommand {
         final boolean debug = !config.getBoolean("Debug", false);
         config.set("Debug", debug);
         if (sender instanceof Player) {
-            plugin.lang.sender.infoMessage(user, "Debug 模式已", debug ? "&a&l开启" : "&c&l关闭");
+            plugin.lang.sender.infoMessage(user, "Debug 模式已{0}", debug ? "&a&l开启" : "&c&l关闭");
         } else {
             plugin.lang.log.info("Debug 模式已" + (debug ? "&a&l开启" : "&c&l关闭"));
         }
