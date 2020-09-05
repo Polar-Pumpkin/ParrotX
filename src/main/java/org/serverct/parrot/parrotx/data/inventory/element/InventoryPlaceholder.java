@@ -86,11 +86,12 @@ class InventoryPlaceholder implements InventoryElement {
                     return;
                 }
 
+                this.placedMap.put(event.getSlot(), cursorItem);
+                place(event);
+
                 if (Objects.nonNull(slotItem) && slotItem.isSimilar(base.getItem())) {
                     Bukkit.getScheduler().runTaskLater(holder.getPlugin(), () -> event.getView().setCursor(new ItemStack(Material.AIR)), 1L);
                 }
-                this.placedMap.put(event.getSlot(), cursorItem);
-                place(event);
                 break;
             case PICKUP_ALL:
                 if (Objects.nonNull(slotItem) && !slotItem.isSimilar(base.getItem())) {
