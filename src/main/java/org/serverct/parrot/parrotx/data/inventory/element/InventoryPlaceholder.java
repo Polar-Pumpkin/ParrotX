@@ -2,10 +2,10 @@ package org.serverct.parrot.parrotx.data.inventory.element;
 
 import lombok.Builder;
 import lombok.Data;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.serverct.parrot.parrotx.data.inventory.BaseInventory;
 import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
@@ -86,11 +86,16 @@ class InventoryPlaceholder implements InventoryElement {
                     return;
                 }
 
-                this.placedMap.put(event.getSlot(), cursorItem);
+                this.placedMap.put(event.getSlot(), cursorItem.clone());
                 place(event);
 
                 if (Objects.nonNull(slotItem) && slotItem.isSimilar(base.getItem())) {
-                    Bukkit.getScheduler().runTaskLater(holder.getPlugin(), () -> event.getView().setCursor(null), 1L);
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            event.getView().setCursor(new ItemStack(Material.AIR));
+                        }
+                    }.runTaskLater(holder.getPlugin(), 1L);
                 }
                 break;
             case PICKUP_ALL:
