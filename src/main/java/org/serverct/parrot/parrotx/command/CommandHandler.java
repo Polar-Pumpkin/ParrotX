@@ -54,8 +54,15 @@ public class CommandHandler implements TabExecutor {
             } else {
                 boolean hasPerm = (defCommand.getPermission() == null || defCommand.getPermission().equals("")) || sender.hasPermission(defCommand.getPermission());
                 if (hasPerm) {
-                    defCommand.execute(sender, args);
+                    return defCommand.execute(sender, args);
                 }
+
+                String msg = plugin.lang.data.warn("您没有权限这么做.");
+                if (sender instanceof Player) {
+                    TextComponent text = JsonChatUtil.getFromLegacy(msg);
+                    text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color("&7所需权限 ▶ &c" + defCommand.getPermission()))));
+                    ((Player) sender).spigot().sendMessage(text);
+                } else sender.sendMessage(msg);
             }
             return true;
         }
