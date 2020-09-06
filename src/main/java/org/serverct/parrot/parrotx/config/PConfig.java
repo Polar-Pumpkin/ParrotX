@@ -77,57 +77,52 @@ public class PConfig implements PConfiguration {
         if (Objects.isNull(instance)) {
             return;
         }
-        Class<?> configClass = instance;
         this.itemMap.forEach(
                 (fieldName, item) -> {
                     final String path = item.getPath();
                     final ConfigurationSection section = config.getConfigurationSection(path);
                     try {
-                        Field field = configClass.getDeclaredField(path);
+                        Field field = instance.getDeclaredField(path);
                         field.setAccessible(true);
                         switch (item.getType()) {
                             case INT:
-                                field.setInt(this, config.getInt(path));
+                                field.setInt(instance, config.getInt(path));
                                 break;
                             case STRING:
-                                field.set(this, config.getString(path));
+                                field.set(instance, config.getString(path));
                                 break;
                             case BOOLEAN:
-                                field.setBoolean(this, config.getBoolean(path));
+                                field.setBoolean(instance, config.getBoolean(path));
                                 break;
                             case LIST:
-                                field.set(this, config.getStringList(path));
+                                field.set(instance, config.getStringList(path));
                                 break;
                             case STRING_MAP:
                                 final Map<String, String> stringMap = new HashMap<>();
-                                if (Objects.isNull(section)) {
-                                    field.set(this, stringMap);
-                                    break;
+                                if (Objects.nonNull(section)) {
+                                    section.getKeys(false).forEach(key -> stringMap.put(key, section.getString(key)));
                                 }
-                                section.getKeys(false).forEach(key -> stringMap.put(key, section.getString(key)));
-                                field.set(this, stringMap);
+                                field.set(instance, stringMap);
                                 break;
                             case INT_MAP:
                                 final Map<String, Integer> intMap = new HashMap<>();
-                                if (Objects.isNull(section)) {
-                                    field.set(this, intMap);
-                                    break;
+                                if (Objects.nonNull(section)) {
+                                    section.getKeys(false).forEach(key -> intMap.put(key, section.getInt(key)));
                                 }
-                                section.getKeys(false).forEach(key -> intMap.put(key, section.getInt(key)));
-                                field.set(this, intMap);
+                                field.set(instance, intMap);
                                 break;
                             case SOUND:
                                 final String sound = config.getString(path);
-                                field.set(this, EnumUtil.valueOf(Sound.class, Objects.isNull(sound) ? "" : sound.toUpperCase()));
+                                field.set(instance, EnumUtil.valueOf(Sound.class, Objects.isNull(sound) ? "" : sound.toUpperCase()));
                                 break;
                             case UNKNOWN:
                             default:
-                                field.set(this, config.get(path));
+                                field.set(instance, config.get(path));
                                 break;
                         }
 
                     } catch (NoSuchFieldException e) {
-                        plugin.lang.log.error(I18n.LOAD, getTypename(), "目标 Field 未找到(" + item.getField() + ")");
+                        plugin.lang.log.error(I18n.LOAD, getTypename(), "目标 Field 未找到: " + item.getField());
                     } catch (Throwable e) {
                         plugin.lang.log.error(I18n.LOAD, getTypename(), e, null);
                     }
@@ -147,24 +142,23 @@ public class PConfig implements PConfiguration {
             return;
         }
         try {
-            Class<?> configClass = instance;
             this.itemMap.forEach(
                     (fieldName, item) -> {
                         try {
-                            Field field = configClass.getDeclaredField(item.getField());
+                            Field field = instance.getDeclaredField(item.getField());
                             field.setAccessible(true);
                             switch (item.getType()) {
                                 case INT_MAP:
                                 case STRING_MAP:
-                                    final Map<?, ?> map = (Map<?, ?>) field.get(this);
+                                    final Map<?, ?> map = (Map<?, ?>) field.get(instance);
                                     map.forEach((key, value) -> config.set((String) key, value));
                                     break;
                                 default:
-                                    config.set(item.getPath(), field.get(this));
+                                    config.set(item.getPath(), field.get(instance));
                                     break;
                             }
                         } catch (NoSuchFieldException e) {
-                            plugin.lang.log.error(I18n.LOAD, getTypename(), "目标配置项未找到(" + item.toString() + ")");
+                            plugin.lang.log.error(I18n.LOAD, getTypename(), "目标 Field 未找到: " + item.getField());
                         } catch (Throwable e) {
                             plugin.lang.log.error(I18n.LOAD, getTypename(), e, null);
                         }
@@ -208,7 +202,7 @@ public class PConfig implements PConfiguration {
         this.itemMap.remove(field);
     }
 
-    protected void autoLoad(final Class<?> clazz) {
+    protected void loadTo(final Class<?> clazz) {
         this.instance = clazz;
     }
 
