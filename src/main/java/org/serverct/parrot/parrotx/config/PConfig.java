@@ -4,10 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NonNull;
+import org.bukkit.Sound;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PConfiguration;
+import org.serverct.parrot.parrotx.utils.EnumUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
@@ -73,24 +76,49 @@ public class PConfig implements PConfiguration {
         Class<? extends PConfig> configClass = this.getClass();
         this.itemMap.forEach(
                 (fieldName, item) -> {
+                    final String path = item.getPath();
+                    final ConfigurationSection section = config.getConfigurationSection(path);
                     try {
-                        Field field = configClass.getField(item.getField());
+                        Field field = configClass.getDeclaredField(path);
                         field.setAccessible(true);
                         switch (item.getType()) {
                             case INT:
-                                field.setInt(this, config.getInt(item.getPath()));
+                                field.setInt(this, config.getInt(path));
                                 break;
                             case STRING:
-                                field.set(this, config.getString(item.getPath()));
+                                field.set(this, config.getString(path));
                                 break;
                             case BOOLEAN:
-                                field.setBoolean(this, config.getBoolean(item.getPath()));
+                                field.setBoolean(this, config.getBoolean(path));
                                 break;
                             case LIST:
-                                field.set(this, config.getStringList(item.getPath()));
+                                field.set(this, config.getStringList(path));
                                 break;
+                            case STRING_MAP:
+                                final Map<String, String> stringMap = new HashMap<>();
+                                if (Objects.isNull(section)) {
+                                    field.set(this, stringMap);
+                                    break;
+                                }
+                                section.getKeys(false).forEach(key -> stringMap.put(key, section.getString(key)));
+                                field.set(this, stringMap);
+                                break;
+                            case INT_MAP:
+                                final Map<String, Integer> intMap = new HashMap<>();
+                                if (Objects.isNull(section)) {
+                                    field.set(this, intMap);
+                                    break;
+                                }
+                                section.getKeys(false).forEach(key -> intMap.put(key, section.getInt(key)));
+                                field.set(this, intMap);
+                                break;
+                            case SOUND:
+                                final String sound = config.getString(path);
+                                field.set(this, EnumUtil.valueOf(Sound.class, Objects.isNull(sound) ? "" : sound.toUpperCase()));
+                                break;
+                            case UNKNOWN:
                             default:
-                                field.set(this, config.get(item.getPath()));
+                                field.set(this, config.get(path));
                                 break;
                         }
 
@@ -116,9 +144,18 @@ public class PConfig implements PConfiguration {
             this.itemMap.forEach(
                     (fieldName, item) -> {
                         try {
-                            Field field = configClass.getField(item.getField());
+                            Field field = configClass.getDeclaredField(item.getField());
                             field.setAccessible(true);
-                            config.set(item.getPath(), field.get(this));
+                            switch (item.getType()) {
+                                case INT_MAP:
+                                case STRING_MAP:
+                                    final Map<?, ?> map = (Map<?, ?>) field.get(this);
+                                    map.forEach((key, value) -> config.set((String) key, value));
+                                    break;
+                                default:
+                                    config.set(item.getPath(), field.get(this));
+                                    break;
+                            }
                         } catch (NoSuchFieldException e) {
                             plugin.lang.log.error(I18n.LOAD, getTypename(), "目标配置项未找到(" + item.toString() + ")");
                         } catch (Throwable e) {
@@ -169,6 +206,8 @@ public class PConfig implements PConfiguration {
         INT("整数"),
         BOOLEAN("布尔值"),
         LIST("列表"),
+        STRING_MAP("哈希表(String)"),
+        INT_MAP("哈希表(Int)"),
         SOUND("SpigotAPI 声音(Sound)枚举"),
         UNKNOWN("未知类型");
 
