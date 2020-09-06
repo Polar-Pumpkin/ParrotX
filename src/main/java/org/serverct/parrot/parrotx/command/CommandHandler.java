@@ -12,8 +12,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
-import org.serverct.parrot.parrotx.utils.i18n.I18n;
 import org.serverct.parrot.parrotx.utils.JsonChatUtil;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -47,11 +47,16 @@ public class CommandHandler implements TabExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (args.length == 0) {
-            PCommand helpCmd = commands.get((Objects.isNull(defaultCmd) ? "help" : defaultCmd));
-            if (helpCmd == null) {
+            PCommand defCommand = commands.get((Objects.isNull(defaultCmd) ? "help" : defaultCmd));
+            if (defCommand == null) {
                 // plugin.lang.getHelp(plugin.localeKey).forEach(sender::sendMessage);
                 formatHelp().forEach(sender::sendMessage);
-            } else helpCmd.execute(sender, args);
+            } else {
+                boolean hasPerm = (defCommand.getPermission() == null || defCommand.getPermission().equals("")) || sender.hasPermission(defCommand.getPermission());
+                if (hasPerm) {
+                    defCommand.execute(sender, args);
+                }
+            }
             return true;
         }
 
