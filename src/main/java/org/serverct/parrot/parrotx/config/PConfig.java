@@ -26,17 +26,19 @@ public class PConfig implements PConfiguration {
     protected final Map<String, ConfigItem> itemMap = new HashMap<>();
     private final String id;
     private final String name;
+    private final Class<? extends PConfig> instance;
     protected PPlugin plugin;
     @Getter
     protected File file;
     @Getter
     protected FileConfiguration config;
 
-    public PConfig(@NonNull PPlugin plugin, String fileName, String typeName) {
+    public PConfig(@NonNull PPlugin plugin, String fileName, String typeName, Class<? extends PConfig> instance) {
         this.plugin = plugin;
         this.file = new File(plugin.getDataFolder(), fileName + ".yml");
         this.id = fileName;
         this.name = typeName;
+        this.instance = instance;
     }
 
     @Override
@@ -73,7 +75,7 @@ public class PConfig implements PConfiguration {
 
     @Override
     public void load(@NonNull File file) {
-        Class<? extends PConfig> configClass = this.getClass();
+        Class<? extends PConfig> configClass = instance;
         this.itemMap.forEach(
                 (fieldName, item) -> {
                     final String path = item.getPath();
@@ -123,7 +125,7 @@ public class PConfig implements PConfiguration {
                         }
 
                     } catch (NoSuchFieldException e) {
-                        plugin.lang.log.error(I18n.LOAD, getTypename(), "目标配置项未找到(" + item.toString() + ")");
+                        plugin.lang.log.error(I18n.LOAD, getTypename(), "目标 Field 未找到(" + item.getField() + ")");
                     } catch (Throwable e) {
                         plugin.lang.log.error(I18n.LOAD, getTypename(), e, null);
                     }
@@ -140,7 +142,7 @@ public class PConfig implements PConfiguration {
     @Override
     public void save() {
         try {
-            Class<? extends PConfig> configClass = this.getClass();
+            Class<? extends PConfig> configClass = instance;
             this.itemMap.forEach(
                     (fieldName, item) -> {
                         try {
