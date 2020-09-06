@@ -26,19 +26,18 @@ public class PConfig implements PConfiguration {
     protected final Map<String, ConfigItem> itemMap = new HashMap<>();
     private final String id;
     private final String name;
-    private final Class<? extends PConfig> instance;
     protected PPlugin plugin;
     @Getter
     protected File file;
     @Getter
     protected FileConfiguration config;
+    private Class<?> instance = null;
 
-    public PConfig(@NonNull PPlugin plugin, String fileName, String typeName, Class<? extends PConfig> instance) {
+    public PConfig(@NonNull PPlugin plugin, String fileName, String typeName) {
         this.plugin = plugin;
         this.file = new File(plugin.getDataFolder(), fileName + ".yml");
         this.id = fileName;
         this.name = typeName;
-        this.instance = instance;
     }
 
     @Override
@@ -75,7 +74,10 @@ public class PConfig implements PConfiguration {
 
     @Override
     public void load(@NonNull File file) {
-        Class<? extends PConfig> configClass = instance;
+        if (Objects.isNull(instance)) {
+            return;
+        }
+        Class<?> configClass = instance;
         this.itemMap.forEach(
                 (fieldName, item) -> {
                     final String path = item.getPath();
@@ -141,8 +143,11 @@ public class PConfig implements PConfiguration {
 
     @Override
     public void save() {
+        if (Objects.isNull(instance)) {
+            return;
+        }
         try {
-            Class<? extends PConfig> configClass = instance;
+            Class<?> configClass = instance;
             this.itemMap.forEach(
                     (fieldName, item) -> {
                         try {
@@ -201,6 +206,10 @@ public class PConfig implements PConfiguration {
 
     protected void removeItem(String field) {
         this.itemMap.remove(field);
+    }
+
+    protected void autoLoad(final Class<?> clazz) {
+        this.instance = clazz;
     }
 
     public enum ItemType {
