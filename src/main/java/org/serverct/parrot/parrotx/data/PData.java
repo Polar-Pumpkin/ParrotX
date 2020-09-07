@@ -46,6 +46,12 @@ public abstract class PData extends AutoLoader implements PConfiguration, FileSa
     }
 
     @Override
+    public void load() {
+        plugin.getLang().log.action(I18n.LOAD, getTypename());
+        load(this.file);
+    }
+
+    @Override
     public PID getID() {
         return this.id;
     }

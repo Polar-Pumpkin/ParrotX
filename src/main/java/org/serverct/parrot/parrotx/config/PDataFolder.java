@@ -1,5 +1,6 @@
 package org.serverct.parrot.parrotx.config;
 
+import lombok.Getter;
 import lombok.NonNull;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PConfiguration;
@@ -9,11 +10,13 @@ import org.serverct.parrot.parrotx.data.flags.FileSaved;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.*;
 
 @SuppressWarnings({"unused"})
 public abstract class PDataFolder<T extends PData> implements PConfiguration, FileSaved {
 
+    @Getter
     protected final Map<PID, T> dataMap = new HashMap<>();
     protected PPlugin plugin;
     protected File folder;
@@ -39,6 +42,11 @@ public abstract class PDataFolder<T extends PData> implements PConfiguration, Fi
     }
 
     @Override
+    public void load(@NonNull File file) {
+        put(loadData(file));
+    }
+
+    @Override
     public void reload() {
         reloadAll();
     }
@@ -53,15 +61,19 @@ public abstract class PDataFolder<T extends PData> implements PConfiguration, Fi
         deleteAll();
     }
 
+    public abstract T loadData(File file);
+
     public void put(T data) {
         this.dataMap.put(data.getID(), data);
     }
 
-    public abstract T loadData(File file);
+    public T get(String id) {
+        for (T data : this.dataMap.values()) if (data.check(id)) return data;
+        return null;
+    }
 
-    @Override
-    public void load(@NonNull File file) {
-        put(loadData(file));
+    public List<T> getAll() {
+        return new ArrayList<>(this.dataMap.values());
     }
 
     public List<String> listId() {
@@ -70,9 +82,35 @@ public abstract class PDataFolder<T extends PData> implements PConfiguration, Fi
         return ids;
     }
 
-    public T get(String id) {
-        for (T data : this.dataMap.values()) if (data.check(id)) return data;
-        return null;
+    public void reload(String id) {
+        PData data = get(id);
+        if (Objects.nonNull(data)) {
+            plugin.getLang().log.action(I18n.RELOAD, MessageFormat.format(getTypename() + "({0})", id));
+            data.reload();
+        } else {
+            plugin.getLang().log.error(I18n.RELOAD, getTypename(), "目标数据未找到: " + id);
+        }
+    }
+
+    public void delete(String id) {
+        PData data = get(id);
+        if (Objects.nonNull(data)) {
+            plugin.getLang().log.action(I18n.DELETE, MessageFormat.format(getTypename() + "({0})", id));
+            dataMap.remove(data.getID());
+            data.delete();
+        } else {
+            plugin.getLang().log.error(I18n.DELETE, getTypename(), "目标数据未找到: " + id);
+        }
+    }
+
+    public void save(String id) {
+        PData data = get(id);
+        if (Objects.nonNull(data)) {
+            plugin.getLang().log.action(I18n.SAVE, MessageFormat.format(getTypename() + "({0})", id));
+            data.save();
+        } else {
+            plugin.getLang().log.error(I18n.SAVE, getTypename(), "目标数据未找到: " + id);
+        }
     }
 
     public void reloadAll() {
@@ -87,37 +125,5 @@ public abstract class PDataFolder<T extends PData> implements PConfiguration, Fi
     public void deleteAll() {
         this.dataMap.values().forEach(PData::delete);
         this.dataMap.clear();
-    }
-
-    public void reload(String id) {
-        String object = getTypename() + "(" + id + ")";
-        PData data = get(id);
-        if (Objects.nonNull(data)) {
-            plugin.getLang().log.action(I18n.RELOAD, object);
-            data.reload();
-        } else {
-            plugin.getLang().log.error(I18n.RELOAD, object, "目标数据未找到");
-        }
-    }
-
-    public void delete(String id) {
-        String object = getTypename() + "(" + id + ")";
-        PData data = get(id);
-        if (Objects.nonNull(data)) {
-            dataMap.remove(data.getID());
-            data.delete();
-        } else {
-            plugin.getLang().log.error(I18n.RELOAD, object, "目标数据未找到");
-        }
-    }
-
-    public void save(String id) {
-        String object = getTypename() + "(" + id + ")";
-        PData data = get(id);
-        if (Objects.nonNull(data)) {
-            data.save();
-        } else {
-            plugin.getLang().log.error(I18n.RELOAD, object, "目标数据未找到");
-        }
     }
 }
