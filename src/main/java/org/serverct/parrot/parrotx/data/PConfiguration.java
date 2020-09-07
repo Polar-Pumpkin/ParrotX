@@ -1,11 +1,15 @@
 package org.serverct.parrot.parrotx.data;
 
-import org.serverct.parrot.parrotx.data.flags.FileSaved;
-
-public interface PConfiguration extends FileSaved {
+public interface PConfiguration {
     String getTypename();
 
-    String getFilename();
+    void load();
+
+    void reload();
+
+    void save();
+
+    void delete();
 
     void init();
 

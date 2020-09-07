@@ -1,42 +1,59 @@
 package org.serverct.parrot.parrotx.config;
 
+import lombok.Getter;
 import lombok.NonNull;
+import org.bukkit.configuration.ConfigurationSection;
 import org.serverct.parrot.parrotx.PPlugin;
-import org.serverct.parrot.parrotx.data.PConfiguration;
-import org.serverct.parrot.parrotx.data.PData;
 import org.serverct.parrot.parrotx.data.PID;
-import org.serverct.parrot.parrotx.data.flags.FileSaved;
+import org.serverct.parrot.parrotx.data.PStruct;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
 import java.util.*;
 
-@SuppressWarnings({"unused", "AccessStaticViaInstance"})
-public abstract class PDataFolder<T extends PData> implements PConfiguration, FileSaved {
+@SuppressWarnings("AccessStaticViaInstance")
+public abstract class PStructSet<T extends PStruct> extends PConfig {
 
-    protected final Map<PID, T> dataMap = new HashMap<>();
-    protected PPlugin plugin;
-    protected File folder;
+    @Getter
+    protected Map<PID, T> dataMap = new HashMap<>();
+    @Getter
+    protected String root;
 
-    public PDataFolder(PPlugin plugin, File folder) {
-        this.plugin = plugin;
-        this.folder = folder;
+    public PStructSet(@NonNull PPlugin plugin, String fileName, String typeName, String root) {
+        super(plugin, fileName, typeName);
+        this.root = root;
     }
 
     @Override
-    public String getFilename() {
-        return this.folder.getName();
+    public void load(@NonNull File file) {
+        super.load(file);
+
+        if (!config.isConfigurationSection(root)) {
+            return;
+        }
+        final ConfigurationSection root = config.getConfigurationSection(this.root);
+        if (Objects.isNull(root)) {
+            return;
+        }
+        for (String key : root.getKeys(false)) {
+            if (!config.isConfigurationSection(key)) {
+                continue;
+            }
+            final ConfigurationSection section = root.getConfigurationSection(key);
+            if (Objects.isNull(section)) {
+                continue;
+            }
+            put(load(section));
+        }
+
+        if (this.dataMap.isEmpty()) {
+            plugin.lang.log.warn("&c" + getTypename() + " &7中没有数据可供加载.");
+        } else {
+            plugin.lang.log.info("共加载 &c" + getTypename() + " &7中的 &c" + dataMap.size() + " &7个数据.");
+        }
     }
 
-    @Override
-    public File getFile() {
-        return this.folder;
-    }
-
-    @Override
-    public void setFile(@NonNull File file) {
-        this.folder = file;
-    }
+    public abstract T load(final ConfigurationSection section);
 
     @Override
     public void reload() {
@@ -53,15 +70,8 @@ public abstract class PDataFolder<T extends PData> implements PConfiguration, Fi
         deleteAll();
     }
 
-    public void put(T data) {
+    public void put(final T data) {
         this.dataMap.put(data.getID(), data);
-    }
-
-    public abstract T loadData(File file);
-
-    @Override
-    public void load(@NonNull File file) {
-        put(loadData(file));
     }
 
     public List<String> listId() {
@@ -81,17 +91,22 @@ public abstract class PDataFolder<T extends PData> implements PConfiguration, Fi
     }
 
     public void saveAll() {
-        this.dataMap.values().forEach(PData::save);
+        try {
+            this.dataMap.values().forEach(PStruct::save);
+            config.save(file);
+        } catch (Throwable e) {
+            plugin.lang.log.error(I18n.SAVE, getTypename(), e, null);
+        }
     }
 
     public void deleteAll() {
-        this.dataMap.values().forEach(PData::delete);
+        this.dataMap.values().forEach(struct -> config.set(root + struct.getID().getId(), null));
         this.dataMap.clear();
     }
 
     public void reload(String id) {
         String object = getTypename() + "(" + id + ")";
-        PData data = get(id);
+        PStruct data = get(id);
         if (Objects.nonNull(data)) {
             plugin.lang.log.action(I18n.RELOAD, object);
             data.reload();
@@ -102,7 +117,7 @@ public abstract class PDataFolder<T extends PData> implements PConfiguration, Fi
 
     public void delete(String id) {
         String object = getTypename() + "(" + id + ")";
-        PData data = get(id);
+        PStruct data = get(id);
         if (Objects.nonNull(data)) {
             dataMap.remove(data.getID());
             data.delete();
@@ -113,7 +128,7 @@ public abstract class PDataFolder<T extends PData> implements PConfiguration, Fi
 
     public void save(String id) {
         String object = getTypename() + "(" + id + ")";
-        PData data = get(id);
+        PStruct data = get(id);
         if (Objects.nonNull(data)) {
             data.save();
         } else {

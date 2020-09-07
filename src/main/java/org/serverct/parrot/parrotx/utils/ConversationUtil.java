@@ -10,6 +10,7 @@ import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ConversationUtil {
     public static void start(@NonNull PPlugin plugin, @NonNull Player user, Prompt firstPrompt, int timedOut, String message) {

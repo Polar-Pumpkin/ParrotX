@@ -2,13 +2,15 @@ package org.serverct.parrot.parrotx.config;
 
 import lombok.NonNull;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.data.PData;
 import org.serverct.parrot.parrotx.data.PID;
+import org.serverct.parrot.parrotx.utils.BasicUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
 
 @SuppressWarnings("AccessStaticViaInstance")
-public class PFolder extends PDataFolder {
+public abstract class PFolder<T extends PData> extends PDataFolder<T> {
 
     protected String id;
     protected String dataKey;
@@ -35,10 +37,19 @@ public class PFolder extends PDataFolder {
                 plugin.lang.log.error("尝试生成 &c" + getTypename() + " &7失败.");
             }
         }
-        File[] files = folder.listFiles(pathname -> pathname.getName().endsWith(".yml"));
+        load();
+    }
+
+    @Override
+    public void saveDefault() {
+    }
+
+    @Override
+    public void load() {
+        File[] files = BasicUtil.getYamls(folder);
         if (files == null || files.length == 0) {
             saveDefault();
-            files = folder.listFiles(pathname -> pathname.getName().endsWith(".yml"));
+            files = BasicUtil.getYamls(folder);
         }
         if (files != null && files.length != 0) {
             for (File file : files) {
@@ -48,22 +59,6 @@ public class PFolder extends PDataFolder {
         } else {
             plugin.lang.log.warn("&c" + getTypename() + " &7中没有数据可供加载.");
         }
-    }
-
-    @Override
-    public void saveDefault() {
-        if (!folder.exists()) {
-            plugin.lang.log.error(I18n.GENERATE, getTypename(), "自动生成失败");
-        }
-    }
-
-    @Override
-    public void load(File file) {
-    }
-
-    @Override
-    public void reloadAll() {
-
     }
 
     public PID buildId(String id) {

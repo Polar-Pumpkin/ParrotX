@@ -3,26 +3,26 @@ package org.serverct.parrot.parrotx.data;
 import lombok.NonNull;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.serverct.parrot.parrotx.PPlugin;
-import org.serverct.parrot.parrotx.data.flags.Uniqued;
+import org.serverct.parrot.parrotx.data.autoload.AutoLoader;
+import org.serverct.parrot.parrotx.data.flags.FileSaved;
+import org.serverct.parrot.parrotx.data.flags.Unique;
 import org.serverct.parrot.parrotx.utils.BasicUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
 
 @SuppressWarnings("AccessStaticViaInstance")
-public abstract class PData implements PConfiguration, Uniqued {
+public abstract class PData extends AutoLoader implements PConfiguration, FileSaved, Unique {
 
-    protected PPlugin plugin;
     protected PID id;
     protected File file;
     protected FileConfiguration data;
 
     public PData(File file, PID id) {
+        super(id.getPlugin());
         this.file = file;
         this.data = YamlConfiguration.loadConfiguration(file);
         this.id = id;
-        this.plugin = id.getPlugin();
     }
 
     @Override

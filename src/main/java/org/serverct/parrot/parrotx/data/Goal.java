@@ -7,7 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.Inventory;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.flags.Timestamp;
-import org.serverct.parrot.parrotx.data.flags.Uniqued;
+import org.serverct.parrot.parrotx.data.flags.Unique;
 import org.serverct.parrot.parrotx.utils.EnumUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 import org.serverct.parrot.parrotx.utils.InventoryUtil;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings({"unused", "AccessStaticViaInstance"})
-public class Goal implements Timestamp, Uniqued {
+public class Goal implements Timestamp, Unique {
 
     private final PPlugin plugin;
     private PID id;

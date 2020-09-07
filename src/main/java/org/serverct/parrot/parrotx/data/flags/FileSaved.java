@@ -11,9 +11,5 @@ public interface FileSaved {
 
     void load(@NonNull File file);
 
-    void reload();
-
-    void save();
-
-    void delete();
+    String getFilename();
 }
