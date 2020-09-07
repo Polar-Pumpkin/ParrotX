@@ -60,7 +60,7 @@ class InventoryPlaceholder implements InventoryElement {
         final ItemStack slotItem = event.getCurrentItem();
         final ItemStack cursorItem = event.getCursor();
 
-        @SuppressWarnings("AccessStaticViaInstance") final I18n lang = holder.getPlugin().lang;
+        final I18n lang = holder.getPlugin().getLang();
         lang.log.debug("(ParrotX) InventoryPlaceholder " + getBase().getName() + " 已被点击:");
         lang.log.debug("(ParrotX) 槽位内物品: " + slotItem);
         lang.log.debug("(ParrotX) 指针上物品: " + cursorItem);

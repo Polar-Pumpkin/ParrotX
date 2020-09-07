@@ -61,11 +61,11 @@ public class TimerUtil {
             // 安排指定的任务在指定的时间开始进行重复的固定延迟执行。
             TIMER.schedule(task, date, PERIOD_DAY);
             REGISTERED_TASK.put(id, task);
-            id.getPlugin().lang.log.action(I18n.REGISTER, "定时刷新任务/每天 " + refreshTime);
+            id.getPlugin().getLang().log.action(I18n.REGISTER, "定时刷新任务/每天 " + refreshTime);
 
             return true;
         } catch (Throwable e) {
-            id.getPlugin().lang.log.error(I18n.REGISTER, "定时刷新任务", e, null);
+            id.getPlugin().getLang().log.error(I18n.REGISTER, "定时刷新任务", e, null);
             return false;
         }
     }

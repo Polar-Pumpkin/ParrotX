@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-@SuppressWarnings("AccessStaticViaInstance")
 public abstract class AutoLoader {
 
     @Getter
@@ -83,7 +82,7 @@ public abstract class AutoLoader {
                                 final String soundName = from.getString(path);
                                 final Sound sound = EnumUtil.valueOf(Sound.class, Objects.isNull(soundName) ? "" : soundName.toUpperCase());
                                 if (Objects.isNull(sound)) {
-                                    plugin.lang.log.error(I18n.LOAD, object, "未找到目标音效枚举: " + soundName + "(" + path + ")");
+                                    plugin.getLang().log.error(I18n.LOAD, object, "未找到目标音效枚举: " + soundName + "(" + path + ")");
                                 }
                                 field.set(to, sound);
                                 break;
@@ -99,7 +98,7 @@ public abstract class AutoLoader {
                             case SERIALIZABLE:
                                 final Class<? extends ConfigurationSerializable> clazz = getSerializable(path, serializableMap);
                                 if (Objects.isNull(clazz)) {
-                                    plugin.lang.log.error(I18n.LOAD, object, "尝试读取未注册的可序列化对象: " + path);
+                                    plugin.getLang().log.error(I18n.LOAD, object, "尝试读取未注册的可序列化对象: " + path);
                                     break;
                                 }
                                 field.set(to, from.getSerializable(path, clazz));
@@ -111,9 +110,9 @@ public abstract class AutoLoader {
                         }
 
                     } catch (NoSuchFieldException e) {
-                        plugin.lang.log.error(I18n.LOAD, object, "目标 Field 未找到: " + fieldName);
+                        plugin.getLang().log.error(I18n.LOAD, object, "目标 Field 未找到: " + fieldName);
                     } catch (Throwable e) {
-                        plugin.lang.log.error(I18n.LOAD, object, e, null);
+                        plugin.getLang().log.error(I18n.LOAD, object, e, null);
                     }
                 }
         );
@@ -152,9 +151,9 @@ public abstract class AutoLoader {
                                 break;
                         }
                     } catch (NoSuchFieldException e) {
-                        plugin.lang.log.error(I18n.LOAD, object, "目标 Field 未找到: " + item.getField());
+                        plugin.getLang().log.error(I18n.LOAD, object, "目标 Field 未找到: " + item.getField());
                     } catch (Throwable e) {
-                        plugin.lang.log.error(I18n.LOAD, object, e, null);
+                        plugin.getLang().log.error(I18n.LOAD, object, e, null);
                     }
                 }
         );

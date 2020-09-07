@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.command.BaseCommand;
 
-@SuppressWarnings("AccessStaticViaInstance")
 public class DebugCommand extends BaseCommand {
     public DebugCommand(@NotNull PPlugin plugin, String perm) {
         super(plugin, "debug", 0);
@@ -20,9 +19,9 @@ public class DebugCommand extends BaseCommand {
         final boolean debug = !config.getBoolean("Debug", false);
         config.set("Debug", debug);
         if (sender instanceof Player) {
-            plugin.lang.sender.infoMessage(user, "Debug 模式已{0}", debug ? "&a&l开启" : "&c&l关闭");
+            plugin.getLang().sender.infoMessage(user, "Debug 模式已{0}", debug ? "&a&l开启" : "&c&l关闭");
         } else {
-            plugin.lang.log.info("Debug 模式已" + (debug ? "&a&l开启" : "&c&l关闭"));
+            plugin.getLang().log.info("Debug 模式已" + (debug ? "&a&l开启" : "&c&l关闭"));
         }
     }
 }

@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings({"unused", "AccessStaticViaInstance"})
+@SuppressWarnings("unused")
 public class Goal implements Timestamp, Unique {
 
     private final PPlugin plugin;
@@ -64,7 +64,7 @@ public class Goal implements Timestamp, Unique {
                     itemRemain.put(EnumUtil.getMaterial(material.toUpperCase()), item.getInt(material));
             }
         } catch (Throwable e) {
-            plugin.lang.log.error(I18n.LOAD, "目标/" + id.getKey(), e, null);
+            plugin.getLang().log.error(I18n.LOAD, "目标/" + id.getKey(), e, null);
         }
     }
 
@@ -79,7 +79,7 @@ public class Goal implements Timestamp, Unique {
 
     public int contribute(Type type, int amount) {
         if (type == Type.ITEM) {
-            plugin.lang.log.error(I18n.CONTRIBUTE, "目标/" + id.getKey(), "尝试数字化提交物品");
+            plugin.getLang().log.error(I18n.CONTRIBUTE, "目标/" + id.getKey(), "尝试数字化提交物品");
             return 0;
         }
         int result = digitalRemain.get(type) - amount;

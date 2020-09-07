@@ -20,7 +20,8 @@ public abstract class PPlugin extends JavaPlugin {
     private static PPlugin inst;
     public String localeKey = "Chinese";
     protected PConfig pConfig;
-    public static I18n lang;
+    @Getter
+    protected I18n lang;
     private Consumer<PluginManager> listenerRegister = null;
     private String timeLog = null;
     @Getter

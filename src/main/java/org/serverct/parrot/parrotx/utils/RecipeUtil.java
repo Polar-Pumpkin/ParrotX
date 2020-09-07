@@ -12,6 +12,7 @@ import org.serverct.parrot.parrotx.utils.i18n.I18n;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class RecipeUtil {
 
@@ -20,7 +21,8 @@ public class RecipeUtil {
         Map<Character, Material> ingredientMap = new HashMap<>();
         if (ingredient != null) {
             for (String character : ingredient.getKeys(false)) {
-                ingredientMap.put(character.toCharArray()[0], Material.valueOf(ingredient.getString(character).toUpperCase()));
+                final String material = ingredient.getString(character);
+                ingredientMap.put(character.toCharArray()[0], Material.valueOf((Objects.isNull(material) ? "AIR" : material).toUpperCase()));
             }
         }
         return ingredientMap;
@@ -41,7 +43,7 @@ public class RecipeUtil {
                 try {
                     plugin.getServer().addRecipe(recipe);
                 } catch (Throwable e) {
-                    plugin.lang.log.error(I18n.LOAD, "自定义配方/" + namespacedKey.toString(), e, null);
+                    plugin.getLang().log.error(I18n.LOAD, "自定义配方/" + namespacedKey.toString(), e, null);
                 }
             }
         }

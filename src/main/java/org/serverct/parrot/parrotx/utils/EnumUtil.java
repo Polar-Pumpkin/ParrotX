@@ -8,7 +8,7 @@ import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Set;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class EnumUtil {
     public static <T extends Enum> T valueOf(Class<T> enumClass, String... names) {
         for (String name : names) {

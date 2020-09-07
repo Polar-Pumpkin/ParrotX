@@ -19,7 +19,7 @@ import parsii.eval.Variable;
 import java.io.File;
 import java.util.Objects;
 
-@SuppressWarnings({"unused", "AccessStaticViaInstance"})
+@SuppressWarnings({"unused"})
 public class BasicUtil {
 
     public static void potion(Player target, PotionEffectType type, int level, int duration) {
@@ -59,10 +59,10 @@ public class BasicUtil {
             Expression expr = Parser.parse(expression, scope);
             x.setValue(xValue);
             double result = expr.evaluate();
-            plugin.lang.log.action(I18n.CALCULATE, "数学表达式(" + expression + ", x=" + xValue + ", 值=" + result + ")");
+            plugin.getLang().log.action(I18n.CALCULATE, "数学表达式(" + expression + ", x=" + xValue + ", 值=" + result + ")");
             return result;
         } catch (Throwable e) {
-            plugin.lang.log.error(I18n.CALCULATE, "数学表达式(" + expression + ", x=" + xValue + ")", e, null);
+            plugin.getLang().log.error(I18n.CALCULATE, "数学表达式(" + expression + ", x=" + xValue + ")", e, null);
         }
         return 0;
     }
@@ -173,7 +173,7 @@ public class BasicUtil {
     @Contract("_, null, _, _, _ -> true; _, !null, _, _, _ -> false")
     public static boolean isNull(PPlugin plugin, Object object, String action, String name, String message) {
         if (Objects.isNull(object)) {
-            plugin.lang.log.error(action, name, message);
+            plugin.getLang().log.error(action, name, message);
             return true;
         }
         return false;

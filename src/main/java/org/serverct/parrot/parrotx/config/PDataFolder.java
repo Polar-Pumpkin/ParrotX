@@ -11,7 +11,7 @@ import org.serverct.parrot.parrotx.utils.i18n.I18n;
 import java.io.File;
 import java.util.*;
 
-@SuppressWarnings({"unused", "AccessStaticViaInstance"})
+@SuppressWarnings({"unused"})
 public abstract class PDataFolder<T extends PData> implements PConfiguration, FileSaved {
 
     protected final Map<PID, T> dataMap = new HashMap<>();
@@ -76,7 +76,7 @@ public abstract class PDataFolder<T extends PData> implements PConfiguration, Fi
     }
 
     public void reloadAll() {
-        plugin.lang.log.action(I18n.RELOAD, getTypename());
+        plugin.getLang().log.action(I18n.RELOAD, getTypename());
         init();
     }
 
@@ -93,10 +93,10 @@ public abstract class PDataFolder<T extends PData> implements PConfiguration, Fi
         String object = getTypename() + "(" + id + ")";
         PData data = get(id);
         if (Objects.nonNull(data)) {
-            plugin.lang.log.action(I18n.RELOAD, object);
+            plugin.getLang().log.action(I18n.RELOAD, object);
             data.reload();
         } else {
-            plugin.lang.log.error(I18n.RELOAD, object, "目标数据未找到");
+            plugin.getLang().log.error(I18n.RELOAD, object, "目标数据未找到");
         }
     }
 
@@ -107,7 +107,7 @@ public abstract class PDataFolder<T extends PData> implements PConfiguration, Fi
             dataMap.remove(data.getID());
             data.delete();
         } else {
-            plugin.lang.log.error(I18n.RELOAD, object, "目标数据未找到");
+            plugin.getLang().log.error(I18n.RELOAD, object, "目标数据未找到");
         }
     }
 
@@ -117,7 +117,7 @@ public abstract class PDataFolder<T extends PData> implements PConfiguration, Fi
         if (Objects.nonNull(data)) {
             data.save();
         } else {
-            plugin.lang.log.error(I18n.RELOAD, object, "目标数据未找到");
+            plugin.getLang().log.error(I18n.RELOAD, object, "目标数据未找到");
         }
     }
 }

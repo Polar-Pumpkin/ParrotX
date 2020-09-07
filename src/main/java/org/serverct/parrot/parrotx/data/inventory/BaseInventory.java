@@ -11,7 +11,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
@@ -116,8 +115,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
 
     @Override
     public void execute(InventoryClickEvent event) {
-        final Inventory clickedInv = event.getClickedInventory();
-        if (Objects.isNull(clickedInv) || Objects.isNull(clickedInv.getHolder()) || !clickedInv.getHolder().equals(this)) {
+        if (!check(event)) {
             return;
         }
 

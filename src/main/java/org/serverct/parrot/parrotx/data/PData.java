@@ -11,7 +11,6 @@ import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
 
-@SuppressWarnings("AccessStaticViaInstance")
 public abstract class PData extends AutoLoader implements PConfiguration, FileSaved, Unique {
 
     protected PID id;
@@ -42,7 +41,7 @@ public abstract class PData extends AutoLoader implements PConfiguration, FileSa
 
     @Override
     public void reload() {
-        plugin.lang.log.action(I18n.RELOAD, getTypename());
+        plugin.getLang().log.action(I18n.RELOAD, getTypename());
         load(this.file);
     }
 
@@ -59,9 +58,9 @@ public abstract class PData extends AutoLoader implements PConfiguration, FileSa
     @Override
     public void delete() {
         if (getFile().delete()) {
-            plugin.lang.log.action(I18n.DELETE, getTypename());
+            plugin.getLang().log.action(I18n.DELETE, getTypename());
         } else {
-            plugin.lang.log.error(I18n.DELETE, getTypename(), "无法删除该文件.");
+            plugin.getLang().log.error(I18n.DELETE, getTypename(), "无法删除该文件.");
         }
     }
 }

@@ -1,6 +1,6 @@
 name: ParrotX
 version: ${project.version}
 main: org.serverct.parrot.parrotx.ParrotX
-api-version: 1.13
+api-version: "1.13"
 softdepend: [Vault]
 authors: [EntityParrot_]

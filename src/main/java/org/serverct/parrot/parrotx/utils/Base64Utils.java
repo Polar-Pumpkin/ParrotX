@@ -15,6 +15,7 @@ import java.util.Base64;
  * @since 1.3.2
  */
 
+@SuppressWarnings("unchecked")
 public class Base64Utils {
 
     public static String enCode(Object object) throws IOException {

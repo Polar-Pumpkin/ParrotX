@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-@SuppressWarnings("AccessStaticViaInstance")
 public class PConfig extends AutoLoader implements PConfiguration, FileSaved {
 
     private final String id;
@@ -46,8 +45,8 @@ public class PConfig extends AutoLoader implements PConfiguration, FileSaved {
     public void init() {
         if (!file.exists()) {
             saveDefault();
-            if (file.exists()) plugin.lang.log.warn("未找到 &c" + getTypename() + "&7, 已自动生成.");
-            else plugin.lang.log.error("无法自动生成 &c" + getTypename() + "&7.");
+            if (file.exists()) plugin.getLang().log.warn("未找到 &c" + getTypename() + "&7, 已自动生成.");
+            else plugin.getLang().log.error("无法自动生成 &c" + getTypename() + "&7.");
         }
         config = YamlConfiguration.loadConfiguration(file);
 
@@ -56,9 +55,9 @@ public class PConfig extends AutoLoader implements PConfiguration, FileSaved {
             setDefFrom(config);
 
             load();
-            plugin.lang.log.info("已加载 &c" + getTypename() + "&7.");
+            plugin.getLang().log.info("已加载 &c" + getTypename() + "&7.");
         } catch (Throwable e) {
-            plugin.lang.log.error(I18n.LOAD, getTypename(), e, null);
+            plugin.getLang().log.error(I18n.LOAD, getTypename(), e, null);
         }
     }
 
@@ -79,7 +78,7 @@ public class PConfig extends AutoLoader implements PConfiguration, FileSaved {
 
     @Override
     public void reload() {
-        plugin.lang.log.action(I18n.RELOAD, getTypename());
+        plugin.getLang().log.action(I18n.RELOAD, getTypename());
         init();
     }
 
@@ -89,16 +88,16 @@ public class PConfig extends AutoLoader implements PConfiguration, FileSaved {
             autoSave();
             config.save(file);
         } catch (IOException e) {
-            plugin.lang.log.error(I18n.SAVE, getTypename(), e, null);
+            plugin.getLang().log.error(I18n.SAVE, getTypename(), e, null);
         }
     }
 
     @Override
     public void delete() {
         if (file.delete()) {
-            plugin.lang.log.action(I18n.DELETE, getTypename());
+            plugin.getLang().log.action(I18n.DELETE, getTypename());
         } else {
-            plugin.lang.log.error(I18n.DELETE, getTypename(), "无法删除该文件");
+            plugin.getLang().log.error(I18n.DELETE, getTypename(), "无法删除该文件");
         }
     }
 
@@ -108,10 +107,10 @@ public class PConfig extends AutoLoader implements PConfiguration, FileSaved {
         else {
             try {
                 if (!file.createNewFile()) {
-                    plugin.lang.log.error(I18n.GENERATE, getTypename(), "自动生成失败");
+                    plugin.getLang().log.error(I18n.GENERATE, getTypename(), "自动生成失败");
                 }
             } catch (IOException e) {
-                plugin.lang.log.error(I18n.GENERATE, getTypename(), e, null);
+                plugin.getLang().log.error(I18n.GENERATE, getTypename(), e, null);
             }
         }
     }

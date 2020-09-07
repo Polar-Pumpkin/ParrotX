@@ -10,6 +10,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ListIterator;
+import java.util.Objects;
 
 public interface InventoryExecutor extends InventoryHolder {
     Inventory construct();
@@ -29,5 +30,10 @@ public interface InventoryExecutor extends InventoryHolder {
         Inventory inv = construct();
         ListIterator<ItemStack> iterator = inv.iterator();
         while (iterator.hasNext()) inventory.setItem(iterator.nextIndex(), iterator.next());
+    }
+
+    default boolean check(final InventoryClickEvent event) {
+        final Inventory clickedInv = event.getClickedInventory();
+        return !Objects.isNull(clickedInv) && !Objects.isNull(clickedInv.getHolder()) && clickedInv.getHolder().equals(this);
     }
 }

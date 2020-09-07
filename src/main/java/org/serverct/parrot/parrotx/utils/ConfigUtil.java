@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-@SuppressWarnings({"unused", "AccessStaticViaInstance"})
+@SuppressWarnings({"unused"})
 public class ConfigUtil {
 
     public static Map<String, Object> getMap(ConfigurationSection section, String path) {
@@ -51,7 +51,7 @@ public class ConfigUtil {
         try {
             return new Location(world, x, y, z);
         } catch (Throwable e) {
-            plugin.lang.log.error(I18n.SAVE, "Location", e, null);
+            plugin.getLang().log.error(I18n.SAVE, "Location", e, null);
             return null;
         }
     }

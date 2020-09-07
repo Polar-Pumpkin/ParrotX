@@ -18,13 +18,12 @@ import org.serverct.parrot.parrotx.utils.i18n.I18n;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("AccessStaticViaInstance")
 public class CommandHandler implements TabExecutor {
 
-    public String mainCmd;
-    protected PPlugin plugin;
+    public final String mainCmd;
+    protected final PPlugin plugin;
     @Getter
-    protected Map<String, PCommand> commands = new HashMap<>();
+    protected final Map<String, PCommand> commands = new HashMap<>();
     protected String defaultCmd = null;
 
     public CommandHandler(@NonNull PPlugin plugin, String mainCmd) {
@@ -40,7 +39,7 @@ public class CommandHandler implements TabExecutor {
         if (!commands.containsKey(cmd)) {
             commands.put(cmd, executor);
         } else {
-            plugin.lang.log.error(I18n.REGISTER, "子命令", "重复子命令注册: " + cmd);
+            plugin.getLang().log.error(I18n.REGISTER, "子命令", "重复子命令注册: " + cmd);
         }
     }
 
@@ -57,7 +56,7 @@ public class CommandHandler implements TabExecutor {
                     return defCommand.execute(sender, args);
                 }
 
-                String msg = plugin.lang.data.warn("您没有权限这么做.");
+                String msg = plugin.getLang().data.warn("您没有权限这么做.");
                 if (sender instanceof Player) {
                     TextComponent text = JsonChatUtil.getFromLegacy(msg);
                     text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color("&7所需权限 ▶ &c" + defCommand.getPermission()))));
@@ -69,8 +68,8 @@ public class CommandHandler implements TabExecutor {
 
         PCommand pCommand = commands.get(args[0]);
         if (pCommand == null) {
-            sender.sendMessage(plugin.lang.data.warn("未知命令, 请检查您的命令拼写是否正确."));
-            plugin.lang.log.error(I18n.EXECUTE, "子命令/" + args[0], sender.getName() + " 尝试执行未注册子命令");
+            sender.sendMessage(plugin.getLang().data.warn("未知命令, 请检查您的命令拼写是否正确."));
+            plugin.getLang().log.error(I18n.EXECUTE, "子命令/" + args[0], sender.getName() + " 尝试执行未注册子命令");
             return true;
         }
 
@@ -83,7 +82,7 @@ public class CommandHandler implements TabExecutor {
             return pCommand.execute(sender, newArg);
         }
 
-        String msg = plugin.lang.data.warn("您没有权限这么做.");
+        String msg = plugin.getLang().data.warn("您没有权限这么做.");
         if (sender instanceof Player) {
             TextComponent text = JsonChatUtil.getFromLegacy(msg);
             text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color("&7所需权限 ▶ &c" + pCommand.getPermission()))));

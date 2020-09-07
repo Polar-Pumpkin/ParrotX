@@ -6,7 +6,6 @@ import org.serverct.parrot.parrotx.data.autoload.AutoLoader;
 import org.serverct.parrot.parrotx.data.flags.Unique;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
-@SuppressWarnings("AccessStaticViaInstance")
 public abstract class PStruct extends AutoLoader implements PConfiguration, Unique {
 
     protected PID id;
@@ -20,7 +19,7 @@ public abstract class PStruct extends AutoLoader implements PConfiguration, Uniq
 
     @Override
     public void reload() {
-        plugin.lang.log.action(I18n.RELOAD, getTypename());
+        plugin.getLang().log.action(I18n.RELOAD, getTypename());
         load();
     }
 

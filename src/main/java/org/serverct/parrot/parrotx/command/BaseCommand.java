@@ -13,7 +13,7 @@ import org.serverct.parrot.parrotx.utils.i18n.I18n;
 import java.util.*;
 import java.util.function.Predicate;
 
-@SuppressWarnings({"unused", "AccessStaticViaInstance"})
+@SuppressWarnings({"unused"})
 public abstract class BaseCommand implements PCommand {
 
     protected final PPlugin plugin;
@@ -149,15 +149,15 @@ public abstract class BaseCommand implements PCommand {
     }
 
     protected String info(final String text, final Object... args) {
-        return plugin.lang.data.info(text, args);
+        return plugin.getLang().data.info(text, args);
     }
 
     protected String warn(final String text, final Object... args) {
-        return plugin.lang.data.warn(text, args);
+        return plugin.getLang().data.warn(text, args);
     }
 
     protected String error(final String text, final Object... args) {
-        return plugin.lang.data.error(text, args);
+        return plugin.getLang().data.error(text, args);
     }
 
     protected Object convert(final int index, final String[] args) {

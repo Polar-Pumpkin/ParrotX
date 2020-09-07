@@ -18,14 +18,14 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-@SuppressWarnings("AccessStaticViaInstance")
 public class ItemUtil {
 
     public static ItemStack build(final @NonNull PPlugin plugin, final @NonNull ConfigurationSection section) {
         ConfigurationSection itemSection = section.getConfigurationSection("ItemStack");
         if (itemSection != null) {
             try {
-                ItemStack result = new ItemStack(EnumUtil.getMaterial(itemSection.getString("Material", "AIR").toUpperCase()));
+                final String material = itemSection.getString("Material");
+                ItemStack result = new ItemStack(EnumUtil.getMaterial((Objects.isNull(material) ? "AIR" : material).toUpperCase()));
                 ItemMeta meta = result.getItemMeta();
 
                 if (meta == null) meta = Bukkit.getItemFactory().getItemMeta(result.getType());
@@ -46,7 +46,7 @@ public class ItemUtil {
                         for (String name : enchant.getKeys(false)) {
                             Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(name.toLowerCase()));
                             if (enchantment == null) {
-                                plugin.lang.log.error(I18n.BUILD, "ItemStack", "目标附魔不存在: " + name);
+                                plugin.getLang().log.error(I18n.BUILD, "ItemStack", "目标附魔不存在: " + name);
                                 continue;
                             }
                             meta.addEnchant(enchantment, enchant.getInt(name), true);
@@ -59,7 +59,7 @@ public class ItemUtil {
                     for (String flagName : itemFlag) {
                         ItemFlag flag = EnumUtil.valueOf(ItemFlag.class, flagName.toUpperCase());
                         if (flag == null) {
-                            plugin.lang.log.error(I18n.BUILD, "ItemStack", "目标 ItemFlag 不存在: " + flagName);
+                            plugin.getLang().log.error(I18n.BUILD, "ItemStack", "目标 ItemFlag 不存在: " + flagName);
                             continue;
                         }
                         meta.addItemFlags(flag);
@@ -69,9 +69,9 @@ public class ItemUtil {
                 result.setItemMeta(meta);
                 return result;
             } catch (Throwable e) {
-                plugin.lang.log.error(I18n.BUILD, "ItemStack/" + section.getName(), e, null);
+                plugin.getLang().log.error(I18n.BUILD, "ItemStack/" + section.getName(), e, null);
             }
-        } else plugin.lang.log.error(I18n.BUILD, "ItemStack/" + section.getName(), "未找到 ItemStack 数据节");
+        } else plugin.getLang().log.error(I18n.BUILD, "ItemStack/" + section.getName(), "未找到 ItemStack 数据节");
         return new ItemStack(Material.AIR);
     }
 
@@ -104,8 +104,8 @@ public class ItemUtil {
 
     public static String getName(final @NonNull PPlugin plugin, final @NonNull Material material) {
         String name = material.name();
-        if (plugin.lang.hasLocale("Material")) {
-            String result = plugin.lang.data.get("Material", "Material", name);
+        if (plugin.getLang().hasLocale("Material")) {
+            String result = plugin.getLang().data.get("Material", "Material", name);
             if (!result.contains("错误")) name = ChatColor.stripColor(result);
         }
         return name;

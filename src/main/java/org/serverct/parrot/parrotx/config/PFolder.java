@@ -5,11 +5,9 @@ import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PData;
 import org.serverct.parrot.parrotx.data.PID;
 import org.serverct.parrot.parrotx.utils.BasicUtil;
-import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
 
-@SuppressWarnings("AccessStaticViaInstance")
 public abstract class PFolder<T extends PData> extends PDataFolder<T> {
 
     protected String id;
@@ -32,9 +30,9 @@ public abstract class PFolder<T extends PData> extends PDataFolder<T> {
         if (!folder.exists()) {
             if (folder.mkdirs()) {
                 saveDefault();
-                plugin.lang.log.warn("未找到 &c" + getTypename() + "&7, 已重新生成.");
+                plugin.getLang().log.warn("未找到 &c" + getTypename() + "&7, 已重新生成.");
             } else {
-                plugin.lang.log.error("尝试生成 &c" + getTypename() + " &7失败.");
+                plugin.getLang().log.error("尝试生成 &c" + getTypename() + " &7失败.");
             }
         }
         load();
@@ -55,9 +53,9 @@ public abstract class PFolder<T extends PData> extends PDataFolder<T> {
             for (File file : files) {
                 load(file);
             }
-            plugin.lang.log.info("共加载 &c" + getTypename() + " &7中的 &c" + dataMap.size() + " &7个数据文件.");
+            plugin.getLang().log.info("共加载 &c" + getTypename() + " &7中的 &c" + dataMap.size() + " &7个数据文件.");
         } else {
-            plugin.lang.log.warn("&c" + getTypename() + " &7中没有数据可供加载.");
+            plugin.getLang().log.warn("&c" + getTypename() + " &7中没有数据可供加载.");
         }
     }
 

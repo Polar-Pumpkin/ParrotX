@@ -11,7 +11,6 @@ import org.serverct.parrot.parrotx.utils.i18n.I18n;
 import java.io.File;
 import java.util.*;
 
-@SuppressWarnings("AccessStaticViaInstance")
 public abstract class PStructSet<T extends PStruct> extends PConfig {
 
     @Getter
@@ -47,9 +46,9 @@ public abstract class PStructSet<T extends PStruct> extends PConfig {
         }
 
         if (this.dataMap.isEmpty()) {
-            plugin.lang.log.warn("&c" + getTypename() + " &7中没有数据可供加载.");
+            plugin.getLang().log.warn("&c" + getTypename() + " &7中没有数据可供加载.");
         } else {
-            plugin.lang.log.info("共加载 &c" + getTypename() + " &7中的 &c" + dataMap.size() + " &7个数据.");
+            plugin.getLang().log.info("共加载 &c" + getTypename() + " &7中的 &c" + dataMap.size() + " &7个数据.");
         }
     }
 
@@ -86,7 +85,7 @@ public abstract class PStructSet<T extends PStruct> extends PConfig {
     }
 
     public void reloadAll() {
-        plugin.lang.log.action(I18n.RELOAD, getTypename());
+        plugin.getLang().log.action(I18n.RELOAD, getTypename());
         init();
     }
 
@@ -95,7 +94,7 @@ public abstract class PStructSet<T extends PStruct> extends PConfig {
             this.dataMap.values().forEach(PStruct::save);
             config.save(file);
         } catch (Throwable e) {
-            plugin.lang.log.error(I18n.SAVE, getTypename(), e, null);
+            plugin.getLang().log.error(I18n.SAVE, getTypename(), e, null);
         }
     }
 
@@ -108,10 +107,10 @@ public abstract class PStructSet<T extends PStruct> extends PConfig {
         String object = getTypename() + "(" + id + ")";
         PStruct data = get(id);
         if (Objects.nonNull(data)) {
-            plugin.lang.log.action(I18n.RELOAD, object);
+            plugin.getLang().log.action(I18n.RELOAD, object);
             data.reload();
         } else {
-            plugin.lang.log.error(I18n.RELOAD, object, "目标数据未找到");
+            plugin.getLang().log.error(I18n.RELOAD, object, "目标数据未找到");
         }
     }
 
@@ -122,7 +121,7 @@ public abstract class PStructSet<T extends PStruct> extends PConfig {
             dataMap.remove(data.getID());
             data.delete();
         } else {
-            plugin.lang.log.error(I18n.RELOAD, object, "目标数据未找到");
+            plugin.getLang().log.error(I18n.RELOAD, object, "目标数据未找到");
         }
     }
 
@@ -132,7 +131,7 @@ public abstract class PStructSet<T extends PStruct> extends PConfig {
         if (Objects.nonNull(data)) {
             data.save();
         } else {
-            plugin.lang.log.error(I18n.RELOAD, object, "目标数据未找到");
+            plugin.getLang().log.error(I18n.RELOAD, object, "目标数据未找到");
         }
     }
 }

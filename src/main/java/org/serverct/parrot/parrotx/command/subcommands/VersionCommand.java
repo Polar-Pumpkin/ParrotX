@@ -8,7 +8,6 @@ import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.Arrays;
 
-@SuppressWarnings("AccessStaticViaInstance")
 public class VersionCommand extends BaseCommand {
     public VersionCommand(@NotNull PPlugin plugin) {
         super(plugin, "version", 0);
@@ -25,7 +24,7 @@ public class VersionCommand extends BaseCommand {
                 "  &7ParrotX 版本: &c1.3.4-Alpha",
                 "  &7I18n 信息:",
                 "  &9&l-> &7" + I18n.getToolVersion(),
-                "  &9&l-> &7绑定插件: &c" + plugin.lang.getPlugin().getName(),
+                "  &9&l-> &7绑定插件: &c" + plugin.getLang().getPlugin().getName(),
                 "  &9&l-> &7语言: &c" + plugin.localeKey
         ).forEach(msg -> sender.sendMessage(I18n.color(msg)));
     }
