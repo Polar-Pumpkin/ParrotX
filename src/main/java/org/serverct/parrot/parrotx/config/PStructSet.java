@@ -28,19 +28,15 @@ public abstract class PStructSet<T extends PStruct> extends PConfig {
     public void load(@NonNull File file) {
         super.load(file);
 
-        if (!config.isConfigurationSection(root)) {
-            return;
-        }
         final ConfigurationSection root = config.getConfigurationSection(this.root);
         if (Objects.isNull(root)) {
+            plugin.getLang().log.error(I18n.LOAD, getTypename(), "根数据节为 null: " + this.root);
             return;
         }
         for (String key : root.getKeys(false)) {
-            if (!config.isConfigurationSection(key)) {
-                continue;
-            }
             final ConfigurationSection section = root.getConfigurationSection(key);
             if (Objects.isNull(section)) {
+                plugin.getLang().log.error(I18n.LOAD, getTypename(), "存在非数据节: " + key);
                 continue;
             }
             put(loadData(section));

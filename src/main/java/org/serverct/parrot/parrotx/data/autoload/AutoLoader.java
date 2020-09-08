@@ -203,7 +203,6 @@ public abstract class AutoLoader {
         if (this.groupMap.containsKey(group)) {
             return this.groupMap.get(group);
         } else {
-            plugin.getLang().log.error(I18n.GET, "自动加载数据组/" + group, "目标自动加载数据组不存在");
             return group(group, defFrom, defTo);
         }
     }
