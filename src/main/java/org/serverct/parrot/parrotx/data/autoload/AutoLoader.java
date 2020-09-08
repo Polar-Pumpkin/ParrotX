@@ -2,7 +2,6 @@ package org.serverct.parrot.parrotx.data.autoload;
 
 import com.google.common.collect.Multimap;
 import lombok.Getter;
-import lombok.Setter;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
@@ -16,14 +15,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+@SuppressWarnings("SameParameterValue")
 public abstract class AutoLoader {
 
     @Getter
     protected final Map<String, AutoLoadGroup> groupMap = new HashMap<>();
     protected final PPlugin plugin;
-    @Setter
     private ConfigurationSection defFrom;
-    @Setter
     private Class<?> defTo;
 
     public AutoLoader(final PPlugin plugin) {
@@ -38,81 +36,85 @@ public abstract class AutoLoader {
         itemMap.forEach(
                 (fieldName, item) -> {
                     final String path = item.getPath();
-                    final ConfigurationSection section = from.getConfigurationSection(path);
-                    try {
-                        Field field = to.getDeclaredField(fieldName);
-                        field.setAccessible(true);
-                        switch (item.getType()) {
-                            case INT:
-                                field.setInt(to, from.getInt(path));
-                                break;
-                            case STRING:
-                                field.set(to, from.getString(path));
-                                break;
-                            case BOOLEAN:
-                                field.setBoolean(to, from.getBoolean(path));
-                                break;
-                            case LONG:
-                                field.setLong(to, from.getLong(path));
-                                break;
-                            case DOUBLE:
-                                field.setDouble(to, from.getDouble(path));
-                                break;
-                            case LIST:
-                                field.set(to, from.getList(path));
-                                break;
-                            case MAP_LIST:
-                                field.set(to, from.getMapList(path));
-                                break;
-                            case STRING_MAP:
-                                final Map<String, String> stringMap = new HashMap<>();
-                                if (Objects.nonNull(section)) {
-                                    section.getKeys(false).forEach(key -> stringMap.put(key, section.getString(key)));
-                                }
-                                field.set(to, stringMap);
-                                break;
-                            case INT_MAP:
-                                final Map<String, Integer> intMap = new HashMap<>();
-                                if (Objects.nonNull(section)) {
-                                    section.getKeys(false).forEach(key -> intMap.put(key, section.getInt(key)));
-                                }
-                                field.set(to, intMap);
-                                break;
-                            case SOUND:
-                                final String soundName = from.getString(path);
-                                final Sound sound = EnumUtil.valueOf(Sound.class, Objects.isNull(soundName) ? "" : soundName.toUpperCase());
-                                if (Objects.isNull(sound)) {
-                                    plugin.getLang().log.error(I18n.LOAD, object, "未找到目标音效枚举: " + soundName + "(" + path + ")");
-                                }
-                                field.set(to, sound);
-                                break;
-                            case ITEM_STACK:
-                                field.set(to, from.getItemStack(path));
-                                break;
-                            case COLOR:
-                                field.set(to, from.getColor(path));
-                                break;
-                            case LOCATION:
-                                field.set(to, from.getLocation(path));
-                                break;
-                            case SERIALIZABLE:
-                                final Class<? extends ConfigurationSerializable> clazz = getSerializable(path, serializableMap);
-                                if (Objects.isNull(clazz)) {
-                                    plugin.getLang().log.error(I18n.LOAD, object, "尝试读取未注册的可序列化对象: " + path);
+                    if (!from.contains(path, true) || Objects.isNull(from.get(path))) {
+                        plugin.getLang().log.error(I18n.LOAD, object, "目标路径未找到: " + path);
+                    } else {
+                        final ConfigurationSection section = from.getConfigurationSection(path);
+                        try {
+                            Field field = to.getDeclaredField(fieldName);
+                            field.setAccessible(true);
+                            switch (item.getType()) {
+                                case INT:
+                                    field.setInt(to, from.getInt(path));
                                     break;
-                                }
-                                field.set(to, from.getSerializable(path, clazz));
-                                break;
-                            case UNKNOWN:
-                            default:
-                                field.set(to, from.get(path));
-                                break;
-                        }
+                                case STRING:
+                                    field.set(to, from.getString(path));
+                                    break;
+                                case BOOLEAN:
+                                    field.setBoolean(to, from.getBoolean(path));
+                                    break;
+                                case LONG:
+                                    field.setLong(to, from.getLong(path));
+                                    break;
+                                case DOUBLE:
+                                    field.setDouble(to, from.getDouble(path));
+                                    break;
+                                case LIST:
+                                    field.set(to, from.getList(path));
+                                    break;
+                                case MAP_LIST:
+                                    field.set(to, from.getMapList(path));
+                                    break;
+                                case STRING_MAP:
+                                    final Map<String, String> stringMap = new HashMap<>();
+                                    if (Objects.nonNull(section)) {
+                                        section.getKeys(false).forEach(key -> stringMap.put(key, section.getString(key)));
+                                    }
+                                    field.set(to, stringMap);
+                                    break;
+                                case INT_MAP:
+                                    final Map<String, Integer> intMap = new HashMap<>();
+                                    if (Objects.nonNull(section)) {
+                                        section.getKeys(false).forEach(key -> intMap.put(key, section.getInt(key)));
+                                    }
+                                    field.set(to, intMap);
+                                    break;
+                                case SOUND:
+                                    final String soundName = from.getString(path);
+                                    final Sound sound = EnumUtil.valueOf(Sound.class, Objects.isNull(soundName) ? "" : soundName.toUpperCase());
+                                    if (Objects.isNull(sound)) {
+                                        plugin.getLang().log.error(I18n.LOAD, object, "未找到目标音效枚举: " + soundName + "(" + path + ")");
+                                    }
+                                    field.set(to, sound);
+                                    break;
+                                case ITEM_STACK:
+                                    field.set(to, from.getItemStack(path));
+                                    break;
+                                case COLOR:
+                                    field.set(to, from.getColor(path));
+                                    break;
+                                case LOCATION:
+                                    field.set(to, from.getLocation(path));
+                                    break;
+                                case SERIALIZABLE:
+                                    final Class<? extends ConfigurationSerializable> clazz = getSerializable(path, serializableMap);
+                                    if (Objects.isNull(clazz)) {
+                                        plugin.getLang().log.error(I18n.LOAD, object, "尝试读取未注册的可序列化对象: " + path);
+                                        break;
+                                    }
+                                    field.set(to, from.getSerializable(path, clazz));
+                                    break;
+                                case UNKNOWN:
+                                default:
+                                    field.set(to, from.get(path));
+                                    break;
+                            }
 
-                    } catch (NoSuchFieldException e) {
-                        plugin.getLang().log.error(I18n.LOAD, object, "目标 Field 未找到: " + fieldName);
-                    } catch (Throwable e) {
-                        plugin.getLang().log.error(I18n.LOAD, object, e, null);
+                        } catch (NoSuchFieldException e) {
+                            plugin.getLang().log.error(I18n.LOAD, object, "目标 Field 未找到: " + fieldName);
+                        } catch (Throwable e) {
+                            plugin.getLang().log.error(I18n.LOAD, object, e, null);
+                        }
                     }
                 }
         );
@@ -159,6 +161,20 @@ public abstract class AutoLoader {
         );
     }
 
+    public void defaultTo(final Class<?> to) {
+        this.defTo = to;
+        if (this.groupMap.containsKey("default")) {
+            getGroup("default").setTo(this.defTo);
+        }
+    }
+
+    public void defaultFrom(final ConfigurationSection from) {
+        this.defFrom = from;
+        if (this.groupMap.containsKey("default")) {
+            getGroup("default").setFrom(this.defFrom);
+        }
+    }
+
     protected void autoLoad() {
         this.groupMap.values().forEach(group -> group.load(plugin));
     }
@@ -191,6 +207,14 @@ public abstract class AutoLoader {
 
     protected void registerSerializable(final String groupName, final Class<? extends ConfigurationSerializable> clazz, final String path) {
         getGroup(groupName).registerSerializable(clazz, path);
+    }
+
+    protected void autoLoad(final String path, final AutoLoadItem.DataType type, final String field) {
+        autoLoad(AutoLoadItem.builder()
+                .path(path)
+                .type(type)
+                .field(field)
+                .build());
     }
 
     protected void autoLoad(final AutoLoadItem... item) {

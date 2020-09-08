@@ -24,14 +24,6 @@ public class AutoLoadGroup {
     private Class<?> to;
     private ConfigurationSection from;
 
-    public void to(final Class<?> to) {
-        this.to = to;
-    }
-
-    public void from(final ConfigurationSection from) {
-        this.from = from;
-    }
-
     public void load(final AutoLoadItem... items) {
         Arrays.stream(items).forEach(item -> this.itemMap.put(item.getField(), item));
     }
@@ -46,10 +38,10 @@ public class AutoLoadGroup {
     }
 
     public void load(final PPlugin plugin) {
-        AutoLoader.autoLoad(plugin, name, from, to, itemMap, serializableMap);
+        AutoLoader.autoLoad(plugin, "自动加载数据组/" + name, from, to, itemMap, serializableMap);
     }
 
     public void save(final PPlugin plugin) {
-        AutoLoader.autoSave(plugin, name, from, to, itemMap);
+        AutoLoader.autoSave(plugin, "自动加载数据组/" + name, from, to, itemMap);
     }
 }

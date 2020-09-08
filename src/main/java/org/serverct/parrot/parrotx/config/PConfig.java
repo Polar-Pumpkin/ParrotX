@@ -14,7 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-public class PConfig extends AutoLoader implements PConfiguration, FileSaved {
+public abstract class PConfig extends AutoLoader implements PConfiguration, FileSaved {
 
     private final String id;
     private final String name;
@@ -51,8 +51,8 @@ public class PConfig extends AutoLoader implements PConfiguration, FileSaved {
         config = YamlConfiguration.loadConfiguration(file);
 
         try {
-            setDefTo(this.getClass());
-            setDefFrom(config);
+            defaultFrom(config);
+            defaultTo(this.getClass());
 
             load();
             plugin.getLang().log.info("已加载 &c" + getTypename() + "&7.");
