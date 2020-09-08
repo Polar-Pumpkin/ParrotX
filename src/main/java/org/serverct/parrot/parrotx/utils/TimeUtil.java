@@ -34,15 +34,19 @@ public final class TimeUtil {
     /**
      * 根据数字（单位：秒）获取时间长度，如 1 年 1 月 4 天 5 小时 1 分钟 4 秒
      *
-     * @param time 需要格式化的秒数
-     * @param timeKey 单位时间长短及其称呼
-     * @param format 单位时间的展示格式
+     * @param time       需要格式化的秒数
+     * @param timeKey    单位时间长短及其称呼
+     * @param format     单位时间的展示格式
      * @param ignoreZero 是否忽略 0
      * @return 时间长度
      */
     public static String getTimeLong(int time, final Map<String, Integer> timeKey, final String format, final boolean ignoreZero) {
         int cache;
         final StringBuilder result = new StringBuilder();
+
+        if (time <= 0) {
+            return MessageFormat.format(format, time, "秒");
+        }
 
         for (Map.Entry<String, Integer> entry : timeKey.entrySet()) {
             final String key = entry.getKey();
@@ -57,6 +61,18 @@ public final class TimeUtil {
             }
         }
         return result.toString().trim();
+    }
+
+    public static String getTimeLong(int time, final String format, final boolean ignoreZero) {
+        return getTimeLong(time, DEFAULT_TIME_KEY, format, ignoreZero);
+    }
+
+    public static String getTimeLong(int time, final String format) {
+        return getTimeLong(time, DEFAULT_TIME_KEY, format, true);
+    }
+
+    public static String getTimeLong(int time) {
+        return getTimeLong(time, DEFAULT_TIME_KEY, "{0} {1} ", true);
     }
 
     /**

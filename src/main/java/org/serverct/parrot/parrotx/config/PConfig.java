@@ -103,7 +103,7 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
 
     @Override
     public void saveDefault() {
-        if (Objects.nonNull(plugin.getResource(file.getName()))) plugin.saveResource(file.getName(), false);
+        if (Objects.nonNull(plugin.getResource(id + ".yml"))) plugin.saveResource(id + ".yml", false);
         else {
             try {
                 if (!file.createNewFile()) {
