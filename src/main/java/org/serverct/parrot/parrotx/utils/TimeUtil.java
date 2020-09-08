@@ -56,7 +56,7 @@ public final class TimeUtil {
             final int number = (time - cache) / value;
             time -= number * value;
 
-            if (ignoreZero || number != 0) {
+            if (!ignoreZero || number != 0) {
                 result.append(MessageFormat.format(format, number, key));
             }
         }

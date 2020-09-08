@@ -7,6 +7,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.data.inventory.BaseInventory;
 import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.*;
 
@@ -18,7 +19,6 @@ class InventoryTemplate<T> implements InventoryElement {
     private final List<T> contents;
     private final TempleApplier<ItemStack, T> applyTemple;
     private final Map<Integer, Map<Integer, T>> contentMap = new HashMap<>();
-    private ListIterator<T> iterator;
 
     public InventoryElement getElement() {
         return base;
@@ -48,17 +48,17 @@ class InventoryTemplate<T> implements InventoryElement {
 
     @Override
     public BaseElement preload(BaseInventory<?> inv) {
-        this.contentMap.clear();
-        inv.setPage(getBase().getName(), 1);
+        final I18n lang = inv.getPlugin().getLang();
+        lang.log.debug("预加载 InventoryTemplate: " + getBase().getName());
+        lang.log.debug("数据集: " + contents);
 
-        final List<Integer> slots = getBase().getPositions();
-        final Iterator<Integer> slotIterator = slots.iterator();
+        this.contentMap.clear();
+
+        final Iterator<Integer> slotIterator = getBase().getPositions().iterator();
         Map<Integer, T> contents = null;
         int page = 1;
 
-        iterator = this.contents.listIterator();
-
-        while (iterator.hasNext()) {
+        for (T content : this.contents) {
             if (Objects.isNull(contents)) {
                 contents = new HashMap<>();
             }
@@ -67,8 +67,13 @@ class InventoryTemplate<T> implements InventoryElement {
                 contents = new HashMap<>();
                 page++;
             }
-            contents.put(slotIterator.next(), iterator.next());
+            contents.put(slotIterator.next(), content);
         }
+        contentMap.put(page, contents);
+        lang.log.debug("分页数据集: " + contentMap);
+
+        inv.setPage(getBase().getName(), 1);
+        lang.log.debug("BaseInventory 页码数据: " + inv.getPageMap());
 
         return getBase();
     }
