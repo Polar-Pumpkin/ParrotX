@@ -156,11 +156,31 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
         return this.pageMap.get(name);
     }
 
-    public int getMaxPage(final String name) {
+    protected int getMaxPage(final String name) {
         final InventoryElement element = getElement(name);
         if (element instanceof InventoryTemplate<?>) {
             return ((InventoryTemplate<?>) element).getContentMap().size();
         }
         return 0;
+    }
+
+    protected void setPage(final String name, final int page) {
+        this.pageMap.put(name, Math.min(getMaxPage(name), page));
+    }
+
+    protected int nextPage(final String name, final boolean cycle) {
+        final int page = getPage(name) + 1;
+        if (page > getMaxPage(name)) {
+            return cycle ? 1 : -1;
+        }
+        return page;
+    }
+
+    protected int previousPage(final String name, final boolean cycle) {
+        final int page = getPage(name) - 1;
+        if (page == 0) {
+            return cycle ? getMaxPage(name) : -1;
+        }
+        return page;
     }
 }
