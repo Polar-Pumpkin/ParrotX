@@ -17,7 +17,7 @@ class InventoryTemplate<T> implements InventoryElement {
     private final InventoryElement base;
     private final List<T> contents;
     private final TempleApplier<ItemStack, T> applyTemple;
-    private final Map<Integer, T> contentMap = new HashMap<>();
+    private final Map<Integer, Map<Integer, T>> contentMap = new HashMap<>();
     private ListIterator<T> iterator;
 
     public InventoryElement getElement() {
@@ -32,8 +32,8 @@ class InventoryTemplate<T> implements InventoryElement {
         return applyTemple.apply(item, data);
     }
 
-    public T getContent(final int slot) {
-        return this.contentMap.get(slot);
+    public T getContent(final int page, final int slot) {
+        return this.contentMap.getOrDefault(page, new HashMap<>()).get(slot);
     }
 
     @Override
@@ -49,21 +49,33 @@ class InventoryTemplate<T> implements InventoryElement {
     @Override
     public BaseElement preload(BaseInventory<?> inv) {
         this.contentMap.clear();
+        inv.getPageMap().put(getBase().getName(), 1);
+
+        final List<Integer> slots = getBase().getPositions();
+        final Iterator<Integer> slotIterator = slots.iterator();
+        Map<Integer, T> contents = null;
+        int page = 1;
+
         iterator = this.contents.listIterator();
+
+        while (iterator.hasNext()) {
+            if (Objects.isNull(contents)) {
+                contents = new HashMap<>();
+            }
+            if (!slotIterator.hasNext()) {
+                this.contentMap.put(page, contents);
+                contents = new HashMap<>();
+                page++;
+            }
+            contents.put(slotIterator.next(), iterator.next());
+        }
+
         return getBase();
     }
 
     @Override
     public ItemStack parseItem(BaseInventory<?> inv, int slot) {
-        if (Objects.isNull(iterator)) {
-            return null;
-        }
-        if (iterator.hasNext()) {
-            final T data = iterator.next();
-            this.contentMap.put(slot, data);
-            return apply(data);
-        }
-        return null;
+        return apply(this.contentMap.getOrDefault(inv.getPage(getBase().getName()), new HashMap<>()).get(slot));
     }
 
     @Override

@@ -33,19 +33,27 @@ public abstract class PPlugin extends JavaPlugin {
         inst = this;
         final long timestamp = System.currentTimeMillis();
 
-        init();
+        try {
+            init();
 
-        if (Objects.nonNull(listenerRegister)) {
-            listenerRegister.accept(Bukkit.getPluginManager());
-        }
+            afterInit();
 
-        if (Objects.nonNull(timeLog)) {
-            final long time = System.currentTimeMillis() - timestamp;
-            lang.log.info(MessageFormat.format(timeLog, time));
+            if (Objects.nonNull(listenerRegister)) {
+                listenerRegister.accept(Bukkit.getPluginManager());
+            }
+
+            if (Objects.nonNull(timeLog)) {
+                final long time = System.currentTimeMillis() - timestamp;
+                lang.log.info(MessageFormat.format(timeLog, time));
+            }
+        } catch (Throwable e) {
+            lang.log.error(I18n.INIT, "插件", e, null);
+            this.setEnabled(false);
         }
     }
 
     public void init() {
+        Bukkit.getScheduler().cancelTasks(this);
         lang = new I18n(this, localeKey);
 
         preload();
@@ -62,6 +70,9 @@ public abstract class PPlugin extends JavaPlugin {
     }
 
     protected void load() {
+    }
+
+    protected void afterInit() {
     }
 
     protected void listen(Consumer<PluginManager> register) {

@@ -15,6 +15,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.inventory.element.BaseElement;
+import org.serverct.parrot.parrotx.data.inventory.element.InventoryTemplate;
 import org.serverct.parrot.parrotx.utils.BasicUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
@@ -33,6 +34,8 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
     protected final FileConfiguration settings;
     protected final String title;
     protected final int row;
+    @Getter
+    protected final Map<String, Integer> pageMap = new HashMap<>();
     @Getter
     private final Map<String, InventoryElement> elementMap = new HashMap<>();
     @Getter
@@ -147,5 +150,17 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
 
     protected InventoryElement getElement(String name) {
         return this.elementMap.get(name);
+    }
+
+    public int getPage(final String name) {
+        return this.pageMap.get(name);
+    }
+
+    public int getMaxPage(final String name) {
+        final InventoryElement element = getElement(name);
+        if (element instanceof InventoryTemplate<?>) {
+            return ((InventoryTemplate<?>) element).getContentMap().size();
+        }
+        return 0;
     }
 }

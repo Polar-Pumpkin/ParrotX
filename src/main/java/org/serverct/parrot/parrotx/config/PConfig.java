@@ -55,7 +55,9 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
             defaultTo(this);
 
             load();
-            plugin.getLang().log.info("已加载 &c" + getTypename() + "&7.");
+            if (!(this instanceof PStructSet)) {
+                plugin.getLang().log.info("已加载 &c" + getTypename() + "&7.");
+            }
         } catch (Throwable e) {
             plugin.getLang().log.error(I18n.LOAD, getTypename(), e, null);
         }
