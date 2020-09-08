@@ -49,7 +49,7 @@ class InventoryTemplate<T> implements InventoryElement {
     @Override
     public BaseElement preload(BaseInventory<?> inv) {
         this.contentMap.clear();
-        inv.getPageMap().put(getBase().getName(), 1);
+        inv.setPage(getBase().getName(), 1);
 
         final List<Integer> slots = getBase().getPositions();
         final Iterator<Integer> slotIterator = slots.iterator();
@@ -80,6 +80,10 @@ class InventoryTemplate<T> implements InventoryElement {
 
     @Override
     public void click(final BaseInventory<?> holder, final InventoryClickEvent event) {
+        if (Objects.isNull(getContent(holder.getPage(getBase().getName()), event.getSlot()))) {
+            event.setCancelled(true);
+            return;
+        }
         this.base.click(holder, event);
     }
 
