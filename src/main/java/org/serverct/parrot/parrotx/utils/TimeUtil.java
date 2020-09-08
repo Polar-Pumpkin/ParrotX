@@ -2,9 +2,12 @@ package org.serverct.parrot.parrotx.utils;
 
 import lombok.NonNull;
 
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public final class TimeUtil {
 
@@ -13,11 +16,47 @@ public final class TimeUtil {
     private static final int DAY = 24 * 60 * 60; // one day's int data
     private static final int HOUR = 60 * 60; // one hour int data
     private static final int MINUTE = 60; // one minute int data
+    public static final Map<String, Integer> DEFAULT_TIME_KEY = new LinkedHashMap<String, Integer>() {{
+        put("年", YEAR);
+        put("月", MONTH);
+        put("天", DAY);
+        put("时", HOUR);
+        put("分", MINUTE);
+        put("秒", 1);
+    }};
     private static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private static final String CHINESE_DATE_FORMAT = "yyyy年MM月dd日 HH:mm:ss";
 
     // Prevent accidental construction
     private TimeUtil() {
+    }
+
+    /**
+     * 根据数字（单位：秒）获取时间长度，如 1 年 1 月 4 天 5 小时 1 分钟 4 秒
+     *
+     * @param time 需要格式化的秒数
+     * @param timeKey 单位时间长短及其称呼
+     * @param format 单位时间的展示格式
+     * @param ignoreZero 是否忽略 0
+     * @return 时间长度
+     */
+    public static String getTimeLong(int time, final Map<String, Integer> timeKey, final String format, final boolean ignoreZero) {
+        int cache;
+        final StringBuilder result = new StringBuilder();
+
+        for (Map.Entry<String, Integer> entry : timeKey.entrySet()) {
+            final String key = entry.getKey();
+            final int value = entry.getValue();
+
+            cache = time % value;
+            final int number = (time - cache) / value;
+            time -= number * value;
+
+            if (ignoreZero || number != 0) {
+                result.append(MessageFormat.format(format, number, key));
+            }
+        }
+        return result.toString().trim();
     }
 
     /**
