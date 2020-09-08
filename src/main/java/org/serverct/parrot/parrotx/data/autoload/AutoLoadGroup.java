@@ -21,7 +21,7 @@ public class AutoLoadGroup {
     private final Multimap<Class<? extends ConfigurationSerializable>, String> serializableMap = HashMultimap.create();
     private final Map<String, AutoLoadItem> itemMap = new HashMap<>();
     private final String name;
-    private Class<?> to;
+    private Object to;
     private ConfigurationSection from;
 
     public void load(final AutoLoadItem... items) {

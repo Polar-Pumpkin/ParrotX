@@ -52,7 +52,7 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
 
         try {
             defaultFrom(config);
-            defaultTo(this.getClass());
+            defaultTo(this);
 
             load();
             plugin.getLang().log.info("已加载 &c" + getTypename() + "&7.");

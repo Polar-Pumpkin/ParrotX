@@ -22,16 +22,18 @@ public abstract class AutoLoader {
     protected final Map<String, AutoLoadGroup> groupMap = new HashMap<>();
     protected final PPlugin plugin;
     private ConfigurationSection defFrom;
-    private Class<?> defTo;
+    private Object defTo;
 
     public AutoLoader(final PPlugin plugin) {
         this.plugin = plugin;
     }
 
-    public static void autoLoad(final PPlugin plugin, final String object, final ConfigurationSection from, final Class<?> to, final Map<String, AutoLoadItem> itemMap, final Multimap<Class<? extends ConfigurationSerializable>, String> serializableMap) {
+    public static void autoLoad(final PPlugin plugin, final String object, final ConfigurationSection from, final Object to, final Map<String, AutoLoadItem> itemMap, final Multimap<Class<? extends ConfigurationSerializable>, String> serializableMap) {
         if (Objects.isNull(from) || Objects.isNull(to)) {
             return;
         }
+
+        final Class<?> clazz = to.getClass();
 
         itemMap.forEach(
                 (fieldName, item) -> {
@@ -41,7 +43,7 @@ public abstract class AutoLoader {
                     } else {
                         final ConfigurationSection section = from.getConfigurationSection(path);
                         try {
-                            Field field = to.getDeclaredField(fieldName);
+                            Field field = clazz.getDeclaredField(fieldName);
                             field.setAccessible(true);
                             switch (item.getType()) {
                                 case INT:
@@ -97,12 +99,12 @@ public abstract class AutoLoader {
                                     field.set(to, from.getLocation(path));
                                     break;
                                 case SERIALIZABLE:
-                                    final Class<? extends ConfigurationSerializable> clazz = getSerializable(path, serializableMap);
-                                    if (Objects.isNull(clazz)) {
+                                    final Class<? extends ConfigurationSerializable> serializable = getSerializable(path, serializableMap);
+                                    if (Objects.isNull(serializable)) {
                                         plugin.getLang().log.error(I18n.LOAD, object, "尝试读取未注册的可序列化对象: " + path);
                                         break;
                                     }
-                                    field.set(to, from.getSerializable(path, clazz));
+                                    field.set(to, from.getSerializable(path, serializable));
                                     break;
                                 case UNKNOWN:
                                 default:
@@ -113,7 +115,7 @@ public abstract class AutoLoader {
                         } catch (NoSuchFieldException e) {
                             plugin.getLang().log.error(I18n.LOAD, object, "目标 Field 未找到: " + fieldName);
                         } catch (Throwable e) {
-                            plugin.getLang().log.error(I18n.LOAD, object, e, null);
+                            plugin.getLang().log.error(I18n.LOAD, object, e, "serverct");
                         }
                     }
                 }
@@ -133,14 +135,17 @@ public abstract class AutoLoader {
         return null;
     }
 
-    public static void autoSave(final PPlugin plugin, final String object, final ConfigurationSection from, final Class<?> to, final Map<String, AutoLoadItem> itemMap) {
+    public static void autoSave(final PPlugin plugin, final String object, final ConfigurationSection from, final Object to, final Map<String, AutoLoadItem> itemMap) {
         if (Objects.isNull(from) || Objects.isNull(to)) {
             return;
         }
+
+        final Class<?> clazz = to.getClass();
+
         itemMap.forEach(
                 (fieldName, item) -> {
                     try {
-                        Field field = to.getDeclaredField(fieldName);
+                        Field field = clazz.getDeclaredField(fieldName);
                         field.setAccessible(true);
                         switch (item.getType()) {
                             case INT_MAP:
@@ -161,7 +166,7 @@ public abstract class AutoLoader {
         );
     }
 
-    public void defaultTo(final Class<?> to) {
+    public void defaultTo(final Object to) {
         this.defTo = to;
         if (this.groupMap.containsKey("default")) {
             getGroup("default").setTo(this.defTo);
@@ -183,30 +188,36 @@ public abstract class AutoLoader {
         this.groupMap.values().forEach(group -> group.save(plugin));
     }
 
-    protected AutoLoadGroup group(final String groupName, final ConfigurationSection from, final Class<?> to) {
+    protected AutoLoadGroup group(final String name, final ConfigurationSection from, final Object to) {
         final AutoLoadGroup group = AutoLoadGroup.builder()
-                .name(groupName)
+                .name(name)
                 .from(from)
                 .to(to)
                 .build();
-        this.groupMap.put(groupName, group);
+        plugin.getLang().log.debug("新建自动加载数据组: " + group);
+        this.groupMap.put(name, group);
         return group;
     }
 
-    protected AutoLoadGroup getGroup(final String groupName) {
-        return this.groupMap.getOrDefault(groupName, group(groupName, defFrom, defTo));
+    protected AutoLoadGroup getGroup(final String group) {
+        if (this.groupMap.containsKey(group)) {
+            return this.groupMap.get(group);
+        } else {
+            plugin.getLang().log.error(I18n.GET, "自动加载数据组/" + group, "目标自动加载数据组不存在");
+            return group(group, defFrom, defTo);
+        }
     }
 
-    protected void autoLoad(final String groupName, final AutoLoadItem... item) {
-        getGroup(groupName).load(item);
+    protected void autoLoad(final String group, final AutoLoadItem... items) {
+        getGroup(group).load(items);
     }
 
-    protected void loadAll(final String groupName, final Collection<? extends AutoLoadItem> items) {
-        getGroup(groupName).loadAll(items);
+    protected void loadAll(final String group, final Collection<? extends AutoLoadItem> items) {
+        getGroup(group).loadAll(items);
     }
 
-    protected void registerSerializable(final String groupName, final Class<? extends ConfigurationSerializable> clazz, final String path) {
-        getGroup(groupName).registerSerializable(clazz, path);
+    protected void registerSerializable(final String group, final Class<? extends ConfigurationSerializable> clazz, final String path) {
+        getGroup(group).registerSerializable(clazz, path);
     }
 
     protected void autoLoad(final String path, final AutoLoadItem.DataType type, final String field) {
@@ -217,8 +228,8 @@ public abstract class AutoLoader {
                 .build());
     }
 
-    protected void autoLoad(final AutoLoadItem... item) {
-        this.autoLoad("default", item);
+    protected void autoLoad(final AutoLoadItem... items) {
+        this.autoLoad("default", items);
     }
 
     protected void loadAll(final Collection<? extends AutoLoadItem> items) {
