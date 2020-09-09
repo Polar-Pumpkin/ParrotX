@@ -14,13 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public @Data
 @Builder
 class BaseElement implements InventoryElement {
     private final int priority;
     private final String name;
-    private final ItemStack item;
+    private final Supplier<ItemStack> item;
     private final String xPos;
     private final String yPos;
     private final Predicate<Player> condition;
@@ -49,7 +50,7 @@ class BaseElement implements InventoryElement {
 
     @Override
     public ItemStack parseItem(BaseInventory<?> inv, int slot) {
-        return this.item;
+        return this.item.get();
     }
 
     @Override

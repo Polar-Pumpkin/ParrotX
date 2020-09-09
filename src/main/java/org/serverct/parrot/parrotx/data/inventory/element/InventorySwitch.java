@@ -39,7 +39,7 @@ class InventorySwitch implements InventoryElement {
 
     @Override
     public ItemStack parseItem(BaseInventory<?> inv, int slot) {
-        return active ? activeItem : base.getItem();
+        return active ? activeItem : base.getItem().get();
     }
 
     @Override

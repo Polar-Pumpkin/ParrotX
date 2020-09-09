@@ -52,7 +52,7 @@ class InventoryPlaceholder implements InventoryElement {
 
     @Override
     public ItemStack parseItem(BaseInventory<?> inv, int slot) {
-        return this.placedMap.getOrDefault(slot, this.base.getItem());
+        return this.placedMap.getOrDefault(slot, this.base.getItem().get());
     }
 
     @Override
@@ -89,7 +89,7 @@ class InventoryPlaceholder implements InventoryElement {
                 this.placedMap.put(event.getSlot(), cursorItem.clone());
                 place(event);
 
-                if (Objects.nonNull(slotItem) && slotItem.isSimilar(base.getItem())) {
+                if (Objects.nonNull(slotItem) && slotItem.isSimilar(base.getItem().get())) {
                     new BukkitRunnable() {
                         @Override
                         public void run() {
@@ -99,7 +99,7 @@ class InventoryPlaceholder implements InventoryElement {
                 }
                 break;
             case PICKUP_ALL:
-                if (Objects.isNull(slotItem) || slotItem.isSimilar(base.getItem())) {
+                if (Objects.isNull(slotItem) || slotItem.isSimilar(base.getItem().get())) {
                     event.setCancelled(true);
                     break;
                 }

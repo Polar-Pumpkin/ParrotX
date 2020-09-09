@@ -51,6 +51,6 @@ class InventoryProcessBar implements InventoryElement {
 
     @Override
     public ItemStack parseItem(BaseInventory<?> inv, int slot) {
-        return this.barMap.getOrDefault(slot, getBase().getItem());
+        return this.barMap.getOrDefault(slot, getBase().getItem().get());
     }
 }

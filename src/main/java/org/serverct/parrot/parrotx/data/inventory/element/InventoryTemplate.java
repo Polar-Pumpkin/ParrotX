@@ -29,7 +29,7 @@ class InventoryTemplate<T> implements InventoryElement {
         if (Objects.isNull(data)) {
             return new ItemStack(Material.AIR);
         }
-        final ItemStack item = getBase().getItem();
+        final ItemStack item = getBase().getItem().get();
         if (Objects.isNull(applyTemple)) {
             return item;
         }
