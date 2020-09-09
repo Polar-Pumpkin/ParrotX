@@ -105,6 +105,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
     @Override
     public void open(InventoryOpenEvent event) {
         if (this.refreshInterval > 0) {
+            plugin.getLang().log.debug(getTypename() + " 刷新间隔大于 0: " + this.refreshInterval);
             this.refreshTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> refresh(event.getInventory()), 1L, refreshInterval * 20L);
         }
     }
@@ -112,6 +113,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
     @Override
     public void close(InventoryCloseEvent event) {
         if (Objects.nonNull(this.refreshTask) && !this.refreshTask.isCancelled()) {
+            plugin.getLang().log.debug(getTypename() + " 取消自动刷新任务");
             this.refreshTask.cancel();
         }
     }

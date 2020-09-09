@@ -2,6 +2,7 @@ package org.serverct.parrot.parrotx.data.inventory.element;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -25,8 +26,11 @@ class InventoryTemplate<T> implements InventoryElement {
     }
 
     public ItemStack apply(final T data) {
+        if (Objects.isNull(data)) {
+            return new ItemStack(Material.AIR);
+        }
         final ItemStack item = getBase().getItem();
-        if (Objects.isNull(applyTemple) || Objects.isNull(data)) {
+        if (Objects.isNull(applyTemple)) {
             return item;
         }
         return applyTemple.apply(item, data);
