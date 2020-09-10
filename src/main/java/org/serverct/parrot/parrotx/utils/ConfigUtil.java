@@ -6,20 +6,11 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.IOException;
 import java.util.Objects;
 
 @SuppressWarnings({"unused"})
 public class ConfigUtil {
-
-    public static Map<String, Object> getMap(ConfigurationSection section, String path) {
-        Map<String, Object> result = new HashMap<>();
-        ConfigurationSection targetSection = section.getConfigurationSection(path);
-        if (targetSection == null) return result;
-        for (String key : targetSection.getKeys(false)) result.put(key, targetSection.get(key));
-        return result;
-    }
 
     public static void saveLocation(Location loc, ConfigurationSection section) {
         if (loc.getWorld() == null) {

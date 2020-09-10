@@ -11,12 +11,13 @@ import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public @Data
 @Builder
 class InventorySwitch implements InventoryElement {
     private final BaseElement base;
-    private final ItemStack activeItem;
+    private final Supplier<ItemStack> activeItem;
     private final Predicate<Player> condition;
     private final Consumer<Boolean> onSwitch;
     private boolean active;
@@ -39,7 +40,7 @@ class InventorySwitch implements InventoryElement {
 
     @Override
     public ItemStack parseItem(BaseInventory<?> inv, int slot) {
-        return active ? activeItem : base.getItem().get();
+        return active ? activeItem.get() : base.getItem().get();
     }
 
     @Override
