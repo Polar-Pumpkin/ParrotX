@@ -11,7 +11,9 @@ import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 @SuppressWarnings({"unused"})
 public abstract class BaseCommand implements PCommand {
@@ -78,9 +80,9 @@ public abstract class BaseCommand implements PCommand {
     @Override
     public String[] getParams(int arg) {
         if (this.paramMap.containsKey(arg)) {
-            ParamSuggester suggester = this.paramMap.get(arg).suggest;
+            Supplier<String[]> suggester = this.paramMap.get(arg).suggest;
             if (suggester != null) {
-                return suggester.param();
+                return suggester.get();
             }
         }
         return new String[0];
@@ -165,17 +167,7 @@ public abstract class BaseCommand implements PCommand {
         if (param == null || param.converter == null) {
             return null;
         }
-        return param.converter.convert(args);
-    }
-
-    @FunctionalInterface
-    public interface ParamSuggester {
-        String[] param();
-    }
-
-    @FunctionalInterface
-    public interface ParamConverter<K, V> {
-        V convert(K k);
+        return param.converter.apply(args);
     }
 
     protected @Data
@@ -188,7 +180,7 @@ public abstract class BaseCommand implements PCommand {
         private Predicate<String> validate;
         private String validateMessage;
         private int position;
-        private ParamSuggester suggest;
-        private ParamConverter<String[], ?> converter;
+        private Supplier<String[]> suggest;
+        private Function<String[], ?> converter;
     }
 }

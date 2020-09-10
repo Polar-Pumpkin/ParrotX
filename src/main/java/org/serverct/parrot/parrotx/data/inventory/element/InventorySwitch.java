@@ -2,15 +2,14 @@ package org.serverct.parrot.parrotx.data.inventory.element;
 
 import lombok.Builder;
 import lombok.Data;
-import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.serverct.parrot.parrotx.data.inventory.BaseInventory;
 import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
 
 import java.util.Objects;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public @Data
@@ -18,12 +17,12 @@ public @Data
 class InventorySwitch implements InventoryElement {
     private final BaseElement base;
     private final Supplier<ItemStack> activeItem;
-    private final Predicate<Player> condition;
+    private final BooleanSupplier condition;
     private final Consumer<Boolean> onSwitch;
     private boolean active;
 
-    public boolean condition(final Player user) {
-        return Objects.isNull(condition) || condition.test(user);
+    public boolean condition() {
+        return Objects.isNull(condition) || condition.getAsBoolean();
     }
 
     public void onSwitch() {
@@ -46,7 +45,7 @@ class InventorySwitch implements InventoryElement {
     @Override
     public void click(final BaseInventory<?> holder, final InventoryClickEvent event) {
         event.setCancelled(true);
-        if (!condition(holder.getViewer())) {
+        if (!condition()) {
             return;
         }
         this.active = !this.active;

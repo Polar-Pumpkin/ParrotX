@@ -11,6 +11,7 @@ import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.*;
+import java.util.function.BiFunction;
 
 @SuppressWarnings("unused")
 public @Data
@@ -18,7 +19,7 @@ class InventoryTemplate<T> implements InventoryElement {
 
     private final InventoryElement base;
     private final List<T> contents;
-    private final TempleApplier<ItemStack, T> applyTemple;
+    private final BiFunction<ItemStack, T, ItemStack> applyTemple;
     private final Map<Integer, Map<Integer, T>> contentMap = new HashMap<>();
 
     public InventoryElement getElement() {
@@ -96,16 +97,11 @@ class InventoryTemplate<T> implements InventoryElement {
         this.base.click(holder, event);
     }
 
-    @FunctionalInterface
-    public interface TempleApplier<Temple, Data> {
-        Temple apply(Temple temple, Data data);
-    }
-
     public @NoArgsConstructor
     static class InventoryTemplateBuilder<T> {
         private InventoryElement base;
         private List<T> contents;
-        private TempleApplier<ItemStack, T> applyTemple;
+        private BiFunction<ItemStack, T, ItemStack> applyTemple;
 
         public InventoryTemplateBuilder<T> base(final InventoryElement base) {
             this.base = base;
@@ -117,7 +113,7 @@ class InventoryTemplate<T> implements InventoryElement {
             return this;
         }
 
-        public InventoryTemplateBuilder<T> applyTemple(final TempleApplier<ItemStack, T> applyTemple) {
+        public InventoryTemplateBuilder<T> applyTemple(final BiFunction<ItemStack, T, ItemStack> applyTemple) {
             this.applyTemple = applyTemple;
             return this;
         }
