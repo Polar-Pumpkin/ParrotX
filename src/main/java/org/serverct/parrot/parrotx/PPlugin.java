@@ -16,8 +16,6 @@ import java.util.function.Consumer;
 
 public abstract class PPlugin extends JavaPlugin {
 
-    @Getter
-    private static PPlugin inst;
     public String localeKey = "Chinese";
     protected PConfig pConfig;
     @Getter
@@ -30,7 +28,6 @@ public abstract class PPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
-        inst = this;
         final long timestamp = System.currentTimeMillis();
 
         try {
