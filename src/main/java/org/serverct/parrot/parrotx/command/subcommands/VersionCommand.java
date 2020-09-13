@@ -21,7 +21,7 @@ public class VersionCommand extends BaseCommand {
                 "  &7当前服务端版本: &c" + Bukkit.getVersion(),
                 "  &7当前插件版本: &c" + plugin.getDescription().getVersion(),
                 "",
-                "  &7ParrotX 版本: &c1.3.6-Alpha",
+                "  &7ParrotX 版本: &c1.3.7-Alpha",
                 "  &7I18n 信息:",
                 "  &9&l-> &7" + I18n.getToolVersion(),
                 "  &9&l-> &7绑定插件: &c" + plugin.getLang().getPlugin().getName(),

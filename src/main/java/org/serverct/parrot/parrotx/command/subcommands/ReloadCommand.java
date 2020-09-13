@@ -15,6 +15,7 @@ public class ReloadCommand extends BaseCommand {
     @Override
     protected void call(String[] args) {
         try {
+            plugin.onDisable();
             plugin.init();
             sender.sendMessage(plugin.getLang().data.info("重载配置文件成功."));
         } catch (Throwable e) {

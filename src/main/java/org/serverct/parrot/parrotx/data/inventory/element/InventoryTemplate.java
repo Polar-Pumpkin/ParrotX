@@ -60,13 +60,10 @@ class InventoryTemplate<T> implements InventoryElement {
         this.contentMap.clear();
 
         final Iterator<Integer> slotIterator = getBase().getPositions().iterator();
-        Map<Integer, T> contents = null;
+        Map<Integer, T> contents = new HashMap<>();
         int page = 1;
 
         for (T content : this.contents) {
-            if (Objects.isNull(contents)) {
-                contents = new HashMap<>();
-            }
             if (!slotIterator.hasNext()) {
                 this.contentMap.put(page, contents);
                 contents = new HashMap<>();

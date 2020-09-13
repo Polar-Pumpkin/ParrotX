@@ -50,7 +50,6 @@ public abstract class PPlugin extends JavaPlugin {
     }
 
     public void init() {
-        Bukkit.getScheduler().cancelTasks(this);
         lang = new I18n(this, localeKey);
 
         preload();
