@@ -86,8 +86,8 @@ public final class TimeUtil {
      * @param ignoreZero 是否忽略 0
      * @return 时间长度
      */
-    public static String getTimeLong(int time, final Map<String, Integer> timeKey, final String format, final boolean ignoreZero) {
-        int cache;
+    public static String getTimeLong(long time, final Map<String, Integer> timeKey, final String format, final boolean ignoreZero) {
+        long cache;
         final StringBuilder result = new StringBuilder();
 
         if (time <= 0) {
@@ -99,7 +99,7 @@ public final class TimeUtil {
             final int value = entry.getValue();
 
             cache = time % value;
-            final int number = (time - cache) / value;
+            final long number = (time - cache) / value;
             time -= number * value;
 
             if (!ignoreZero || number != 0) {
@@ -109,15 +109,15 @@ public final class TimeUtil {
         return result.toString().trim();
     }
 
-    public static String getTimeLong(int time, final String format, final boolean ignoreZero) {
+    public static String getTimeLong(long time, final String format, final boolean ignoreZero) {
         return getTimeLong(time, DEFAULT_TIME_KEY, format, ignoreZero);
     }
 
-    public static String getTimeLong(int time, final String format) {
+    public static String getTimeLong(long time, final String format) {
         return getTimeLong(time, DEFAULT_TIME_KEY, format, true);
     }
 
-    public static String getTimeLong(int time) {
+    public static String getTimeLong(long time) {
         return getTimeLong(time, DEFAULT_TIME_KEY, "{0} {1} ", true);
     }
 

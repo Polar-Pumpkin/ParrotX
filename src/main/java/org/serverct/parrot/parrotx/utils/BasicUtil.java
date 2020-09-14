@@ -3,6 +3,7 @@ package org.serverct.parrot.parrotx.utils;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.potion.PotionEffect;
@@ -48,7 +49,11 @@ public class BasicUtil {
     }
 
     public static String formatLocation(@NonNull Location location) {
+        final World world = location.getWorld();
         String result = "&c" + location.getBlockX() + "&7, &c" + location.getBlockY() + "&7, &c" + location.getBlockZ() + "&7";
+        if (Objects.nonNull(world)) {
+            result = result + "(&c" + world.getName() + "&7)&r";
+        }
         return I18n.color(result);
     }
 
