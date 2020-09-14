@@ -25,8 +25,12 @@ import java.util.Objects;
 @SuppressWarnings({"unused"})
 public class BasicUtil {
 
-    public static double round(final double number) {
+    public static double roundToDouble(final double number) {
         return BigDecimal.valueOf(number).setScale(2, RoundingMode.HALF_DOWN).doubleValue();
+    }
+
+    public static int roundToInt(final double number) {
+        return BigDecimal.valueOf(number).setScale(2, RoundingMode.HALF_DOWN).intValue();
     }
 
     public static void potion(Player target, PotionEffectType type, int level, int duration) {

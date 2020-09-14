@@ -13,7 +13,6 @@ import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -86,8 +85,8 @@ public abstract class PPlugin extends JavaPlugin {
         this.timeLog = format;
     }
 
-    protected void registerExpansion(final PlaceholderExpansion... expansions) {
-        this.expansions.addAll(Arrays.asList(expansions));
+    protected <T extends PlaceholderExpansion> void registerExpansion(final T expansions) {
+        this.expansions.add(expansions);
     }
 
     protected void registerCommand(@NonNull CommandHandler handler) {
