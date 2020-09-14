@@ -42,11 +42,12 @@ public class BaseExpansion extends PlaceholderExpansion {
     @Override
     public String onRequest(OfflinePlayer player, @NotNull String params) {
         final String[] source = params.split("[_]");
-        if (!this.paramMap.containsKey(source[0])) {
+        final String key = source[0].toLowerCase();
+        if (!this.paramMap.containsKey(key)) {
             return "";
         }
 
-        final PlaceholderParam param = this.paramMap.get(source[0]);
+        final PlaceholderParam param = this.paramMap.get(key);
         if (Objects.isNull(param.getParse())) {
             return "";
         }
@@ -75,7 +76,7 @@ public class BaseExpansion extends PlaceholderExpansion {
     }
 
     protected void addParam(final PlaceholderParam... params) {
-        Arrays.stream(params).forEach(param -> this.paramMap.put(param.getName(), param));
+        Arrays.stream(params).forEach(param -> this.paramMap.put(param.getName().toLowerCase(), param));
     }
 
     @Data
