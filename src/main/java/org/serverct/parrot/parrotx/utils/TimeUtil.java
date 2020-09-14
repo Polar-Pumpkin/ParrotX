@@ -8,6 +8,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class TimeUtil {
 
@@ -26,13 +28,57 @@ public final class TimeUtil {
     }};
     private static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private static final String CHINESE_DATE_FORMAT = "yyyy年MM月dd日 HH:mm:ss";
+    private final static Pattern PATTERN = Pattern.compile("(\\d+[yMdhms])+");
+    private final static Pattern TYPE = Pattern.compile("([yMdhms])");
 
     // Prevent accidental construction
     private TimeUtil() {
     }
 
     /**
-     * 根据数字（单位：秒）获取时间长度，如 1 年 1 月 4 天 5 小时 1 分钟 4 秒
+     * 从描述性时间长度字符串中获取以秒为单位的时间长度。
+     * @param duration 描述性时间长度，例如 19d19h810m
+     * @return 以秒为单位的时间长度数字
+     */
+    public static long getTime(String duration) {
+        long result = 0;
+        Matcher matcher = PATTERN.matcher(duration);
+        while (matcher.find()) {
+            final String part = matcher.group(1);
+            final Matcher typeMatcher = TYPE.matcher(part);
+            if (!typeMatcher.find()) {
+                continue;
+            }
+            final String type = typeMatcher.group();
+            final long time = Long.parseLong(part.replace(type, ""));
+            switch (type) {
+                case "y":
+                    result += time * YEAR;
+                    break;
+                case "M":
+                    result += time * MONTH;
+                    break;
+                case "d":
+                    result += time * DAY;
+                    break;
+                case "h":
+                    result += time * HOUR;
+                    break;
+                case "m":
+                    result += time * MINUTE;
+                    break;
+                case "s":
+                    result += time;
+                    break;
+            }
+            duration = duration.replace(part, "");
+            matcher = PATTERN.matcher(duration);
+        }
+        return result;
+    }
+
+    /**
+     * 根据数字（单位：秒）获取描述性时间长度字符串，如 1 年 1 月 4 天 5 小时 1 分钟 4 秒
      *
      * @param time       需要格式化的秒数
      * @param timeKey    单位时间长短及其称呼
@@ -74,6 +120,7 @@ public final class TimeUtil {
     public static String getTimeLong(int time) {
         return getTimeLong(time, DEFAULT_TIME_KEY, "{0} {1} ", true);
     }
+
 
     /**
      * 根据时间戳获取描述性时间，如3分钟前，1天前
