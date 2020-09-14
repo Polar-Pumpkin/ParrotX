@@ -18,10 +18,16 @@ import parsii.eval.Scope;
 import parsii.eval.Variable;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 
 @SuppressWarnings({"unused"})
 public class BasicUtil {
+
+    public static double round(final double number) {
+        return BigDecimal.valueOf(number).setScale(2, RoundingMode.HALF_DOWN).doubleValue();
+    }
 
     public static void potion(Player target, PotionEffectType type, int level, int duration) {
         target.addPotionEffect(new PotionEffect(type, duration * 20, level), true);
