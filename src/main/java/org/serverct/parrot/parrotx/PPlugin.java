@@ -44,7 +44,9 @@ public abstract class PPlugin extends JavaPlugin {
                 listenerRegister.accept(Bukkit.getPluginManager());
             }
 
-            this.expansions.forEach(PlaceholderExpansion::register);
+            if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+                this.expansions.forEach(PlaceholderExpansion::register);
+            }
 
             if (Objects.nonNull(timeLog)) {
                 final long time = System.currentTimeMillis() - timestamp;
@@ -104,7 +106,9 @@ public abstract class PPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        this.expansions.forEach(PlaceholderExpansion::unregister);
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            this.expansions.forEach(PlaceholderExpansion::unregister);
+        }
         getServer().getScheduler().cancelTasks(this);
     }
 }
