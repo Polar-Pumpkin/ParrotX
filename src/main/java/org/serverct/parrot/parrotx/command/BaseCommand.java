@@ -60,10 +60,10 @@ public abstract class BaseCommand implements PCommand {
                 if (param.position >= args.length) {
                     return true;
                 }
-                if (param.validate != null && !param.validate.test(args[param.position])) {
-                    sender.sendMessage(I18n.color(param.validateMessage));
-                    return true;
-                }
+            }
+            if (param.validate != null && param.position < args.length && !param.validate.test(args[param.position])) {
+                sender.sendMessage(I18n.color(param.validateMessage));
+                return true;
             }
         }
 
