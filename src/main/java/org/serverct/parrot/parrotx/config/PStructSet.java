@@ -17,20 +17,22 @@ public abstract class PStructSet<T extends PStruct> extends PConfig {
     @Getter
     protected Map<PID, T> dataMap = new HashMap<>();
     @Getter
-    protected String root;
+    protected String rootName;
+    protected ConfigurationSection root;
 
-    public PStructSet(@NonNull PPlugin plugin, String fileName, String typeName, String root) {
+    public PStructSet(@NonNull PPlugin plugin, String fileName, String typeName, String rootName) {
         super(plugin, fileName, typeName);
-        this.root = root;
+        this.rootName = rootName;
     }
 
     @Override
     public void load(@NonNull File file) {
         super.load(file);
 
-        final ConfigurationSection root = config.getConfigurationSection(this.root);
+        root = config.getConfigurationSection(this.rootName);
         if (Objects.isNull(root)) {
-            plugin.getLang().log.error(I18n.LOAD, getTypename(), "根数据节为 null: " + this.root);
+            root = config.createSection(this.rootName);
+            plugin.getLang().log.error(I18n.LOAD, getTypename(), "根数据节为 null: " + this.rootName);
             return;
         }
         for (String key : root.getKeys(false)) {
@@ -131,11 +133,11 @@ public abstract class PStructSet<T extends PStruct> extends PConfig {
     }
 
     public void deleteAll() {
-        this.dataMap.values().forEach(struct -> config.set(root + struct.getID().getId(), null));
+        this.dataMap.values().forEach(struct -> config.set(rootName + struct.getID().getId(), null));
         this.dataMap.clear();
     }
 
     public PID buildId(String id) {
-        return new PID(plugin, root.toUpperCase(), id);
+        return new PID(plugin, rootName.toUpperCase(), id);
     }
 }
