@@ -2,6 +2,7 @@ package org.serverct.parrot.parrotx;
 
 import lombok.Getter;
 import lombok.NonNull;
+import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
@@ -11,11 +12,15 @@ import org.serverct.parrot.parrotx.config.PConfig;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 public abstract class PPlugin extends JavaPlugin {
 
+    private final List<PlaceholderExpansion> expansions = new ArrayList<>();
     public String localeKey = "Chinese";
     protected PConfig pConfig;
     @Getter
@@ -38,6 +43,8 @@ public abstract class PPlugin extends JavaPlugin {
             if (Objects.nonNull(listenerRegister)) {
                 listenerRegister.accept(Bukkit.getPluginManager());
             }
+
+            this.expansions.forEach(PlaceholderExpansion::register);
 
             if (Objects.nonNull(timeLog)) {
                 final long time = System.currentTimeMillis() - timestamp;
@@ -79,6 +86,10 @@ public abstract class PPlugin extends JavaPlugin {
         this.timeLog = format;
     }
 
+    protected void registerExpansion(final PlaceholderExpansion... expansions) {
+        this.expansions.addAll(Arrays.asList(expansions));
+    }
+
     protected void registerCommand(@NonNull CommandHandler handler) {
         PluginCommand command = Bukkit.getPluginCommand(handler.mainCmd);
         if (command != null) {
@@ -93,6 +104,7 @@ public abstract class PPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        this.expansions.forEach(PlaceholderExpansion::unregister);
         getServer().getScheduler().cancelTasks(this);
     }
 }
