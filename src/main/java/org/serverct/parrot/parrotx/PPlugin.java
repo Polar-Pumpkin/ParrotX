@@ -9,6 +9,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.serverct.parrot.parrotx.command.CommandHandler;
 import org.serverct.parrot.parrotx.config.PConfig;
+import org.serverct.parrot.parrotx.hooks.BaseExpansion;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.text.MessageFormat;
@@ -19,7 +20,7 @@ import java.util.function.Consumer;
 
 public abstract class PPlugin extends JavaPlugin {
 
-    private final List<PlaceholderExpansion> expansions = new ArrayList<>();
+    private final List<BaseExpansion> expansions = new ArrayList<>();
     public String localeKey = "Chinese";
     protected PConfig pConfig;
     @Getter
@@ -85,7 +86,7 @@ public abstract class PPlugin extends JavaPlugin {
         this.timeLog = format;
     }
 
-    protected <T extends PlaceholderExpansion> void registerExpansion(final T expansions) {
+    protected <T extends BaseExpansion> void registerExpansion(final T expansions) {
         this.expansions.add(expansions);
     }
 
