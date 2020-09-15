@@ -53,8 +53,8 @@ public class BaseExpansion extends PlaceholderExpansion {
         }
 
         final String[] args = new String[source.length - 1];
-        if (args.length >= 2) {
-            System.arraycopy(args, 1, args, 0, args.length - 1);
+        if (source.length >= 2) {
+            System.arraycopy(source, 1, args, 0, source.length - 1);
         }
 
         return param.getParse().apply(player, args);
