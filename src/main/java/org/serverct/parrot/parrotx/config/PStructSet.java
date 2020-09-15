@@ -103,6 +103,7 @@ public abstract class PStructSet<T extends PStruct> extends PConfig {
             plugin.getLang().log.action(I18n.DELETE, MessageFormat.format(getTypename() + "({0})", id));
             dataMap.remove(data.getID());
             data.delete();
+            root.set(id, null);
         } else {
             plugin.getLang().log.error(I18n.DELETE, getTypename(), "目标数据未找到: " + id);
         }
@@ -133,11 +134,11 @@ public abstract class PStructSet<T extends PStruct> extends PConfig {
     }
 
     public void deleteAll() {
-        this.dataMap.values().forEach(struct -> config.set(rootName + struct.getID().getId(), null));
+        this.dataMap.values().forEach(struct -> root.set(struct.getID().getId(), null));
         this.dataMap.clear();
     }
 
     public PID buildId(String id) {
-        return new PID(plugin, rootName.toUpperCase(), id);
+        return new PID(plugin, rootName.toLowerCase(), id);
     }
 }

@@ -60,6 +60,6 @@ public abstract class PFolder<T extends PData> extends PDataFolder<T> {
     }
 
     public PID buildId(String id) {
-        return new PID(plugin, dataKey, id);
+        return new PID(plugin, dataKey.toLowerCase(), id);
     }
 }

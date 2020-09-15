@@ -6,7 +6,7 @@
 
     <groupId>org.serverct.parrot</groupId>
     <artifactId>ParrotX</artifactId>
-    <version>1.3.8-alpha</version>
+    <version>1.3.9-alpha</version>
     <packaging>jar</packaging>
 
     <name>ParrotX</name>
