@@ -1,26 +1,24 @@
 package org.serverct.parrot.parrotx.data;
 
+import lombok.Getter;
 import org.serverct.parrot.parrotx.data.flags.MemberManager;
 import org.serverct.parrot.parrotx.data.flags.Owned;
 import org.serverct.parrot.parrotx.data.flags.Timestamp;
 
 import java.io.File;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
-public abstract class PGroup extends PData implements MemberManager, Owned, Timestamp {
+public abstract class PGroup<T extends PMember> extends PData implements MemberManager<T>, Owned, Timestamp {
 
+    @Getter
+    protected Map<UUID, T> memberMap = new HashMap<>();
     protected UUID owner;
     protected long foundTime;
-    private List<PMember> memberList;
 
     public PGroup(File file, PID id) {
         super(file, id);
-    }
-
-    @Override
-    public List<PMember> getMembers() {
-        return this.memberList;
     }
 
     @Override

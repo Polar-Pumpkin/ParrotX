@@ -66,7 +66,7 @@ public class CommandHandler implements TabExecutor {
             return true;
         }
 
-        PCommand pCommand = commands.get(args[0]);
+        PCommand pCommand = commands.get(args[0].toLowerCase());
         if (pCommand == null) {
             sender.sendMessage(plugin.getLang().data.warn("未知命令, 请检查您的命令拼写是否正确."));
             plugin.getLang().log.error(I18n.EXECUTE, "子命令/" + args[0], sender.getName() + " 尝试执行未注册子命令");
@@ -136,6 +136,6 @@ public class CommandHandler implements TabExecutor {
     }
 
     public void register(final BaseCommand command) {
-        addCommand(command.getName(), command);
+        addCommand(command.getName().toLowerCase(), command);
     }
 }

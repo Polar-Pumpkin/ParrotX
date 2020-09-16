@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.bukkit.NamespacedKey;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
+
+import java.text.MessageFormat;
 
 public @Data
 @AllArgsConstructor
@@ -13,6 +16,16 @@ class PID {
     private String id;
 
     public NamespacedKey key() {
-        return new NamespacedKey(plugin, key);
+        try {
+            return new NamespacedKey(plugin, key.toLowerCase());
+        } catch (Throwable e) {
+            plugin.getLang().log.error(I18n.BUILD, "NamespacedKey", e, null);
+        }
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return MessageFormat.format("{0} {1}({2})", key.toLowerCase(), id, plugin.getName());
     }
 }

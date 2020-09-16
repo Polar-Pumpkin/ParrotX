@@ -5,13 +5,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.serverct.parrot.parrotx.data.autoload.AutoLoader;
 import org.serverct.parrot.parrotx.data.flags.FileSaved;
-import org.serverct.parrot.parrotx.data.flags.Unique;
 import org.serverct.parrot.parrotx.utils.BasicUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
 
-public abstract class PData extends AutoLoader implements PConfiguration, FileSaved, Unique {
+public abstract class PData extends AutoLoader implements UniqueData, FileSaved {
 
     protected PID id;
     protected File file;
@@ -41,14 +40,15 @@ public abstract class PData extends AutoLoader implements PConfiguration, FileSa
 
     @Override
     public void reload() {
-        plugin.getLang().log.action(I18n.RELOAD, getTypename());
+        save();
         load(this.file);
+        lang.log.action(I18n.RELOAD, name());
     }
 
     @Override
     public void load() {
-        plugin.getLang().log.action(I18n.LOAD, getTypename());
         load(this.file);
+        plugin.getLang().log.action(I18n.LOAD, name());
     }
 
     @Override
@@ -63,10 +63,10 @@ public abstract class PData extends AutoLoader implements PConfiguration, FileSa
 
     @Override
     public void delete() {
-        if (getFile().delete()) {
-            plugin.getLang().log.action(I18n.DELETE, getTypename());
+        if (this.file.delete()) {
+            plugin.getLang().log.action(I18n.DELETE, name());
         } else {
-            plugin.getLang().log.error(I18n.DELETE, getTypename(), "无法删除该文件.");
+            plugin.getLang().log.error(I18n.DELETE, name(), "删除文件失败");
         }
     }
 }

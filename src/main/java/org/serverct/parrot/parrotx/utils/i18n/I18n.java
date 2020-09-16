@@ -49,6 +49,9 @@ public class I18n {
     public static final String INIT = "初始化";
     public static final String CREATE = "创建";
     public static final String GENERATE = "生成";
+    public static final String UPLOAD = "上传";
+    public static final String REFRESH = "刷新";
+    public static final String CLEAR = "清空";
     protected static final String Tool_Prefix = "&7[&b&lEP's &aLocale Tool&7] ";
     protected static final String Tool_INFO = "&a&l> &r";
     protected static final String Tool_WARN = "&e&l> &r";

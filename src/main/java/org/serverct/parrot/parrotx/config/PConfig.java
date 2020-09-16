@@ -16,37 +16,40 @@ import java.util.Objects;
 
 public abstract class PConfig extends AutoLoader implements PConfiguration, FileSaved {
 
-    private final String id;
-    private final String name;
+    private final String filename;
+    private final String typeName;
 
     @Getter
     protected File file;
     @Getter
     protected FileConfiguration config;
 
-    public PConfig(@NonNull PPlugin plugin, String fileName, String typeName) {
+    public PConfig(@NonNull PPlugin plugin, String filename, String typeName) {
         super(plugin);
-        this.file = new File(plugin.getDataFolder(), fileName + ".yml");
-        this.id = fileName;
-        this.name = typeName;
+        this.file = new File(plugin.getDataFolder(), filename + ".yml");
+        this.filename = filename;
+        this.typeName = typeName;
     }
 
     @Override
-    public String getTypename() {
-        return name + "/" + id;
+    public String name() {
+        return typeName + "/" + filename;
     }
 
     @Override
     public String getFilename() {
-        return id;
+        return filename;
     }
 
     @Override
     public void init() {
         if (!file.exists()) {
             saveDefault();
-            if (file.exists()) plugin.getLang().log.warn("未找到 &c" + getTypename() + "&7, 已自动生成.");
-            else plugin.getLang().log.error("无法自动生成 &c" + getTypename() + "&7.");
+            if (file.exists()) {
+                lang.log.warn("未找到 &c" + name() + "&7, 已自动生成.");
+            } else {
+                lang.log.error("无法自动生成 &c" + name() + "&7.");
+            }
         }
         config = YamlConfiguration.loadConfiguration(file);
 
@@ -55,11 +58,9 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
             defaultTo(this);
 
             load();
-            if (!(this instanceof PStructSet)) {
-                plugin.getLang().log.info("已加载 &c" + getTypename() + "&7.");
-            }
+            lang.log.info("已加载 &c" + name() + "&7.");
         } catch (Throwable e) {
-            plugin.getLang().log.error(I18n.LOAD, getTypename(), e, null);
+            lang.log.error(I18n.LOAD, name(), e, null);
         }
     }
 
@@ -80,8 +81,8 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
 
     @Override
     public void reload() {
-        plugin.getLang().log.action(I18n.RELOAD, getTypename());
         init();
+        lang.log.action(I18n.RELOAD, name());
     }
 
     @Override
@@ -90,29 +91,29 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
             autoSave();
             config.save(file);
         } catch (IOException e) {
-            plugin.getLang().log.error(I18n.SAVE, getTypename(), e, null);
+            lang.log.error(I18n.SAVE, name(), e, null);
         }
     }
 
     @Override
     public void delete() {
         if (file.delete()) {
-            plugin.getLang().log.action(I18n.DELETE, getTypename());
+            lang.log.action(I18n.DELETE, name());
         } else {
-            plugin.getLang().log.error(I18n.DELETE, getTypename(), "无法删除该文件");
+            lang.log.error(I18n.DELETE, name(), "删除文件失败");
         }
     }
 
     @Override
     public void saveDefault() {
-        if (Objects.nonNull(plugin.getResource(id + ".yml"))) plugin.saveResource(id + ".yml", false);
+        if (Objects.nonNull(plugin.getResource(filename + ".yml"))) plugin.saveResource(filename + ".yml", false);
         else {
             try {
                 if (!file.createNewFile()) {
-                    plugin.getLang().log.error(I18n.GENERATE, getTypename(), "自动生成失败");
+                    lang.log.error(I18n.GENERATE, name(), "自动生成失败");
                 }
             } catch (IOException e) {
-                plugin.getLang().log.error(I18n.GENERATE, getTypename(), e, null);
+                lang.log.error(I18n.GENERATE, name(), e, null);
             }
         }
     }

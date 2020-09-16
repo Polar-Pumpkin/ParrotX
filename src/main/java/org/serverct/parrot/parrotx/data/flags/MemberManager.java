@@ -1,39 +1,51 @@
 package org.serverct.parrot.parrotx.data.flags;
 
+import org.bukkit.Bukkit;
 import org.serverct.parrot.parrotx.data.PMember;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-public interface MemberManager {
+@SuppressWarnings("unused")
+public interface MemberManager<T extends PMember> {
 
-    List<PMember> getMembers();
+    Map<UUID, T> getMemberMap();
+
+    default Collection<T> getMembers() {
+        return getMemberMap().values();
+    }
 
     default int getSize() {
-        return getMembers().size();
+        return getMemberMap().size();
     }
 
-    default List<String> listMember() {
-        return new ArrayList<String>() {{
-            getMembers().forEach(member -> add(member.getOwnerName()));
-        }};
+    default Set<UUID> getUUIDs() {
+        return getMemberMap().keySet();
     }
 
-    default boolean isMember(String username) {
-        return listMember().contains(username);
+    default boolean hasMember(UUID uuid) {
+        return getMemberMap().containsKey(uuid);
     }
 
-    void addMember(UUID uuid);
+    default boolean hasMember(String username) {
+        return hasMember(Bukkit.getOfflinePlayer(username).getUniqueId());
+    }
 
-    void delMember(UUID uuid);
+    default void addMember(T member) {
+        getMemberMap().put(member.getOwner(), member);
+    }
 
-    default PMember getMember(String username) {
-        for (PMember member : getMembers()) {
-            if (member.getOwnerName().equals(username)) {
-                return member;
-            }
-        }
-        return null;
+    default void delMember(UUID uuid) {
+        getMemberMap().remove(uuid);
+    }
+
+    default T getMember(UUID uuid) {
+        return getMemberMap().get(uuid);
+    }
+
+    default T getMember(String username) {
+        return getMember(Bukkit.getOfflinePlayer(username).getUniqueId());
     }
 }

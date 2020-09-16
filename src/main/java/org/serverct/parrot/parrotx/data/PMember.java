@@ -1,6 +1,5 @@
 package org.serverct.parrot.parrotx.data;
 
-import lombok.Getter;
 import org.serverct.parrot.parrotx.data.flags.Owned;
 import org.serverct.parrot.parrotx.data.flags.Timestamp;
 
@@ -8,7 +7,6 @@ import java.util.UUID;
 
 public abstract class PMember implements Owned, Timestamp {
 
-    @Getter
     protected UUID uuid;
     protected long joinTime;
 

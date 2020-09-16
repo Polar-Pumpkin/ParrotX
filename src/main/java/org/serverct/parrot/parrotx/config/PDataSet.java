@@ -2,128 +2,156 @@ package org.serverct.parrot.parrotx.config;
 
 import lombok.Getter;
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PConfiguration;
-import org.serverct.parrot.parrotx.data.PData;
 import org.serverct.parrot.parrotx.data.PID;
+import org.serverct.parrot.parrotx.data.UniqueData;
+import org.serverct.parrot.parrotx.data.flags.DataSet;
 import org.serverct.parrot.parrotx.data.flags.FileSaved;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
-import java.text.MessageFormat;
 import java.util.*;
 
 @SuppressWarnings({"unused"})
-public abstract class PDataFolder<T extends PData> implements PConfiguration, FileSaved {
+public abstract class PDataSet<T extends UniqueData> implements PConfiguration, FileSaved, DataSet<T> {
 
     @Getter
     protected final Map<PID, T> dataMap = new HashMap<>();
-    protected PPlugin plugin;
-    protected File folder;
+    protected final PPlugin plugin;
+    protected final I18n lang;
+    private final String name;
+    protected File file;
 
-    public PDataFolder(PPlugin plugin, File folder) {
+    public PDataSet(PPlugin plugin, File file, String name) {
         this.plugin = plugin;
-        this.folder = folder;
+        this.file = file;
+        this.lang = this.plugin.getLang();
+        this.name = name;
+    }
+
+    @Override
+    public String name() {
+        return this.name + "/" + getFilename();
     }
 
     @Override
     public String getFilename() {
-        return this.folder.getName();
+        return this.file.getName();
     }
 
     @Override
     public File getFile() {
-        return this.folder;
+        return this.file;
     }
 
     @Override
     public void setFile(@NonNull File file) {
-        this.folder = file;
-    }
-
-    @Override
-    public void load(@NonNull File file) {
-        put(loadData(file));
+        this.file = file;
     }
 
     @Override
     public void reload() {
+        save();
         reloadAll();
+        lang.log.action(I18n.RELOAD, name());
     }
 
     @Override
     public void save() {
         saveAll();
+        lang.log.action(I18n.SAVE, name());
     }
 
     @Override
     public void delete() {
         deleteAll();
+        if (this.file.delete()) {
+            lang.log.action(I18n.DELETE, name());
+        } else {
+            lang.log.error(I18n.DELETE, name(), "删除文件(夹)失败");
+        }
     }
 
-    public abstract T loadData(File file);
-
+    @Override
     public void put(T data) {
         this.dataMap.put(data.getID(), data);
     }
 
-    public T get(String id) {
-        for (T data : this.dataMap.values()) if (data.check(id)) return data;
-        return null;
+    @Override
+    public T get(PID id) {
+        return this.dataMap.get(id);
     }
 
-    public List<T> getAll() {
-        return new ArrayList<>(this.dataMap.values());
+    @Override
+    public boolean has(PID id) {
+        return this.dataMap.containsKey(id);
     }
 
-    public List<String> listId() {
-        List<String> ids = new ArrayList<>();
-        dataMap.keySet().forEach(pid -> ids.add(pid.getId()));
-        return ids;
+    @Override
+    public @NotNull Collection<T> getAll() {
+        return this.dataMap.values();
     }
 
-    public void reload(String id) {
-        PData data = get(id);
+    @Override
+    public @NotNull Set<PID> getIds() {
+        return this.dataMap.keySet();
+    }
+
+    @Override
+    public void reload(PID id) {
+        final UniqueData data = get(id);
         if (Objects.nonNull(data)) {
-            plugin.getLang().log.action(I18n.RELOAD, MessageFormat.format(getTypename() + "({0})", id));
+            plugin.getLang().log.action(I18n.RELOAD, objectName(id));
             data.reload();
         } else {
-            plugin.getLang().log.error(I18n.RELOAD, getTypename(), "目标数据未找到: " + id);
+            plugin.getLang().log.error(I18n.RELOAD, objectName(id), "目标数据不存在");
         }
     }
 
-    public void delete(String id) {
-        PData data = get(id);
+    @Override
+    public void delete(PID id) {
+        UniqueData data = get(id);
         if (Objects.nonNull(data)) {
-            plugin.getLang().log.action(I18n.DELETE, MessageFormat.format(getTypename() + "({0})", id));
+            plugin.getLang().log.action(I18n.DELETE, objectName(id));
             dataMap.remove(data.getID());
             data.delete();
         } else {
-            plugin.getLang().log.error(I18n.DELETE, getTypename(), "目标数据未找到: " + id);
+            plugin.getLang().log.error(I18n.DELETE, objectName(id), "目标数据不存在");
         }
     }
 
-    public void save(String id) {
-        PData data = get(id);
+    @Override
+    public void save(PID id) {
+        UniqueData data = get(id);
         if (Objects.nonNull(data)) {
-            plugin.getLang().log.action(I18n.SAVE, MessageFormat.format(getTypename() + "({0})", id));
+            plugin.getLang().log.action(I18n.SAVE, objectName(id));
             data.save();
         } else {
-            plugin.getLang().log.error(I18n.SAVE, getTypename(), "目标数据未找到: " + id);
+            plugin.getLang().log.error(I18n.SAVE, objectName(id), "目标数据不存在");
         }
     }
 
+    @Override
     public void reloadAll() {
-        plugin.getLang().log.action(I18n.RELOAD, getTypename());
         init();
     }
 
+    @Override
     public void saveAll() {
-        this.dataMap.values().forEach(PData::save);
+        this.dataMap.values().forEach(UniqueData::save);
     }
 
+    @Override
     public void deleteAll() {
-        this.dataMap.values().forEach(PData::delete);
+        this.dataMap.values().forEach(UniqueData::delete);
         this.dataMap.clear();
+        lang.log.action(I18n.CLEAR, name());
+    }
+
+    @Override
+    public String objectName(PID id) {
+        return name() + "/" + id;
     }
 }

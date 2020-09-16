@@ -19,6 +19,7 @@ import java.util.function.Supplier;
 public abstract class BaseCommand implements PCommand {
 
     protected final PPlugin plugin;
+    protected final I18n lang;
     @Getter
     private final String name;
     private final int leastArgLength;
@@ -33,6 +34,7 @@ public abstract class BaseCommand implements PCommand {
 
     public BaseCommand(@NotNull final PPlugin plugin, final String name, final int length) {
         this.plugin = plugin;
+        this.lang = this.plugin.getLang();
         this.name = name;
         this.leastArgLength = length;
         // plugin.getCmdHandler().register(this);
@@ -151,15 +153,15 @@ public abstract class BaseCommand implements PCommand {
     }
 
     protected String info(final String text, final Object... args) {
-        return plugin.getLang().data.info(text, args);
+        return lang.data.info(text, args);
     }
 
     protected String warn(final String text, final Object... args) {
-        return plugin.getLang().data.warn(text, args);
+        return lang.data.warn(text, args);
     }
 
     protected String error(final String text, final Object... args) {
-        return plugin.getLang().data.error(text, args);
+        return lang.data.error(text, args);
     }
 
     protected Object convert(final int index, final String[] args) {

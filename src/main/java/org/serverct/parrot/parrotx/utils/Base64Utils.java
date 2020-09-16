@@ -24,8 +24,7 @@ public class Base64Utils {
         bukkitObjectOutputStream.writeObject(object);
 
         byte[] bytes = byteArrayOutputStream.toByteArray();
-        String encodeToString = Base64.getEncoder().encodeToString(bytes);
-        return encodeToString;
+        return Base64.getEncoder().encodeToString(bytes);
     }
 
     public static <T> T deCode(String base64String, Class<?> clazz) throws IOException, ClassNotFoundException {

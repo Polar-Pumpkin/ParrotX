@@ -1,7 +1,7 @@
 package org.serverct.parrot.parrotx.data;
 
 public interface PConfiguration {
-    String getTypename();
+    String name();
 
     void load();
 

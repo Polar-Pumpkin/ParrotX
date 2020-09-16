@@ -36,6 +36,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
     protected final int row;
     @Getter
     protected final Map<String, Integer> pageMap = new HashMap<>();
+    private final I18n lang;
     @Getter
     private final Map<String, InventoryElement> elementMap = new HashMap<>();
     @Getter
@@ -50,6 +51,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
 
     public BaseInventory(PPlugin plugin, T data, Player user, File file) {
         this.plugin = plugin;
+        this.lang = this.plugin.getLang();
         this.data = data;
         this.viewer = user;
         this.file = file;
@@ -67,6 +69,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
 
     public BaseInventory(PPlugin plugin, T data, Player user, String title, int row) {
         this.plugin = plugin;
+        this.lang = this.plugin.getLang();
         this.data = data;
         this.viewer = user;
         this.file = null;
@@ -105,7 +108,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
     @Override
     public void open(InventoryOpenEvent event) {
         if (this.refreshInterval > 0) {
-            plugin.getLang().log.debug(getTypename() + " 刷新间隔大于 0: " + this.refreshInterval);
+            lang.log.debug(getTypename() + " 刷新间隔大于 0: " + this.refreshInterval);
             this.refreshTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> refresh(event.getInventory()), 1L, refreshInterval * 20L);
         }
     }
@@ -113,7 +116,7 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
     @Override
     public void close(InventoryCloseEvent event) {
         if (Objects.nonNull(this.refreshTask) && !this.refreshTask.isCancelled()) {
-            plugin.getLang().log.debug(getTypename() + " 取消自动刷新任务");
+            lang.log.debug(getTypename() + " 取消自动刷新任务");
             this.refreshTask.cancel();
         }
     }
@@ -184,5 +187,9 @@ public abstract class BaseInventory<T> implements InventoryExecutor {
             return cycle ? getMaxPage(name) : -1;
         }
         return page;
+    }
+
+    public InventoryTemplate<?> getTemplate(final String name) {
+        return (InventoryTemplate<?>) getElement(name);
     }
 }

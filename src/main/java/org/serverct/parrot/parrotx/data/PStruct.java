@@ -3,10 +3,9 @@ package org.serverct.parrot.parrotx.data;
 import lombok.NonNull;
 import org.bukkit.configuration.ConfigurationSection;
 import org.serverct.parrot.parrotx.data.autoload.AutoLoader;
-import org.serverct.parrot.parrotx.data.flags.Unique;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
-public abstract class PStruct extends AutoLoader implements PConfiguration, Unique {
+public abstract class PStruct extends AutoLoader implements UniqueData {
 
     protected PID id;
     protected ConfigurationSection section;
@@ -19,7 +18,7 @@ public abstract class PStruct extends AutoLoader implements PConfiguration, Uniq
 
     @Override
     public void reload() {
-        plugin.getLang().log.action(I18n.RELOAD, getTypename());
+        plugin.getLang().log.action(I18n.RELOAD, name());
         load();
     }
 
