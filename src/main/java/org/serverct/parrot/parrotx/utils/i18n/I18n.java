@@ -21,7 +21,7 @@ import java.util.Objects;
 /**
  * @author EntityParrot_
  * @author Mical
- * @version v3.1
+ * @version v3.2
  * <p>
  * 自己写的一个多语言管理工具。
  */
