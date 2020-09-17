@@ -29,7 +29,7 @@ import java.util.Objects;
 @SuppressWarnings("unused")
 public class I18n {
 
-    public static final String TOOL_VERSION = "v3.1";
+    public static final String TOOL_VERSION = "v3.2";
     public static final String LOAD = "加载";
     public static final String SAVE = "保存";
     public static final String REGISTER = "注册";
