@@ -36,6 +36,8 @@ public abstract class PPlugin extends JavaPlugin {
         final long timestamp = System.currentTimeMillis();
 
         try {
+            beforeInit();
+
             init();
 
             afterInit();
@@ -69,6 +71,9 @@ public abstract class PPlugin extends JavaPlugin {
         }
 
         load();
+    }
+
+    protected void beforeInit() {
     }
 
     protected void preload() {
