@@ -123,13 +123,19 @@ public class PLocaleManager {
     public String build(final String key, final I18n.Type type, final String message, final Object... args) {
         String pluginPrefix = plugin.getName();
         String typePrefix = "&3▶ ";
-        FileConfiguration data = lang.getLocale(lang.hasLocale(key) ? key : null);
-        if (Objects.nonNull(data)) {
-            pluginPrefix = type != I18n.Type.DEBUG ? data.getString("Plugin.Prefix", "&f[&9&l" + plugin.getName() + "&f] ") : "&f[&d" + plugin.getName() + "&f]&7(&d&lDEBUG&7) ";
-            typePrefix = type != I18n.Type.DEBUG ? data.getString("Plugin." + type.name(), "&3▶ ") : "&d&l>> ";
+        if (type == I18n.Type.DEBUG) {
+            pluginPrefix = "&f[&d" + plugin.getName() + "&f]&7(&d&lDEBUG&7) ";
+            typePrefix = "&d&l>> ";
         } else {
-            lang.log.warn("试图读取未加载的语言: &c" + key);
+            FileConfiguration data = lang.getLocale(lang.hasLocale(key) ? key : null);
+            if (Objects.nonNull(data)) {
+                pluginPrefix = data.getString("Plugin.Prefix", "&f[&9&l" + plugin.getName() + "&f] ");
+                typePrefix = data.getString("Plugin." + type.name(), "&3▶ ");
+            } else {
+                lang.log.log("试图读取未加载的语言: &c" + key, I18n.Type.WARN, true);
+            }
         }
+
         String result = pluginPrefix + typePrefix + ChatColor.RESET + message;
         if (args.length > 0) {
             result = MessageFormat.format(result, args);

@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.serverct.parrot.parrotx.PPlugin;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
 
@@ -119,7 +120,7 @@ public class PLogger {
      * @param object 操作对象。
      */
     public void action(String action, String object) {
-        log(lang.data.info("&7尝试{0} &c{1}&7.", action, object));
+        log(MessageFormat.format("&7尝试{0} &c{1}&7.", action, object), I18n.Type.DEBUG, false);
     }
 
     /**
