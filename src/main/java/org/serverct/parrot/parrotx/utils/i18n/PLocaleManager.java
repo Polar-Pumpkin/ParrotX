@@ -121,7 +121,7 @@ public class PLocaleManager {
      * @return 带有格式化前缀的文本信息。
      */
     public String build(final String key, final I18n.Type type, final String message, final Object... args) {
-        String pluginPrefix = plugin.getName();
+        String pluginPrefix = plugin.getName() + " ";
         String typePrefix = "&3▶ ";
         if (type == I18n.Type.DEBUG) {
             pluginPrefix = "&f[&d" + plugin.getName() + "&f]&7(&d&lDEBUG&7) ";
@@ -132,7 +132,7 @@ public class PLocaleManager {
                 pluginPrefix = data.getString("Plugin.Prefix", "&f[&9&l" + plugin.getName() + "&f] ");
                 typePrefix = data.getString("Plugin." + type.name(), "&3▶ ");
             } else {
-                lang.log.log("试图读取未加载的语言: &c" + key, I18n.Type.WARN, true);
+                lang.log.log("试图读取未加载的语言: &c" + key, I18n.Type.ERROR, true);
             }
         }
 

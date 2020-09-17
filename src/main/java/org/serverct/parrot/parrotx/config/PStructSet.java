@@ -1,5 +1,6 @@
 package org.serverct.parrot.parrotx.config;
 
+import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -15,12 +16,15 @@ import java.util.Objects;
 
 public abstract class PStructSet<T extends PStruct> extends PDataSet<T> {
 
+    @Getter
     protected final FileConfiguration config;
     protected final String rootName;
+    private final String filename;
     protected ConfigurationSection root;
 
-    public PStructSet(@NonNull PPlugin plugin, String fileName, String typeName, String rootName) {
-        super(plugin, new File(plugin.getDataFolder(), fileName + ".yml"), typeName);
+    public PStructSet(@NonNull PPlugin plugin, String filename, String typeName, String rootName) {
+        super(plugin, new File(plugin.getDataFolder(), filename + ".yml"), typeName);
+        this.filename = filename;
         this.rootName = rootName;
         this.config = YamlConfiguration.loadConfiguration(file);
     }
@@ -28,11 +32,11 @@ public abstract class PStructSet<T extends PStruct> extends PDataSet<T> {
     @Override
     public void init() {
         if (!file.exists()) {
-            if (file.mkdirs()) {
-                saveDefault();
-                plugin.getLang().log.warn("未找到 &c" + name() + "&7, 已重新生成.");
+            saveDefault();
+            if (file.exists()) {
+                lang.log.warn("未找到 &c" + name() + "&7, 已自动生成.");
             } else {
-                plugin.getLang().log.error("尝试生成 &c" + name() + " &7失败.");
+                lang.log.error("无法自动生成 &c" + name() + "&7.");
             }
         }
         load();
@@ -73,6 +77,27 @@ public abstract class PStructSet<T extends PStruct> extends PDataSet<T> {
             this.config.save(file);
         } catch (IOException e) {
             lang.log.error(I18n.SAVE, name(), e, null);
+        }
+    }
+
+    @Override
+    public void deleteAll() {
+        this.dataMap.values().forEach(struct -> root.set(struct.getID().getId(), null));
+        this.dataMap.clear();
+        lang.log.action(I18n.CLEAR, name());
+    }
+
+    @Override
+    public void saveDefault() {
+        if (Objects.nonNull(plugin.getResource(filename + ".yml"))) plugin.saveResource(filename + ".yml", false);
+        else {
+            try {
+                if (!file.createNewFile()) {
+                    lang.log.error(I18n.GENERATE, name(), "自动生成失败");
+                }
+            } catch (IOException e) {
+                lang.log.error(I18n.GENERATE, name(), e, null);
+            }
         }
     }
 
