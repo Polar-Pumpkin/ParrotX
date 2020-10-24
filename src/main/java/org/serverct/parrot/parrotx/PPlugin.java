@@ -12,6 +12,7 @@ import org.serverct.parrot.parrotx.config.PConfig;
 import org.serverct.parrot.parrotx.hooks.BaseExpansion;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
+import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -115,5 +116,9 @@ public abstract class PPlugin extends JavaPlugin {
 //            this.expansions.forEach(PlaceholderExpansion::unregister);
 //        }
         getServer().getScheduler().cancelTasks(this);
+    }
+
+    public File getFile(final String path) {
+        return new File(getDataFolder(), path);
     }
 }
