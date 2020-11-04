@@ -165,11 +165,23 @@ public abstract class BaseCommand implements PCommand {
     }
 
     protected Object convert(final int index, final String[] args) {
-        CommandParam param = this.paramMap.get(index);
+        final CommandParam param = this.paramMap.get(index);
         if (param == null || param.converter == null) {
             return null;
         }
-        return param.converter.apply(args);
+        if (param.continuous) {
+            final StringBuilder builder = new StringBuilder();
+            final ListIterator<String> iterator = Arrays.asList(args).listIterator(index);
+            while (iterator.hasNext()) {
+                builder.append(iterator.next());
+                if (iterator.hasNext()) {
+                    builder.append(" ");
+                }
+            }
+            return builder.toString();
+        } else {
+            return param.converter.apply(args);
+        }
     }
 
     protected @Data
@@ -184,5 +196,6 @@ public abstract class BaseCommand implements PCommand {
         private int position;
         private Supplier<String[]> suggest;
         private Function<String[], ?> converter;
+        private boolean continuous;
     }
 }

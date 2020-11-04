@@ -6,8 +6,8 @@ import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.serverct.parrot.parrotx.data.inventory.BaseInventory;
 import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
+import org.serverct.parrot.parrotx.data.inventory.PInventory;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.HashMap;
@@ -51,12 +51,12 @@ class InventoryPlaceholder implements InventoryElement {
     }
 
     @Override
-    public ItemStack parseItem(BaseInventory<?> inv, int slot) {
+    public ItemStack parseItem(PInventory<?> inv, int slot) {
         return this.placedMap.getOrDefault(slot, this.base.getItem().get());
     }
 
     @Override
-    public void click(final BaseInventory<?> holder, final InventoryClickEvent event) {
+    public void click(final PInventory<?> holder, final InventoryClickEvent event) {
         final ItemStack slotItem = event.getCurrentItem();
         final ItemStack cursorItem = event.getCursor();
 

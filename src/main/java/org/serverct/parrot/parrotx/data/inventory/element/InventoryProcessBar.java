@@ -3,8 +3,8 @@ package org.serverct.parrot.parrotx.data.inventory.element;
 import lombok.Builder;
 import lombok.Data;
 import org.bukkit.inventory.ItemStack;
-import org.serverct.parrot.parrotx.data.inventory.BaseInventory;
 import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
+import org.serverct.parrot.parrotx.data.inventory.PInventory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -39,7 +39,7 @@ class InventoryProcessBar implements InventoryElement {
     }
 
     @Override
-    public BaseElement preload(BaseInventory<?> inv) {
+    public BaseElement preload(PInventory<?> inv) {
         if (this.total > 0) {
             this.barMap.clear();
             final List<Integer> slots = getPositions();
@@ -51,7 +51,7 @@ class InventoryProcessBar implements InventoryElement {
     }
 
     @Override
-    public ItemStack parseItem(BaseInventory<?> inv, int slot) {
+    public ItemStack parseItem(PInventory<?> inv, int slot) {
         return this.barMap.getOrDefault(slot, getBase().getItem().get());
     }
 }

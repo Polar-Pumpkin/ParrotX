@@ -8,11 +8,15 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.serverct.parrot.parrotx.PPlugin;
 
 import java.util.ListIterator;
 import java.util.Objects;
 
 public interface InventoryExecutor extends InventoryHolder {
+
+    PPlugin getPlugin();
+
     Inventory construct();
 
     void execute(InventoryClickEvent event);
@@ -36,4 +40,6 @@ public interface InventoryExecutor extends InventoryHolder {
         final Inventory clickedInv = event.getClickedInventory();
         return !Objects.isNull(clickedInv) && !Objects.isNull(clickedInv.getHolder()) && clickedInv.getHolder().equals(this);
     }
+
+    String name();
 }

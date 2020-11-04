@@ -6,8 +6,8 @@ import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.serverct.parrot.parrotx.data.inventory.BaseInventory;
 import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
+import org.serverct.parrot.parrotx.data.inventory.PInventory;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.*;
@@ -52,7 +52,7 @@ class InventoryTemplate<T> implements InventoryElement {
     }
 
     @Override
-    public BaseElement preload(BaseInventory<?> inv) {
+    public BaseElement preload(PInventory<?> inv) {
         final I18n lang = inv.getPlugin().getLang();
         lang.log.debug("预加载 InventoryTemplate: " + getBase().getName());
         lang.log.debug("数据集: " + contents);
@@ -81,12 +81,12 @@ class InventoryTemplate<T> implements InventoryElement {
     }
 
     @Override
-    public ItemStack parseItem(BaseInventory<?> inv, int slot) {
+    public ItemStack parseItem(PInventory<?> inv, int slot) {
         return apply(this.contentMap.getOrDefault(inv.getPage(getBase().getName()), new HashMap<>()).get(slot));
     }
 
     @Override
-    public void click(final BaseInventory<?> holder, final InventoryClickEvent event) {
+    public void click(final PInventory<?> holder, final InventoryClickEvent event) {
         if (Objects.isNull(getContent(holder.getPage(getBase().getName()), event.getSlot()))) {
             event.setCancelled(true);
             return;

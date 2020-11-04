@@ -4,8 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.serverct.parrot.parrotx.data.inventory.BaseInventory;
 import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
+import org.serverct.parrot.parrotx.data.inventory.PInventory;
 
 import java.util.Objects;
 import java.util.function.BooleanSupplier;
@@ -38,12 +38,12 @@ class InventorySwitch implements InventoryElement {
     }
 
     @Override
-    public ItemStack parseItem(BaseInventory<?> inv, int slot) {
+    public ItemStack parseItem(PInventory<?> inv, int slot) {
         return active ? activeItem.get() : base.getItem().get();
     }
 
     @Override
-    public void click(final BaseInventory<?> holder, final InventoryClickEvent event) {
+    public void click(final PInventory<?> holder, final InventoryClickEvent event) {
         event.setCancelled(true);
         if (!condition()) {
             return;

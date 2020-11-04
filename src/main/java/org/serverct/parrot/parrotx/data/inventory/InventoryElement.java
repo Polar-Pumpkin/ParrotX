@@ -20,15 +20,15 @@ public interface InventoryElement {
         return getBase().getPositions();
     }
 
-    default BaseElement preload(final BaseInventory<?> inv) {
+    default BaseElement preload(final PInventory<?> inv) {
         return getBase().preload(inv);
     }
 
-    default ItemStack parseItem(final BaseInventory<?> inv, final int slot) {
+    default ItemStack parseItem(final PInventory<?> inv, final int slot) {
         return getBase().parseItem(inv, slot);
     }
 
-    default void click(final BaseInventory<?> holder, final InventoryClickEvent event) {
+    default void click(final PInventory<?> holder, final InventoryClickEvent event) {
         getBase().click(holder, event);
     }
 }
