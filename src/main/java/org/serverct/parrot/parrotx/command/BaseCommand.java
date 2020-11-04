@@ -166,7 +166,7 @@ public abstract class BaseCommand implements PCommand {
 
     protected Object convert(final int index, final String[] args) {
         final CommandParam param = this.paramMap.get(index);
-        if (param == null || param.converter == null) {
+        if (param == null || (!param.continuous && param.converter == null)) {
             return null;
         }
         if (param.continuous) {
