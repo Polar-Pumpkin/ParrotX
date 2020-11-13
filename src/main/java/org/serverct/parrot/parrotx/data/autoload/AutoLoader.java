@@ -109,6 +109,9 @@ public abstract class AutoLoader {
                                     }
                                     field.set(to, from.getSerializable(path, serializable));
                                     break;
+                                case STRING_LIST:
+                                    field.set(to, from.getStringList(path));
+                                    break;
                                 case UNKNOWN:
                                 default:
                                     field.set(to, from.get(path));

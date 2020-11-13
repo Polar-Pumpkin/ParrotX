@@ -25,7 +25,8 @@ public class AutoLoadItem {
         LOCATION("坐标"),
         COLOR("颜色"),
         SERIALIZABLE("可序列化对象"),
-        UNKNOWN("未知类型");
+        UNKNOWN("未知类型"),
+        STRING_LIST("字符串列表");
 
         public final String name;
 
