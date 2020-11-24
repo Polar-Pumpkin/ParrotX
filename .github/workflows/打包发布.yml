@@ -30,7 +30,7 @@ jobs:
       with:
         tag_name: ${{ github.ref }}
         release_name: ParrotX ${{ github.ref }}
-        body_path: ./Updates/${{ github.ref }}.md
+        body_path: ./Updates
         draft: false
         prerelease: true
     - name: 上传最新版 ParrotX
