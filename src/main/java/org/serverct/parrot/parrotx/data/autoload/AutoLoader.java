@@ -4,8 +4,10 @@ import com.google.common.collect.Multimap;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.inventory.ItemStack;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.utils.EnumUtil;
+import org.serverct.parrot.parrotx.utils.ItemUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.lang.reflect.Field;
@@ -103,8 +105,12 @@ public abstract class AutoLoader {
                         }
                         field.set(to, sound);
                         break;
-                    case ITEM_STACK:
-                        field.set(to, dataSource.getItemStack(path));
+                    case ITEMSTACK:
+                        ItemStack itemstack = dataSource.getItemStack(path);
+                        if (Objects.isNull(itemstack) && Objects.nonNull(section)) {
+                            itemstack = ItemUtil.build(plugin, section);
+                        }
+                        field.set(to, itemstack);
                         break;
                     case COLOR:
                         field.set(to, dataSource.getColor(path));

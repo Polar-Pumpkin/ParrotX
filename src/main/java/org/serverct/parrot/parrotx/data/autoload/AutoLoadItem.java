@@ -23,7 +23,7 @@ public class AutoLoadItem {
         STRING_MAP("哈希表(String)"),
         INT_MAP("哈希表(Int)"),
         SOUND("音效(Sound)枚举"),
-        ITEM_STACK("物品堆(ItemStack)"),
+        ITEMSTACK("物品堆(ItemStack)"),
         LOCATION("坐标"),
         COLOR("颜色"),
         SERIALIZABLE("可序列化对象"),
