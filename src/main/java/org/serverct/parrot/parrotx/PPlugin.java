@@ -112,9 +112,6 @@ public abstract class PPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-//        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-//            this.expansions.forEach(PlaceholderExpansion::unregister);
-//        }
         getServer().getScheduler().cancelTasks(this);
     }
 
