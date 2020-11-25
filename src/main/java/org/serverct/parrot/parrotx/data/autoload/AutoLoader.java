@@ -226,11 +226,14 @@ public abstract class AutoLoader {
 
     protected void importGroups(final Object to) {
         final Class<?> clazz = to.getClass();
-        final Group annotation = clazz.getAnnotation(Group.class);
+        final Groups annotation = clazz.getAnnotation(Groups.class);
         if (Objects.isNull(annotation)) {
             return;
         }
-        group(annotation.name(), annotation.path(), defFrom, defTo);
+
+        for (Group group : annotation.value()) {
+            group(group.name(), group.path(), defFrom, defTo);
+        }
     }
 
     protected AutoLoadGroup group(final String name, final String path, final ConfigurationSection from, final Object to) {

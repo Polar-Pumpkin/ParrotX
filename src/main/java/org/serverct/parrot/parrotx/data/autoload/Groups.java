@@ -5,9 +5,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@Repeatable(Groups.class)
-public @interface Group {
-    String name();
-
-    String path();
+public @interface Groups {
+    Group[] value();
 }
