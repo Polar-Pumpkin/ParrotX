@@ -2,13 +2,14 @@ package org.serverct.parrot.parrotx.data.autoload;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
 @Data
 @Builder
 public class AutoLoadItem {
-    private String path;
-    private DataType type;
-    private String field;
+    private final String path;
+    private final DataType type;
+    private final String field;
 
     public enum DataType {
         STRING("字符串"),
@@ -18,6 +19,7 @@ public class AutoLoadItem {
         BOOLEAN("布尔值"),
         LIST("列表"),
         MAP_LIST("Map 列表"),
+        STRING_LIST("字符串列表"),
         STRING_MAP("哈希表(String)"),
         INT_MAP("哈希表(Int)"),
         SOUND("音效(Sound)枚举"),
@@ -25,9 +27,9 @@ public class AutoLoadItem {
         LOCATION("坐标"),
         COLOR("颜色"),
         SERIALIZABLE("可序列化对象"),
-        UNKNOWN("未知类型"),
-        STRING_LIST("字符串列表");
+        UNKNOWN("未知类型");
 
+        @Getter
         public final String name;
 
         DataType(String name) {
