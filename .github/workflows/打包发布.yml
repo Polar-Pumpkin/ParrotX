@@ -42,3 +42,7 @@ jobs:
         asset_path: ./target/ParrotX.jar
         asset_name: ParrotX.jar
         asset_content_type: application/zip
+    - name: 发布到 GitHub Packages
+      run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
