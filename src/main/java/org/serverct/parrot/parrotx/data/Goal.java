@@ -9,9 +9,9 @@ import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.flags.Timestamp;
 import org.serverct.parrot.parrotx.data.flags.Unique;
 import org.serverct.parrot.parrotx.utils.EnumUtil;
-import org.serverct.parrot.parrotx.utils.i18n.I18n;
 import org.serverct.parrot.parrotx.utils.InventoryUtil;
 import org.serverct.parrot.parrotx.utils.ItemUtil;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +22,7 @@ import java.util.Map;
 public class Goal implements Timestamp, Unique {
 
     private final PPlugin plugin;
-    private PID id;
+    private final PID id;
     private long startTime;
     @Getter
     private Map<Type, Integer> digitalRemain = new HashMap<>();
@@ -154,11 +154,6 @@ public class Goal implements Timestamp, Unique {
     @Override
     public PID getID() {
         return id;
-    }
-
-    @Override
-    public void setID(@NonNull PID pid) {
-        this.id = pid;
     }
 
     public enum Type {

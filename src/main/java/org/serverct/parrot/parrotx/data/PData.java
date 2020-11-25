@@ -57,11 +57,6 @@ public abstract class PData extends AutoLoader implements UniqueData, FileSaved 
     }
 
     @Override
-    public void setID(@NonNull PID pid) {
-        this.id = pid;
-    }
-
-    @Override
     public void delete() {
         if (this.file.delete()) {
             plugin.getLang().log.action(I18n.DELETE, name());
