@@ -194,6 +194,7 @@ public abstract class AutoLoader {
     }
 
     protected void autoLoad() {
+        importGroups(this);
         this.groupMap.values().forEach(group -> {
             importItems(group.getTo());
             group.load(plugin);
@@ -207,7 +208,7 @@ public abstract class AutoLoader {
     protected void importItems(final Object to) {
         final Class<?> clazz = to.getClass();
         for (Field field : clazz.getDeclaredFields()) {
-            final AutoLoad annotation = field.getAnnotation(AutoLoad.class);
+            final Load annotation = field.getAnnotation(Load.class);
             if (Objects.isNull(annotation)) {
                 continue;
             }
@@ -221,6 +222,15 @@ public abstract class AutoLoader {
 
             add(annotation.group(), annotation.path(), type, field.getName());
         }
+    }
+
+    protected void importGroups(final Object to) {
+        final Class<?> clazz = to.getClass();
+        final Group annotation = clazz.getAnnotation(Group.class);
+        if (Objects.isNull(annotation)) {
+            return;
+        }
+        group(annotation.name(), annotation.path(), defFrom, defTo);
     }
 
     protected AutoLoadGroup group(final String name, final String path, final ConfigurationSection from, final Object to) {
