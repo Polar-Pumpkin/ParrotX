@@ -18,13 +18,13 @@ public class HelpCommand extends BaseCommand {
                 .description("插件的其他子命令")
                 .optional(true)
                 .position(0)
-                .suggest(() -> plugin.getCmdHandler().getCommands().keySet().toArray(new String[0]))
+                .suggest(() -> plugin.getCommandHandler().getCommands().keySet().toArray(new String[0]))
                 .build());
     }
 
     @Override
     protected void call(String[] args) {
-        CommandHandler handler = plugin.getCmdHandler();
+        CommandHandler handler = plugin.getCommandHandler();
         Map<String, PCommand> subCommands = handler.getCommands();
 
         if (args.length <= 0) {
@@ -34,7 +34,7 @@ public class HelpCommand extends BaseCommand {
             if (subCommands.containsKey(args[0]))
                 for (String help : subCommands.get(args[0]).getHelp()) sender.sendMessage(I18n.color(help));
             else
-                sender.sendMessage(plugin.getLang().data.warn("未知子命令, 输入 &d/" + plugin.getCmdHandler().mainCmd + " help &7获取插件帮助."));
+                sender.sendMessage(plugin.getLang().data.warn("未知子命令, 输入 &d/" + plugin.getCommandHandler().mainCmd + " help &7获取插件帮助."));
         }
     }
 }

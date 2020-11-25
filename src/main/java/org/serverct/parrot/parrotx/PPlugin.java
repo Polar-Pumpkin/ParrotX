@@ -29,7 +29,7 @@ public abstract class PPlugin extends JavaPlugin {
     private Consumer<PluginManager> listenerRegister = null;
     private String timeLog = null;
     @Getter
-    private CommandHandler cmdHandler;
+    private CommandHandler commandHandler;
 
     @Override
     public void onEnable() {
@@ -101,7 +101,7 @@ public abstract class PPlugin extends JavaPlugin {
     protected void registerCommand(@NonNull CommandHandler handler) {
         PluginCommand command = Bukkit.getPluginCommand(handler.mainCmd);
         if (command != null) {
-            this.cmdHandler = handler;
+            this.commandHandler = handler;
             command.setExecutor(handler);
             command.setTabCompleter(handler);
         } else {

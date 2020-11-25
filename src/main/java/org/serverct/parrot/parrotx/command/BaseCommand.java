@@ -108,7 +108,7 @@ public abstract class BaseCommand implements PCommand {
             add("");
 
             StringBuilder commandLine = new StringBuilder("  &9▶ &d/")
-                    .append(plugin.getCmdHandler().mainCmd)
+                    .append(plugin.getCommandHandler().mainCmd)
                     .append(" ")
                     .append(name);
             paramMap.values().forEach(param -> {
