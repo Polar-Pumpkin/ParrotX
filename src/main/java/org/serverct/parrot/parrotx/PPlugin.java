@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 
 public abstract class PPlugin extends JavaPlugin {
 
+
     private final List<BaseExpansion> expansions = new ArrayList<>();
     public String localeKey = "Chinese";
     protected PConfig pConfig;

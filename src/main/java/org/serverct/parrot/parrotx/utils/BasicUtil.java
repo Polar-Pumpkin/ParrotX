@@ -20,6 +20,8 @@ import parsii.eval.Variable;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.MessageFormat;
+import java.util.Map;
 import java.util.Objects;
 
 @SuppressWarnings({"unused"})
@@ -67,17 +69,40 @@ public class BasicUtil {
         return I18n.color(result);
     }
 
-    public static double calculateExpression(@NonNull PPlugin plugin, String expression, int xValue) {
+    public static double calculate(@NonNull PPlugin plugin, String expression, int xValue) {
+        final I18n lang = plugin.getLang();
         try {
-            Scope scope = Scope.create();
-            Variable x = scope.getVariable("x");
-            Expression expr = Parser.parse(expression, scope);
+            final Scope scope = Scope.create();
+            final Variable x = scope.getVariable("x");
+            final Expression expr = Parser.parse(expression, scope);
             x.setValue(xValue);
             double result = expr.evaluate();
-            plugin.getLang().log.action(I18n.CALCULATE, "数学表达式(" + expression + ", x=" + xValue + ", 值=" + result + ")");
+
+            final String message = MessageFormat.format("数学表达式({0}, x={1}, 值={2})", expression, xValue, result);
+            lang.log.action(I18n.CALCULATE, message);
             return result;
         } catch (Throwable e) {
-            plugin.getLang().log.error(I18n.CALCULATE, "数学表达式(" + expression + ", x=" + xValue + ")", e, null);
+            lang.log.error(I18n.CALCULATE, "数学表达式(" + expression + ", x=" + xValue + ")", e, null);
+        }
+        return 0;
+    }
+
+    public static double calculate(@NonNull PPlugin plugin, final String expression, final Map<String, Double> variable) {
+        final I18n lang = plugin.getLang();
+        try {
+            final Scope scope = Scope.create();
+            variable.forEach((symbol, value) -> {
+                final Variable var = scope.getVariable(symbol);
+                var.setValue(value);
+            });
+            final Expression expr = Parser.parse(expression, scope);
+            final double result = expr.evaluate();
+
+            final String message = MessageFormat.format("数学表达式({0} = {1}): {2}", expression, result, variable.toString());
+            lang.log.action(I18n.CALCULATE, message);
+            return result;
+        } catch (Throwable e) {
+            lang.log.error(I18n.CALCULATE, "数学表达式(" + expression + "): " + variable.toString(), e, null);
         }
         return 0;
     }
