@@ -14,4 +14,6 @@ public interface PConfiguration {
     void init();
 
     void saveDefault();
+
+    boolean isReadOnly();
 }

@@ -18,27 +18,36 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
 
     private final String filename;
     private final String typeName;
+    private final boolean readonly;
 
     @Getter
     protected File file;
     @Getter
     protected FileConfiguration config;
 
-    public PConfig(@NonNull PPlugin plugin, String filename, String typeName) {
+    public PConfig(@NonNull PPlugin plugin, String filename, String typename, boolean readonly) {
         super(plugin);
-        this.file = new File(plugin.getDataFolder(), filename + ".yml");
+        this.file = new File(plugin.getDataFolder(), filename + (filename.endsWith(".yml") ? "" : ".yml"));
         this.filename = filename;
-        this.typeName = typeName;
+        this.typeName = typename;
+        this.readonly = readonly;
+
+        plugin.registerConfiguration(this);
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return this.readonly;
     }
 
     @Override
     public String name() {
-        return typeName + "/" + filename;
+        return this.typeName + "/" + this.filename;
     }
 
     @Override
     public String getFilename() {
-        return filename;
+        return this.filename;
     }
 
     @Override

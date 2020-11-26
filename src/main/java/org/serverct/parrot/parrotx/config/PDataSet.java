@@ -22,13 +22,22 @@ public abstract class PDataSet<T extends UniqueData> implements PConfiguration, 
     protected final PPlugin plugin;
     protected final I18n lang;
     private final String name;
+    private final boolean readonly;
     protected File file;
 
-    public PDataSet(PPlugin plugin, File file, String name) {
+    public PDataSet(PPlugin plugin, File file, String name, boolean readonly) {
         this.plugin = plugin;
         this.file = file;
         this.lang = this.plugin.getLang();
         this.name = name;
+        this.readonly = readonly;
+
+        plugin.registerConfiguration(this);
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return this.readonly;
     }
 
     @Override

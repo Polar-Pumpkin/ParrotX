@@ -9,6 +9,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.serverct.parrot.parrotx.command.CommandHandler;
 import org.serverct.parrot.parrotx.config.PConfig;
+import org.serverct.parrot.parrotx.data.PConfiguration;
 import org.serverct.parrot.parrotx.hooks.BaseExpansion;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
@@ -21,7 +22,7 @@ import java.util.function.Consumer;
 
 public abstract class PPlugin extends JavaPlugin {
 
-
+    private final List<PConfiguration> configs = new ArrayList<>();
     private final List<BaseExpansion> expansions = new ArrayList<>();
     public String localeKey = "Chinese";
     protected PConfig pConfig;
@@ -72,6 +73,8 @@ public abstract class PPlugin extends JavaPlugin {
             localeKey = pConfig.getConfig().getString("Language");
         }
 
+        this.configs.forEach(PConfiguration::init);
+
         load();
     }
 
@@ -110,10 +113,19 @@ public abstract class PPlugin extends JavaPlugin {
         }
     }
 
+    public void registerConfiguration(final PConfiguration configuration) {
+        this.configs.add(configuration);
+    }
+
     @Override
     public void onDisable() {
         // Plugin shutdown logic
         getServer().getScheduler().cancelTasks(this);
+        this.configs.forEach(config -> {
+            if (!config.isReadOnly()) {
+                config.save();
+            }
+        });
     }
 
     public File getFile(final String path) {
