@@ -250,7 +250,7 @@ public abstract class AutoLoader {
                 .from(from)
                 .to(to)
                 .build();
-        lang.log.action(I18n.CREATE, "新自动加载数据组: {0}(路径: {1}, 数据源: {2}, 存储对象: {3})", name, path, from.getName(), to.getClass().getSimpleName());
+        lang.log.action(I18n.CREATE, "新自动加载数据组: {0}(路径: {1}, 数据源: {2}, {3})", name, path, from.getName(), to.getClass().getSimpleName() + ".class");
         this.groupMap.put(name, group);
         return group;
     }

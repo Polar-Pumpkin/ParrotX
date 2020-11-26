@@ -9,5 +9,5 @@ import java.lang.annotation.*;
 public @interface Group {
     String name();
 
-    String path();
+    String path() default "";
 }
