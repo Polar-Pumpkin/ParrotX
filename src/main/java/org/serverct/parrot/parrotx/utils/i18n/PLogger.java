@@ -52,8 +52,8 @@ public class PLogger {
         log(result);
     }
 
-    public void debug(final String message) {
-        debug(message, false);
+    public void debug(final String message, final Object... args) {
+        debug(MessageFormat.format(message, args), false);
     }
 
     /**
@@ -89,24 +89,24 @@ public class PLogger {
         messages.forEach(s -> log(s, type, viaTool));
     }
 
-    public void info(final String message) {
-        log(message, I18n.Type.INFO, false);
+    public void info(final String message, final Object... args) {
+        log(MessageFormat.format(message, args), I18n.Type.INFO, false);
     }
 
     public void info(final List<String> message) {
         log(message, I18n.Type.INFO, false);
     }
 
-    public void warn(final String message) {
-        log(message, I18n.Type.WARN, false);
+    public void warn(final String message, final Object... args) {
+        log(MessageFormat.format(message, args), I18n.Type.WARN, false);
     }
 
     public void warn(final List<String> message) {
         log(message, I18n.Type.WARN, false);
     }
 
-    public void error(final String message) {
-        log(message, I18n.Type.ERROR, false);
+    public void error(final String message, final Object... args) {
+        log(MessageFormat.format(message, args), I18n.Type.ERROR, false);
     }
 
     public void error(final List<String> message) {
@@ -119,8 +119,8 @@ public class PLogger {
      * @param action 动作名称。
      * @param object 操作对象。
      */
-    public void action(String action, String object) {
-        log(MessageFormat.format("&7尝试{0} &c{1}&7.", action, object), I18n.Type.DEBUG, false);
+    public void action(String action, String object, Object... args) {
+        log(MessageFormat.format("&7尝试{0} &c{1}&7.", action, MessageFormat.format(object, args)), I18n.Type.DEBUG, false);
     }
 
     /**

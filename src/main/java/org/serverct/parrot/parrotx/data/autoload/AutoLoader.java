@@ -226,6 +226,7 @@ public abstract class AutoLoader {
                 continue;
             }
 
+            lang.log.action(I18n.CREATE, "新自动加载项目: {0}({1}) -> {2}(组: {3})", field.getName(), type, annotation.path(), annotation.group());
             add(annotation.group(), annotation.path(), type, field.getName());
         }
     }
@@ -249,12 +250,17 @@ public abstract class AutoLoader {
                 .from(from)
                 .to(to)
                 .build();
+        lang.log.action(I18n.CREATE, "新自动加载数据组: {0}(路径: {1}, 数据源: {2}, 存储对象: {3})", name, path, from.getName(), to.getClass().getSimpleName());
         this.groupMap.put(name, group);
         return group;
     }
 
     protected AutoLoadGroup getGroup(final String group) {
-        return Optional.ofNullable(this.groupMap.get(group)).orElse(group(group, "", defFrom, defTo));
+        if (this.groupMap.containsKey(group)) {
+            return this.groupMap.get(group);
+        } else {
+            return group(group, "", defFrom, defTo);
+        }
     }
 
     protected void add(final String path, final AutoLoadItem.DataType type, final String field) {
