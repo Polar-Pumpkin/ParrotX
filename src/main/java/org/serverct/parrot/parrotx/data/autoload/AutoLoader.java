@@ -200,7 +200,7 @@ public abstract class AutoLoader {
     }
 
     protected void autoLoad() {
-        importGroups(this);
+        importGroups(defTo);
         this.groupMap.values().forEach(group -> {
             importItems(group.getTo());
             group.load(plugin);
