@@ -46,6 +46,10 @@ class InventoryTemplate<T> implements InventoryElement {
         return this.contentMap.getOrDefault(page, new HashMap<>()).get(slot);
     }
 
+    public T getContent(final int slot) {
+        return getContent(this.currentPage, slot);
+    }
+
     public int getMaxPage() {
         return this.contentMap.size();
     }

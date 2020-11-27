@@ -140,7 +140,7 @@ public abstract class AutoLoader {
         }
     }
 
-    public static void save(final PPlugin plugin, final String object, final ConfigurationSection from, final Object to, final Map<String, AutoLoadItem> itemMap) {
+    public static void save(final PPlugin plugin, final String object, final String extraPath, final ConfigurationSection from, final Object to, final Map<String, AutoLoadItem> itemMap) {
         if (Objects.isNull(from) || Objects.isNull(to)) {
             return;
         }
@@ -148,28 +148,31 @@ public abstract class AutoLoader {
         final I18n lang = plugin.getLang();
         final Class<?> clazz = to.getClass();
 
-        itemMap.forEach(
-                (fieldName, item) -> {
-                    try {
-                        Field field = clazz.getDeclaredField(fieldName);
-                        field.setAccessible(true);
-                        switch (item.getType()) {
-                            case INT_MAP:
-                            case STRING_MAP:
-                                final Map<?, ?> map = (Map<?, ?>) field.get(to);
-                                map.forEach((key, value) -> from.set((String) key, value));
-                                break;
-                            default:
-                                from.set(item.getPath(), field.get(to));
-                                break;
-                        }
-                    } catch (NoSuchFieldException e) {
-                        lang.log.error(I18n.LOAD, object, "目标 Field 未找到: " + item.getField());
-                    } catch (Throwable e) {
-                        lang.log.error(I18n.LOAD, object, e, null);
-                    }
+        for (Map.Entry<String, AutoLoadItem> entry : itemMap.entrySet()) {
+            final String fieldName = entry.getKey();
+            final AutoLoadItem item = entry.getValue();
+
+            final String path = (Optional.ofNullable(extraPath).orElse("").length() > 0 ? extraPath + "." : "") + item.getPath();
+            final ConfigurationSection section = from.createSection(path);
+            try {
+                Field field = clazz.getDeclaredField(fieldName);
+                field.setAccessible(true);
+                switch (item.getType()) {
+                    case INT_MAP:
+                    case STRING_MAP:
+                        final Map<?, ?> map = (Map<?, ?>) field.get(to);
+                        map.forEach((key, value) -> section.set((String) key, value));
+                        break;
+                    default:
+                        from.set(path, field.get(to));
+                        break;
                 }
-        );
+            } catch (NoSuchFieldException e) {
+                lang.log.error(I18n.LOAD, object, "目标 Field 未找到: " + item.getField());
+            } catch (Throwable e) {
+                lang.log.error(I18n.LOAD, object, e, null);
+            }
+        }
     }
 
     private static Class<? extends ConfigurationSerializable> getSerializable(final String path, final Multimap<Class<? extends ConfigurationSerializable>, String> map) {
