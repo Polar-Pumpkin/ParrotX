@@ -8,18 +8,14 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.inventory.element.BaseElement;
-import org.serverct.parrot.parrotx.data.inventory.element.InventoryTemplate;
-import org.serverct.parrot.parrotx.data.inventory.flags.Pageable;
 
 import java.io.File;
 import java.util.*;
 
-public abstract class PInventory<T> extends AutoRefreshInventory implements Pageable {
+public abstract class PInventory<T> extends AutoRefreshInventory {
 
     @Getter
     protected final T data;
-    @Getter
-    protected final Map<String, Integer> pageMap = new HashMap<>();
     @Getter
     private final Map<String, InventoryElement> elementMap = new HashMap<>();
     @Getter
@@ -87,24 +83,11 @@ public abstract class PInventory<T> extends AutoRefreshInventory implements Page
         this.elementMap.put(element.getBase().getName(), element);
     }
 
-    protected InventoryElement getElement(int slot) {
+    public InventoryElement getElement(int slot) {
         return this.elementMap.get(this.slotMap.get(slot));
     }
 
-    protected InventoryElement getElement(String name) {
+    public InventoryElement getElement(String name) {
         return this.elementMap.get(name);
-    }
-
-    public InventoryTemplate<?> getTemplate(final String name) {
-        return (InventoryTemplate<?>) getElement(name);
-    }
-
-    @Override
-    public int getMaxPage(final String element) {
-        final InventoryElement inventoryElement = getElement(element);
-        if (inventoryElement instanceof InventoryTemplate<?>) {
-            return ((InventoryTemplate<?>) inventoryElement).getContentMap().size();
-        }
-        return 0;
     }
 }

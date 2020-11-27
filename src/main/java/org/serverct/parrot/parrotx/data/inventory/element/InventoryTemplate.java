@@ -21,6 +21,11 @@ class InventoryTemplate<T> implements InventoryElement {
     private final List<T> contents;
     private final BiFunction<ItemStack, T, ItemStack> applyTemple;
     private final Map<Integer, Map<Integer, T>> contentMap = new HashMap<>();
+    private int currentPage;
+
+    public static InventoryTemplate<?> get(final PInventory<?> inv, final String name) {
+        return (InventoryTemplate<?>) inv.getElement(name);
+    }
 
     public InventoryElement getElement() {
         return base;
@@ -39,6 +44,14 @@ class InventoryTemplate<T> implements InventoryElement {
 
     public T getContent(final int page, final int slot) {
         return this.contentMap.getOrDefault(page, new HashMap<>()).get(slot);
+    }
+
+    public int getMaxPage() {
+        return this.contentMap.size();
+    }
+
+    public void setCurrentPage(final int page) {
+        this.currentPage = Math.min(getMaxPage(), Math.max(page, 1));
     }
 
     @Override
@@ -74,20 +87,18 @@ class InventoryTemplate<T> implements InventoryElement {
         contentMap.put(page, contents);
         lang.log.debug("分页数据集: " + contentMap);
 
-        inv.setPage(getBase().getName(), 1);
-        lang.log.debug("BaseInventory 页码数据: " + inv.getPageMap());
-
+        this.currentPage = 1;
         return getBase();
     }
 
     @Override
     public ItemStack parseItem(PInventory<?> inv, int slot) {
-        return apply(this.contentMap.getOrDefault(inv.getPage(getBase().getName()), new HashMap<>()).get(slot));
+        return apply(this.contentMap.getOrDefault(currentPage, new HashMap<>()).get(slot));
     }
 
     @Override
     public void click(final PInventory<?> holder, final InventoryClickEvent event) {
-        if (Objects.isNull(getContent(holder.getPage(getBase().getName()), event.getSlot()))) {
+        if (Objects.isNull(getContent(this.currentPage, event.getSlot()))) {
             event.setCancelled(true);
             return;
         }
