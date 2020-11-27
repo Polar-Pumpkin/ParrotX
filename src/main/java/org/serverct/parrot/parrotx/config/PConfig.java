@@ -8,6 +8,7 @@ import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PConfiguration;
 import org.serverct.parrot.parrotx.data.autoload.AutoLoader;
 import org.serverct.parrot.parrotx.data.flags.FileSaved;
+import org.serverct.parrot.parrotx.utils.BasicUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
@@ -28,10 +29,13 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
     public PConfig(@NonNull PPlugin plugin, String filename, String typename, boolean readonly) {
         super(plugin);
         this.file = new File(plugin.getDataFolder(), filename + (filename.endsWith(".yml") ? "" : ".yml"));
-        this.filename = filename;
+        this.filename = BasicUtil.getNoExFileName(this.file.getName());
         this.typeName = typename;
         this.readonly = readonly;
 
+        if (getFilename().equals("config")) {
+            return;
+        }
         plugin.registerConfiguration(this);
     }
 
