@@ -43,6 +43,6 @@ public class AutoLoadGroup {
     }
 
     public void save(final PPlugin plugin) {
-        AutoLoader.save(plugin, "自动加载数据组/" + name, from, to, itemMap);
+        AutoLoader.save(plugin, "自动加载数据组/" + name, path, from, to, itemMap);
     }
 }
