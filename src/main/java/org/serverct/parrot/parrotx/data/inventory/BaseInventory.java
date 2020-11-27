@@ -38,7 +38,7 @@ public class BaseInventory implements InventoryExecutor {
 
     @Override
     public Inventory construct() {
-        return Bukkit.createInventory(this, this.row, I18n.color(this.title));
+        return Bukkit.createInventory(this, this.row * 9, I18n.color(this.title));
     }
 
     @Override
