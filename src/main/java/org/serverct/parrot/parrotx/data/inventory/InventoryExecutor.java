@@ -32,9 +32,9 @@ public interface InventoryExecutor extends InventoryHolder {
         while (iterator.hasNext()) inventory.setItem(iterator.nextIndex(), iterator.next());
     }
 
-    default boolean check(final InventoryClickEvent event) {
+    default boolean check(final @NonNull InventoryExecutor executor, final @NonNull InventoryClickEvent event) {
         final Inventory clickedInv = event.getClickedInventory();
-        return Objects.nonNull(clickedInv) && Objects.nonNull(clickedInv.getHolder()) && this.equals(clickedInv.getHolder());
+        return Objects.nonNull(clickedInv) && Objects.nonNull(clickedInv.getHolder()) && executor.equals(clickedInv.getHolder());
     }
 
     String name();

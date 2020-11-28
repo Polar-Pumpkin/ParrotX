@@ -66,12 +66,16 @@ public abstract class PInventory<T> extends AutoRefreshInventory {
 
     @Override
     public void execute(InventoryClickEvent event) {
-        if (!check(event)) {
+        lang.log.debug("处理 PInventory: {0} 的点击事件...", name());
+        if (!check(this, event)) {
+            lang.log.debug("未通过 Inventory 一致性检查.");
             return;
         }
 
         final InventoryElement element = getElement(event.getSlot());
+        lang.log.debug("被点击的 Inventory 元素: {0}", element);
         if (Objects.isNull(element) || !element.isClickable()) {
+            lang.log.debug("被点击 Inventory 元素为 null 或不可点击.");
             event.setCancelled(true);
             return;
         }
