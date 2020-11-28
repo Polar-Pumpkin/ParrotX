@@ -83,11 +83,11 @@ public abstract class PInventory<T> extends AutoRefreshInventory {
         this.elementMap.put(element.getBase().getName(), element);
     }
 
-    public InventoryElement getElement(int slot) {
-        return this.elementMap.get(this.slotMap.get(slot));
-    }
-
     public InventoryElement getElement(String name) {
         return this.elementMap.get(name);
+    }
+
+    public InventoryElement getElement(int slot) {
+        return getElement(this.slotMap.get(slot));
     }
 }
