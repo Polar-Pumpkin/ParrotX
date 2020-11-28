@@ -34,7 +34,7 @@ public interface InventoryExecutor extends InventoryHolder {
 
     default boolean check(final InventoryClickEvent event) {
         final Inventory clickedInv = event.getClickedInventory();
-        return !Objects.isNull(clickedInv) && !Objects.isNull(clickedInv.getHolder()) && clickedInv.getHolder().equals(this);
+        return Objects.nonNull(clickedInv) && Objects.nonNull(clickedInv.getHolder()) && this.equals(clickedInv.getHolder());
     }
 
     String name();
