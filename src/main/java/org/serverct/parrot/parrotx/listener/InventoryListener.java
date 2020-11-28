@@ -24,10 +24,13 @@ public class InventoryListener implements Listener {
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
+        lang.log.debug("监听到 Inventory 点击事件: {0}", event.toString());
         final InventoryHolder holder = event.getInventory().getHolder();
         if (holder instanceof InventoryExecutor) {
+            lang.log.debug("被点击 Inventory 基于 ParrotX Inventory 工具");
             final InventoryExecutor executor = (InventoryExecutor) holder;
             if (plugin.equals(executor.getPlugin())) {
+                lang.log.debug("监听到与监听器相通所属插件的 Inventory.");
                 executor.execute(event);
             }
         }
