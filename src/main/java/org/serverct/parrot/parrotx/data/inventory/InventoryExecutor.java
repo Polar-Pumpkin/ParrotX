@@ -3,7 +3,6 @@ package org.serverct.parrot.parrotx.data.inventory;
 import lombok.NonNull;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -25,9 +24,6 @@ public interface InventoryExecutor extends InventoryHolder {
     }
 
     default void close(InventoryCloseEvent event) {
-    }
-
-    default void event(InventoryEvent event) {
     }
 
     default void refresh(@NonNull Inventory inventory) {

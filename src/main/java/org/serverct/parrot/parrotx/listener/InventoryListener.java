@@ -5,7 +5,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.serverct.parrot.parrotx.PPlugin;
@@ -22,21 +21,36 @@ public class InventoryListener implements Listener {
         this.lang = this.plugin.getLang();
     }
 
+
     @EventHandler
-    public void onEvent(InventoryEvent event) {
-        lang.log.debug("监听到 Inventory 事件: {0}", event.toString());
-        lang.log.debug("当前监听器所属插件: {0}", plugin.getName());
-        InventoryHolder holder = event.getInventory().getHolder();
+    public void onClick(InventoryClickEvent event) {
+        final InventoryHolder holder = event.getInventory().getHolder();
         if (holder instanceof InventoryExecutor) {
-            lang.log.debug("监听到的 Inventory 基于 ParrotX Inventory 工具.");
             final InventoryExecutor executor = (InventoryExecutor) holder;
             if (plugin.equals(executor.getPlugin())) {
-                lang.log.debug("监听到属于插件的 Inventory 事件: {0}", event.toString());
+                executor.execute(event);
+            }
+        }
+    }
 
-                if (event instanceof InventoryClickEvent) executor.execute((InventoryClickEvent) event);
-                else if (event instanceof InventoryOpenEvent) executor.open((InventoryOpenEvent) event);
-                else if (event instanceof InventoryCloseEvent) executor.close((InventoryCloseEvent) event);
-                else executor.event(event);
+    @EventHandler
+    public void onOpen(InventoryOpenEvent event) {
+        final InventoryHolder holder = event.getInventory().getHolder();
+        if (holder instanceof InventoryExecutor) {
+            final InventoryExecutor executor = (InventoryExecutor) holder;
+            if (plugin.equals(executor.getPlugin())) {
+                executor.open(event);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onClose(InventoryCloseEvent event) {
+        final InventoryHolder holder = event.getInventory().getHolder();
+        if (holder instanceof InventoryExecutor) {
+            final InventoryExecutor executor = (InventoryExecutor) holder;
+            if (plugin.equals(executor.getPlugin())) {
+                executor.close(event);
             }
         }
     }

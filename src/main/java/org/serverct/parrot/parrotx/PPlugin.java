@@ -29,7 +29,7 @@ public abstract class PPlugin extends JavaPlugin {
     @Getter
     protected I18n lang;
     private Consumer<PluginManager> listenerRegister = null;
-    private String timeLog = "插件加载完成, 共耗时 &a{0}ms&r.";
+    private String timeLog = "插件加载完成, 共耗时&a{0}ms&r.";
     @Getter
     private CommandHandler commandHandler;
 
