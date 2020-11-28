@@ -32,11 +32,6 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
         this.filename = BasicUtil.getNoExFileName(this.file.getName());
         this.typeName = typename;
         this.readonly = readonly;
-
-        if (getFilename().equals("config")) {
-            return;
-        }
-        plugin.registerConfiguration(this);
     }
 
     @Override
