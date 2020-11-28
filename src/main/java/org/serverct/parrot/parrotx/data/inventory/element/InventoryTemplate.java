@@ -71,8 +71,8 @@ class InventoryTemplate<T> implements InventoryElement {
     @Override
     public BaseElement preload(PInventory<?> inv) {
         final I18n lang = inv.getPlugin().getLang();
-        lang.log.debug("预加载 InventoryTemplate: " + getBase().getName());
-        lang.log.debug("数据集: " + contents);
+        lang.log.debug("预加载 InventoryTemplate: {0}", getBase().getName());
+        lang.log.debug("数据集: {0}", contents);
 
         this.contentMap.clear();
 
@@ -89,7 +89,7 @@ class InventoryTemplate<T> implements InventoryElement {
             contents.put(slotIterator.next(), content);
         }
         contentMap.put(page, contents);
-        lang.log.debug("分页数据集: " + contentMap);
+        lang.log.debug("分页数据集: {0}", contentMap);
 
         this.currentPage = 1;
         return getBase();

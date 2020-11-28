@@ -31,7 +31,7 @@ public abstract class AutoRefreshInventory implements InventoryExecutor {
 
     public void startRefresh(final Inventory inv) {
         if (this.refreshInterval > 0) {
-            lang.log.debug(name() + " 刷新间隔大于 0: " + this.refreshInterval + "s");
+            lang.log.debug(name() + " 刷新间隔: {0}s", this.refreshInterval);
             this.refreshTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> refresh(inv), 1L, refreshInterval * 20L);
         }
     }
