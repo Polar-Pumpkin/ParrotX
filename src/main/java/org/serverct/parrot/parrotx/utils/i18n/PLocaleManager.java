@@ -122,15 +122,15 @@ public class PLocaleManager {
      */
     public String build(final String key, final I18n.Type type, final String message, final Object... args) {
         String pluginPrefix = plugin.getName() + " ";
-        String typePrefix = "&3▶ ";
+        String typePrefix = "&3▶&r ";
         if (type == I18n.Type.DEBUG) {
-            pluginPrefix = "&f[&d" + plugin.getName() + "&f]&7(&d&lDEBUG&7) ";
-            typePrefix = "&d&l>> ";
+            pluginPrefix = "&f[&d" + plugin.getName() + "&f]&7(&d&lDEBUG&7)&r ";
+            typePrefix = "&d&l>>&r ";
         } else {
             FileConfiguration data = lang.getLocale(lang.hasLocale(key) ? key : null);
             if (Objects.nonNull(data)) {
-                pluginPrefix = data.getString("Plugin.Prefix", "&f[&9&l" + plugin.getName() + "&f] ");
-                typePrefix = data.getString("Plugin." + type.name(), "&3▶ ");
+                pluginPrefix = data.getString("Plugin.Prefix", "&f[&9&l" + plugin.getName() + "&f]&r ");
+                typePrefix = data.getString("Plugin." + type.name(), "&3▶&r ");
             } else {
                 lang.log.log("试图读取未加载的语言: &c" + key, I18n.Type.ERROR, true);
             }

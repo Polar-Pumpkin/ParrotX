@@ -3,6 +3,7 @@ package org.serverct.parrot.parrotx;
 import lombok.Getter;
 import lombok.NonNull;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.PluginManager;
@@ -14,7 +15,6 @@ import org.serverct.parrot.parrotx.hooks.BaseExpansion;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -29,7 +29,7 @@ public abstract class PPlugin extends JavaPlugin {
     @Getter
     protected I18n lang;
     private Consumer<PluginManager> listenerRegister = null;
-    private String timeLog = null;
+    private String timeLog = "插件加载完成, 共耗时 &a{0}ms&r.";
     @Getter
     private CommandHandler commandHandler;
 
@@ -47,15 +47,26 @@ public abstract class PPlugin extends JavaPlugin {
 
             if (Objects.nonNull(listenerRegister)) {
                 listenerRegister.accept(Bukkit.getPluginManager());
+                lang.log.info("已注册监听器.");
             }
 
-            if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") && !this.expansions.isEmpty()) {
                 this.expansions.forEach(PlaceholderExpansion::register);
+                lang.log.info("已注册 PlaceholderAPI 扩展包.");
+            }
+
+            if (getConfig().getBoolean("bStats", true)) {
+                final Metrics metrics = new Metrics(this, ParrotX.PLUGIN_ID);
+                metrics.addCustomChart(new Metrics.SimplePie("integration_method", () -> "Compile"));
+                lang.log.info("已启用 bStats 数据统计.");
+                lang.log.info("若您需要禁用此功能, 一般情况下可于配置文件 config.yml 中编辑或新增 \"bStats: false\" 关闭此功能.");
+            } else {
+                lang.log.warn("bStats 数据统计已被禁用.");
             }
 
             if (Objects.nonNull(timeLog)) {
                 final long time = System.currentTimeMillis() - timestamp;
-                lang.log.info(MessageFormat.format(timeLog, time));
+                lang.log.info(timeLog, time);
             }
         } catch (Throwable e) {
             lang.log.error(I18n.INIT, "插件", e, null);
