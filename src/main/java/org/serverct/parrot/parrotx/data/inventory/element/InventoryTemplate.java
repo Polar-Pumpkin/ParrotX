@@ -103,9 +103,7 @@ class InventoryTemplate<T> implements InventoryElement {
     @Override
     public void click(final PInventory<?> holder, final InventoryClickEvent event) {
         final I18n lang = holder.getPlugin().getLang();
-        lang.log.debug("处理 InventoryTemplate 点击...");
         if (Objects.isNull(getContent(this.currentPage, event.getSlot()))) {
-            lang.log.debug("点击位置无数据.");
             event.setCancelled(true);
             return;
         }

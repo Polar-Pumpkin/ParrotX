@@ -6,8 +6,10 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.command.CommandHandler;
 import org.serverct.parrot.parrotx.config.PConfig;
 import org.serverct.parrot.parrotx.data.PConfiguration;
@@ -55,9 +57,12 @@ public abstract class PPlugin extends JavaPlugin {
                 lang.log.info("已注册 PlaceholderAPI 扩展包.");
             }
 
-            if (getConfig().getBoolean("bStats", true)) {
+            if (getConfig().getBoolean("bStats", true) && !Bukkit.getPluginManager().isPluginEnabled("ParrotX")) {
                 final Metrics metrics = new Metrics(this, ParrotX.PLUGIN_ID);
-                metrics.addCustomChart(new Metrics.SimplePie("integration_method", () -> "Compile"));
+                metrics.addCustomChart(new Metrics.SingleLineChart("plugins_using_parrotx", () -> 1));
+                if (!Bukkit.getPluginManager().isPluginEnabled("ParrotX")) {
+                    metrics.addCustomChart(new Metrics.SimplePie("integration_method", () -> "Compile"));
+                }
                 lang.log.info("已启用 bStats 数据统计.");
                 lang.log.info("若您需要禁用此功能, 一般情况下可于配置文件 config.yml 中编辑或新增 \"bStats: false\" 关闭此功能.");
             } else {
@@ -137,6 +142,14 @@ public abstract class PPlugin extends JavaPlugin {
                 config.save();
             }
         });
+    }
+
+    @Override
+    public @NotNull FileConfiguration getConfig() {
+        if (Objects.isNull(this.pConfig)) {
+            return super.getConfig();
+        }
+        return this.pConfig.getConfig();
     }
 
     public File getFile(final String path) {

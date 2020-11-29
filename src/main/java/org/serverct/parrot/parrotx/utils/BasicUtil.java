@@ -20,7 +20,6 @@ import parsii.eval.Variable;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.MessageFormat;
 import java.util.Map;
 import java.util.Objects;
 
@@ -78,8 +77,7 @@ public class BasicUtil {
             x.setValue(xValue);
             double result = expr.evaluate();
 
-            final String message = MessageFormat.format("数学表达式({0}, x={1}, 值={2})", expression, xValue, result);
-            lang.log.action(I18n.CALCULATE, message);
+            lang.log.action(I18n.CALCULATE, "数学表达式({0}, x={1}, 值={2})", expression, xValue, result);
             return result;
         } catch (Throwable e) {
             lang.log.error(I18n.CALCULATE, "数学表达式(" + expression + ", x=" + xValue + ")", e, null);
@@ -98,8 +96,7 @@ public class BasicUtil {
             final Expression expr = Parser.parse(expression, scope);
             final double result = expr.evaluate();
 
-            final String message = MessageFormat.format("数学表达式({0} = {1}): {2}", expression, result, variable.toString());
-            lang.log.action(I18n.CALCULATE, message);
+            lang.log.action(I18n.CALCULATE, "数学表达式({0} = {1}): {2}", expression, result, variable.toString());
             return result;
         } catch (Throwable e) {
             lang.log.error(I18n.CALCULATE, "数学表达式(" + expression + "): " + variable.toString(), e, null);
