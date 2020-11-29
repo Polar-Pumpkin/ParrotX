@@ -30,6 +30,7 @@ public class InventoryListener implements Listener {
             lang.log.debug("被点击 Inventory 基于 ParrotX Inventory 工具.");
             if (plugin.equals(executor.getPlugin())) {
                 lang.log.debug("被点击 Inventory 与监听器同属一个插件.");
+                lang.log.debug("执行器: {0}", executor.toString());
                 executor.execute(event);
             }
         }
