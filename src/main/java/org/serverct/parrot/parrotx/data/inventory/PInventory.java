@@ -28,13 +28,11 @@ public abstract class PInventory<T> extends AutoRefreshInventory {
     public PInventory(PPlugin plugin, T data, Player user, File file) {
         super(new FileDefinedInventory(plugin, user, file));
         this.data = data;
-        this.inventory = construct(this);
     }
 
     public PInventory(PPlugin plugin, T data, Player user, String title, int row) {
         super(new BaseInventory(plugin, user, title, row));
         this.data = data;
-        this.inventory = construct(this);
     }
 
     @Override
