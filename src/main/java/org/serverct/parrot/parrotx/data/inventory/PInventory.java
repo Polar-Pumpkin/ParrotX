@@ -22,7 +22,6 @@ public abstract class PInventory<T> extends AutoRefreshInventory {
     private final Map<String, InventoryElement> elementMap = new HashMap<>();
     @Getter
     private final Map<Integer, String> slotMap = new HashMap<>();
-    @Getter
     protected Inventory inventory;
 
     public PInventory(PPlugin plugin, T data, Player user, File file) {

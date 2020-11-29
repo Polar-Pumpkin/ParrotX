@@ -38,12 +38,19 @@ class BaseElement implements InventoryElement {
         }
         final String name = section.getName();
         final Supplier<ItemStack> item = () -> ItemUtil.build(plugin, section);
+
         final ConfigurationSection posSection = section.getConfigurationSection("Position");
         if (BasicUtil.isNull(plugin, posSection, I18n.LOAD, "Gui 元素 " + name, "未找到 Position 数据节")) {
             return null;
         }
-        final String x = posSection.getString("X", "0");
-        final String y = posSection.getString("Y", "0");
+
+        final String x = posSection.getString("X", "-1");
+        final String y = posSection.getString("Y", "-1");
+        if ("-1".equals(x) || "-1".equals(y)) {
+            plugin.getLang().log.error("Gui 元素 {0} 的 Position 数据无效.", name);
+            return null;
+        }
+
         return BaseElement.builder()
                 .priority(priority)
                 .name(name)

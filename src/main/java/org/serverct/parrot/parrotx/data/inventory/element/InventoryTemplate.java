@@ -13,7 +13,7 @@ import org.serverct.parrot.parrotx.utils.i18n.I18n;
 import java.util.*;
 import java.util.function.BiFunction;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "unchecked"})
 public @Data
 class InventoryTemplate<T> implements InventoryElement {
 
@@ -23,8 +23,8 @@ class InventoryTemplate<T> implements InventoryElement {
     private final Map<Integer, Map<Integer, T>> contentMap = new HashMap<>();
     private int currentPage;
 
-    public static InventoryTemplate<?> get(final PInventory<?> inv, final String name) {
-        return (InventoryTemplate<?>) inv.getElement(name);
+    public static <T> InventoryTemplate<T> get(final PInventory<?> inv, final String name) {
+        return (InventoryTemplate<T>) inv.getElement(name);
     }
 
     public InventoryElement getElement() {
@@ -56,6 +56,26 @@ class InventoryTemplate<T> implements InventoryElement {
 
     public void setCurrentPage(final int page) {
         this.currentPage = Math.min(getMaxPage(), Math.max(page, 1));
+    }
+
+    public int nextPage(final PInventory<?> holder) {
+        int page = this.currentPage + 1;
+        if (page > getMaxPage()) {
+            page = 1;
+        }
+        this.currentPage = page;
+        holder.refresh(holder.getInventory());
+        return page;
+    }
+
+    public int previousPage(final PInventory<?> holder) {
+        int page = this.currentPage - 1;
+        if (page < 1) {
+            page = getMaxPage();
+        }
+        this.currentPage = page;
+        holder.refresh(holder.getInventory());
+        return page;
     }
 
     @Override

@@ -19,7 +19,7 @@ import java.util.function.Predicate;
 public class FileDefinedInventory extends BaseInventory implements FileSaved {
 
     protected File file;
-    protected FileConfiguration settings;
+    protected FileConfiguration data;
     protected ConfigurationSection items;
 
     public FileDefinedInventory(PPlugin plugin, Player user, File file) {
@@ -45,15 +45,14 @@ public class FileDefinedInventory extends BaseInventory implements FileSaved {
 
     @Override
     public void load(@NonNull File file) {
-        this.settings = YamlConfiguration.loadConfiguration(this.file);
-        this.items = this.settings.getConfigurationSection("Items");
-        final ConfigurationSection settingSection = this.settings.getConfigurationSection("Settings");
-        if (BasicUtil.isNull(plugin, settingSection, I18n.BUILD, name(), "Gui 设置配置节为 null")) {
-            this.title = "未初始化 Gui - " + file.getName();
-            this.row = 6;
-        } else {
-            this.title = settingSection.getString("Title", this.file.getName());
-            this.row = settingSection.getInt("Row", 6);
+        this.data = YamlConfiguration.loadConfiguration(this.file);
+        this.items = this.data.getConfigurationSection("Items");
+        final ConfigurationSection settings = this.data.getConfigurationSection("Settings");
+        if (BasicUtil.isNull(plugin, settings, I18n.BUILD, name(), "Gui 设置配置节为 null")) {
+            addSetting("title", "未初始化 Gui - " + file.getName());
+            addSetting("row", 6);
+        } else for (final String key : settings.getKeys(true)) {
+            addSetting(key.toLowerCase(), settings.get(key));
         }
     }
 
