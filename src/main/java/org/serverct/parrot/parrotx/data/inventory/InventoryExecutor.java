@@ -16,7 +16,7 @@ public interface InventoryExecutor extends InventoryHolder {
 
     PPlugin getPlugin();
 
-    Inventory construct();
+    Inventory construct(final InventoryHolder executor);
 
     void execute(InventoryClickEvent event);
 
@@ -27,7 +27,7 @@ public interface InventoryExecutor extends InventoryHolder {
     }
 
     default void refresh(@NonNull Inventory inventory) {
-        Inventory inv = construct();
+        Inventory inv = construct(inventory.getHolder());
         ListIterator<ItemStack> iterator = inv.iterator();
         while (iterator.hasNext()) inventory.setItem(iterator.nextIndex(), iterator.next());
     }

@@ -6,6 +6,8 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
+import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.inventory.element.BaseElement;
 
@@ -20,20 +22,32 @@ public abstract class PInventory<T> extends AutoRefreshInventory {
     private final Map<String, InventoryElement> elementMap = new HashMap<>();
     @Getter
     private final Map<Integer, String> slotMap = new HashMap<>();
+    @Getter
+    protected Inventory inventory;
 
     public PInventory(PPlugin plugin, T data, Player user, File file) {
         super(new FileDefinedInventory(plugin, user, file));
         this.data = data;
+        this.inventory = construct(this);
     }
 
     public PInventory(PPlugin plugin, T data, Player user, String title, int row) {
         super(new BaseInventory(plugin, user, title, row));
         this.data = data;
+        this.inventory = construct(this);
     }
 
     @Override
-    public Inventory construct() {
-        final Inventory result = base.construct();
+    public @NotNull Inventory getInventory() {
+        if (Objects.isNull(this.inventory)) {
+            this.inventory = construct(this);
+        }
+        return this.inventory;
+    }
+
+    @Override
+    public Inventory construct(final InventoryHolder executor) {
+        final Inventory result = base.construct(this);
 
         final List<InventoryElement> elements = new ArrayList<>(this.elementMap.values());
         elements.sort(Comparator.comparingInt(InventoryElement::getPriority));
@@ -66,16 +80,12 @@ public abstract class PInventory<T> extends AutoRefreshInventory {
 
     @Override
     public void execute(InventoryClickEvent event) {
-        lang.log.debug("处理 PInventory: {0} 的点击事件...", name());
         if (!check(this, event)) {
-            lang.log.debug("未通过 Inventory 一致性检查.");
             return;
         }
 
         final InventoryElement element = getElement(event.getSlot());
-        lang.log.debug("被点击的 Inventory 元素: {0}", element);
         if (Objects.isNull(element) || !element.isClickable()) {
-            lang.log.debug("被点击 Inventory 元素为 null 或不可点击.");
             event.setCancelled(true);
             return;
         }

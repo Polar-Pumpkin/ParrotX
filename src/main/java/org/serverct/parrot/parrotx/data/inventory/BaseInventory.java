@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
@@ -28,7 +29,6 @@ public class BaseInventory implements InventoryExecutor {
         this.viewer = user;
         this.title = title;
         this.row = row;
-        this.inventory = construct();
     }
 
     @Override
@@ -37,8 +37,8 @@ public class BaseInventory implements InventoryExecutor {
     }
 
     @Override
-    public Inventory construct() {
-        return Bukkit.createInventory(this, this.row * 9, I18n.color(this.title));
+    public Inventory construct(final InventoryHolder executor) {
+        return Bukkit.createInventory(executor, this.row * 9, I18n.color(this.title));
     }
 
     @Override
@@ -53,7 +53,7 @@ public class BaseInventory implements InventoryExecutor {
     @Override
     public @NotNull Inventory getInventory() {
         if (Objects.isNull(this.inventory)) {
-            this.inventory = construct();
+            this.inventory = construct(this);
         }
         return this.inventory;
     }
