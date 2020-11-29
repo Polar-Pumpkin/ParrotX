@@ -146,7 +146,7 @@ public abstract class PPlugin extends JavaPlugin {
 
     @Override
     public @NotNull FileConfiguration getConfig() {
-        if (Objects.isNull(this.pConfig)) {
+        if (Objects.isNull(this.pConfig) || Objects.isNull(this.pConfig.getConfig())) {
             return super.getConfig();
         }
         return this.pConfig.getConfig();
