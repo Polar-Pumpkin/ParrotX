@@ -63,7 +63,7 @@ public class FileDefinedInventory extends BaseInventory implements FileSaved {
             addSetting(key.toLowerCase(), settings.get(key));
         }
 
-        this.items.getKeys(false).forEach(key -> this.itemMap.put(key.toLowerCase(), items.getConfigurationSection(key)));
+        this.items.getKeys(false).forEach(key -> this.itemMap.put(key, items.getConfigurationSection(key)));
     }
 
     @Override

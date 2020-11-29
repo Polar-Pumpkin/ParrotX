@@ -58,6 +58,14 @@ class InventoryTemplate<T> implements InventoryElement {
         this.currentPage = Math.min(getMaxPage(), Math.max(page, 1));
     }
 
+    public boolean hasNextPage() {
+        return this.currentPage + 1 <= getMaxPage();
+    }
+
+    public boolean hasPreviousPage() {
+        return this.currentPage - 1 >= 1;
+    }
+
     public int nextPage(final PInventory<?> holder) {
         int page = this.currentPage + 1;
         if (page > getMaxPage()) {
