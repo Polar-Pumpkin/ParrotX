@@ -21,6 +21,7 @@ public class BaseInventory implements InventoryExecutor {
     protected final Player viewer;
     protected final PPlugin plugin;
     protected final I18n lang;
+    @Getter
     protected final Map<String, Object> settings = new HashMap<>();
     protected Inventory inventory;
 
@@ -60,11 +61,11 @@ public class BaseInventory implements InventoryExecutor {
         return this.inventory;
     }
 
-    protected void addSetting(final String key, final Object value) {
+    public void addSetting(final String key, final Object value) {
         this.settings.put(key, value);
     }
 
-    protected <T> T getSetting(final String key, final Class<?> clazz) {
+    public <T> T getSetting(final String key, final Class<?> clazz) {
         return this.settings.containsKey(key) ? (T) clazz.cast(this.settings.get(key)) : null;
     }
 
