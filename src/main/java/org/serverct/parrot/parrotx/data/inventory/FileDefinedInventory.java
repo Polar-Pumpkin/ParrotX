@@ -60,7 +60,9 @@ public class FileDefinedInventory extends BaseInventory implements FileSaved {
             addSetting("title", "未初始化 Gui - " + file.getName());
             addSetting("row", 6);
         } else for (final String key : settings.getKeys(true)) {
-            addSetting(key.toLowerCase(), settings.get(key));
+            final Object value = settings.get(key);
+            lang.log.debug("加载 Gui {0} 设置: {1} -> {2}", name(), key, value);
+            addSetting(key.toLowerCase(), value);
         }
 
         this.items.getKeys(false).forEach(key -> this.itemMap.put(key, items.getConfigurationSection(key)));
