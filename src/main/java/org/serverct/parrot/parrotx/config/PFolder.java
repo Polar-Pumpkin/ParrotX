@@ -12,8 +12,8 @@ public abstract class PFolder<T extends PData> extends PDataSet<T> {
 
     protected String dataKey;
 
-    public PFolder(@NonNull PPlugin plugin, String folderName, String typeName, String dataKey, boolean readonly) {
-        super(plugin, new File(plugin.getDataFolder(), folderName), typeName, readonly);
+    public PFolder(@NonNull PPlugin plugin, String folderName, String typeName, String dataKey) {
+        super(plugin, new File(plugin.getDataFolder(), folderName), typeName);
         this.dataKey = dataKey;
     }
 

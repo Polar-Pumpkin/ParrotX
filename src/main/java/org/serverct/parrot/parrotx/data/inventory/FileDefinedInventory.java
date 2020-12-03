@@ -32,6 +32,7 @@ public class FileDefinedInventory extends BaseInventory implements FileSaved {
     public FileDefinedInventory(PPlugin plugin, Player user, File file) {
         super(plugin, user, null, 6);
         setFile(file);
+        load(file);
     }
 
     @Override

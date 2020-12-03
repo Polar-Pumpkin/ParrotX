@@ -22,8 +22,8 @@ public abstract class PStructSet<T extends PStruct> extends PDataSet<T> {
     private final String filename;
     protected ConfigurationSection root;
 
-    public PStructSet(@NonNull PPlugin plugin, String filename, String typename, String root, boolean readonly) {
-        super(plugin, new File(plugin.getDataFolder(), filename + ".yml"), typename, readonly);
+    public PStructSet(@NonNull PPlugin plugin, String filename, String typename, String root) {
+        super(plugin, new File(plugin.getDataFolder(), filename + ".yml"), typename);
         this.filename = filename;
         this.rootName = root;
         this.config = YamlConfiguration.loadConfiguration(file);
