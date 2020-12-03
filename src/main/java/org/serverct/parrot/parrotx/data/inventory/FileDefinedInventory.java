@@ -6,8 +6,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.flags.FileSaved;
 import org.serverct.parrot.parrotx.data.inventory.element.BaseElement;
@@ -33,12 +31,6 @@ public class FileDefinedInventory extends BaseInventory implements FileSaved {
         super(plugin, user, null, 6);
         setFile(file);
         load(file);
-    }
-
-    @Override
-    public Inventory construct(final InventoryHolder executor) {
-        load(file);
-        return super.construct(executor);
     }
 
     @Override
