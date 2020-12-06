@@ -1,6 +1,7 @@
 package org.serverct.parrot.parrotx.data.inventory;
 
 import lombok.Getter;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -68,11 +69,21 @@ public abstract class PInventory<T> extends AutoRefreshInventory {
     @Override
     public void open(InventoryOpenEvent event) {
         startRefresh(event.getInventory());
+        final Sound sound = base.getSetting("Sound.Open", Sound.class);
+        if (Objects.nonNull(sound)) {
+            final Player user = base.getViewer();
+            user.playSound(user.getLocation(), sound, 1, 1);
+        }
     }
 
     @Override
     public void close(InventoryCloseEvent event) {
         endRefresh();
+        final Sound sound = base.getSetting("Sound.Close", Sound.class);
+        if (Objects.nonNull(sound)) {
+            final Player user = base.getViewer();
+            user.playSound(user.getLocation(), sound, 1, 1);
+        }
     }
 
     @Override

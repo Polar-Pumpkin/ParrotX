@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 
 public abstract class PPlugin extends JavaPlugin {
 
+    public static final int PARROTX_ID = 9515;
     private final List<PConfiguration> configs = new ArrayList<>();
     private final List<BaseExpansion> expansions = new ArrayList<>();
     public String localeKey = "Chinese";
@@ -58,7 +59,7 @@ public abstract class PPlugin extends JavaPlugin {
             }
 
             if (getConfig().getBoolean("bStats", true) && !Bukkit.getPluginManager().isPluginEnabled("ParrotX")) {
-                final Metrics metrics = new Metrics(this, ParrotX.PLUGIN_ID);
+                final Metrics metrics = new Metrics(this, PARROTX_ID);
                 metrics.addCustomChart(new Metrics.SingleLineChart("plugins_using_parrotx", () -> 1));
                 if (!Bukkit.getPluginManager().isPluginEnabled("ParrotX")) {
                     metrics.addCustomChart(new Metrics.SimplePie("integration_method", () -> "Compile"));

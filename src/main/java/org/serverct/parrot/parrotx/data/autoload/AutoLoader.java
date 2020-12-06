@@ -11,6 +11,8 @@ import org.serverct.parrot.parrotx.utils.ItemUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 
 @SuppressWarnings({"SameParameterValue", "unused"})
@@ -77,20 +79,20 @@ public abstract class AutoLoader {
                     case LIST:
                         field.set(to, dataSource.getList(path));
                         break;
-                    case MAP_LIST:
+                    case LIST_MAP:
                         field.set(to, dataSource.getMapList(path));
                         break;
-                    case STRING_LIST:
+                    case LIST_STRING:
                         field.set(to, dataSource.getStringList(path));
                         break;
-                    case STRING_MAP:
+                    case MAP_STRING_STRING:
                         final Map<String, String> stringMap = new HashMap<>();
                         if (Objects.nonNull(section)) {
                             section.getKeys(false).forEach(key -> stringMap.put(key, section.getString(key)));
                         }
                         field.set(to, stringMap);
                         break;
-                    case INT_MAP:
+                    case MAP_STRING_INTEGER:
                         final Map<String, Integer> intMap = new HashMap<>();
                         if (Objects.nonNull(section)) {
                             section.getKeys(false).forEach(key -> intMap.put(key, section.getInt(key)));
@@ -158,8 +160,8 @@ public abstract class AutoLoader {
                 Field field = clazz.getDeclaredField(fieldName);
                 field.setAccessible(true);
                 switch (item.getType()) {
-                    case INT_MAP:
-                    case STRING_MAP:
+                    case MAP_STRING_INTEGER:
+                    case MAP_STRING_STRING:
                         final Map<?, ?> map = (Map<?, ?>) field.get(to);
                         map.forEach((key, value) -> section.set((String) key, value));
                         break;
@@ -222,15 +224,26 @@ public abstract class AutoLoader {
                 continue;
             }
 
-            final String typeName = field.getType().getSimpleName();
-            final AutoLoadItem.DataType type = EnumUtil.valueOf(AutoLoadItem.DataType.class, typeName.toUpperCase());
-            if (Objects.isNull(type)) {
+            final StringBuilder typeName = new StringBuilder(field.getType().getSimpleName());
+
+            final Type type = field.getGenericType();
+            if (type instanceof ParameterizedType) {
+                final ParameterizedType parameterizedType = (ParameterizedType) type;
+                Arrays.stream(parameterizedType.getActualTypeArguments()).forEach(actualType -> {
+                    typeName.append("_").append(actualType.getClass().getSimpleName());
+                });
+            }
+
+            final AutoLoadItem.DataType dataType = EnumUtil.valueOf(AutoLoadItem.DataType.class,
+                    typeName.toString().toUpperCase());
+            if (Objects.isNull(dataType)) {
                 lang.log.error(I18n.LOAD, "自动加载数据组", "通过注解自动导入时遇到不支持的数据类型: " + typeName);
                 continue;
             }
 
-//            lang.log.action(I18n.CREATE, "新自动加载项目: {0}({1}) -> {2}(组: {3})", field.getName(), type, annotation.path(), annotation.group());
-            add(annotation.group(), annotation.path(), type, field.getName());
+//            lang.log.action(I18n.CREATE, "新自动加载项目: {0}({1}) -> {2}(组: {3})", field.getName(), type, annotation.path
+//            (), annotation.group());
+            add(annotation.group(), annotation.path(), dataType, field.getName());
         }
     }
 
