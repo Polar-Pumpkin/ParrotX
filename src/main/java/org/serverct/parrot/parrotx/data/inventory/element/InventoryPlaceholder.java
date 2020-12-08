@@ -2,6 +2,7 @@ package org.serverct.parrot.parrotx.data.inventory.element;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -17,17 +18,16 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public @Data
+@Builder
 class InventoryPlaceholder implements InventoryElement {
     private final BaseElement base;
     private final Predicate<ItemStack> validate;
     private final Consumer<InventoryClickEvent> onPlace;
+    @Getter
     private final Map<Integer, ItemStack> placedMap = new HashMap<>();
 
-    @Builder
-    public InventoryPlaceholder(BaseElement base, Predicate<ItemStack> validate, Consumer<InventoryClickEvent> onPlace) {
-        this.base = base;
-        this.validate = validate;
-        this.onPlace = onPlace;
+    public static InventoryPlaceholder get(final PInventory<?> inv, final String name) {
+        return (InventoryPlaceholder) inv.getElement(name);
     }
 
     public void place(final InventoryClickEvent event) {
