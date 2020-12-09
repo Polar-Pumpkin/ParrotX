@@ -78,7 +78,6 @@ class InventoryPlaceholder implements InventoryElement {
                     place(event);
                     break;
                 }
-                event.setCancelled(true);
                 break;
             case SWAP_WITH_CURSOR:
                 if (!validate(cursorItem) || Objects.isNull(cursorItem)) {
