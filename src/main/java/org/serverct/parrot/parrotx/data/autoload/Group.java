@@ -7,7 +7,7 @@ import java.lang.annotation.*;
 @Documented
 @Repeatable(Groups.class)
 public @interface Group {
-    String name();
+    String name() default "default";
 
     String path() default "";
 }
