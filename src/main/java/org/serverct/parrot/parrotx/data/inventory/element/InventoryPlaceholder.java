@@ -61,10 +61,11 @@ class InventoryPlaceholder implements InventoryElement {
         final ItemStack cursorItem = event.getCursor();
 
         final I18n lang = holder.getPlugin().getLang();
-        lang.log.debug("(ParrotX) InventoryPlaceholder {0} 已被点击:", getBase().getName());
-        lang.log.debug("(ParrotX) 槽位内物品: {0}", slotItem);
-        lang.log.debug("(ParrotX) 指针上物品: {0}", cursorItem);
-        lang.log.debug("(ParrotX) 点击操作: {0}", event.getAction());
+        lang.log.debug("InventoryPlaceholder {0} 已被点击:", getBase().getName());
+        lang.log.debug("槽位内物品: {0}", slotItem);
+        lang.log.debug("指针上物品: {0}", cursorItem);
+        lang.log.debug("点击操作: {0}", event.getAction());
+        lang.log.debug("当前已放置物品集: {0}", this.placedMap);
 
         switch (event.getAction()) {
             case PLACE_ALL:
@@ -109,6 +110,7 @@ class InventoryPlaceholder implements InventoryElement {
                 break;
         }
 
+        lang.log.debug("事件处理结果: {0}", event.isCancelled());
         holder.refresh(event.getInventory());
     }
 }
