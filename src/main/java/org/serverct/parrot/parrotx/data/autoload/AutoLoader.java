@@ -259,16 +259,20 @@ public abstract class AutoLoader {
     protected void importGroups(final Object to) {
         final Class<?> clazz = to.getClass();
         lang.log.debug("开始自动导入自动加载项目组: {0}", clazz.getSimpleName());
-        final Groups annotation = clazz.getAnnotation(Groups.class);
-        if (Objects.isNull(annotation)) {
-            lang.log.debug("该类对象无需自动导入.");
-            return;
+        final Groups multiAnnotation = clazz.getAnnotation(Groups.class);
+        if (Objects.isNull(multiAnnotation)) {
+            final Group annotation = clazz.getAnnotation(Group.class);
+            if (Objects.isNull(annotation)) {
+                lang.log.debug("该类对象无需自动导入.");
+                return;
+            }
+            group(annotation.name(), annotation.path(), defFrom, defTo);
+        } else {
+            for (Group group : multiAnnotation.value()) {
+                group(group.name(), group.path(), defFrom, defTo);
+            }
         }
-
-        for (Group group : annotation.value()) {
-            group(group.name(), group.path(), defFrom, defTo);
-        }
-        lang.log.debug("共自动导入 {0} 个组.", annotation.value().length);
+        lang.log.debug("共自动导入 {0} 个组.", multiAnnotation.value().length);
     }
 
     protected AutoLoadGroup group(final String name, final String path, final ConfigurationSection from,
