@@ -272,7 +272,7 @@ public abstract class AutoLoader {
                 group(group.name(), group.path(), defFrom, defTo);
             }
         }
-        lang.log.debug("共自动导入 {0} 个组.", multiAnnotation.value().length);
+        lang.log.debug("共自动导入 {0} 个组.", this.groupMap.size());
     }
 
     protected AutoLoadGroup group(final String name, final String path, final ConfigurationSection from,
