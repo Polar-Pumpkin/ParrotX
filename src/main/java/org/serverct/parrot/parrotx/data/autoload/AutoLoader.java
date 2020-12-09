@@ -49,7 +49,8 @@ public abstract class AutoLoader {
             final String fieldName = entry.getKey();
             final AutoLoadItem item = entry.getValue();
 
-            final String path = (Optional.ofNullable(extraPath).orElse("").length() > 0 ? extraPath + "." : "") + item.getPath();
+            final String path =
+                    (Optional.ofNullable(extraPath).orElse("").length() > 0 ? extraPath + "." : "") + item.getPath();
             if (!dataSource.contains(path, true) || Objects.isNull(dataSource.get(path))) {
                 lang.log.error(I18n.LOAD, object, "目标路径未找到: " + path);
                 continue;
@@ -101,7 +102,8 @@ public abstract class AutoLoader {
                         break;
                     case SOUND:
                         final String soundName = dataSource.getString(path);
-                        final Sound sound = EnumUtil.valueOf(Sound.class, Objects.isNull(soundName) ? "" : soundName.toUpperCase());
+                        final Sound sound = EnumUtil.valueOf(Sound.class, Objects.isNull(soundName) ? "" :
+                                soundName.toUpperCase());
                         if (Objects.isNull(sound)) {
                             lang.log.error(I18n.LOAD, object, "未找到目标音效枚举: " + soundName + "(" + path + ")");
                         }
@@ -121,7 +123,8 @@ public abstract class AutoLoader {
                         field.set(to, dataSource.getLocation(path));
                         break;
                     case SERIALIZABLE:
-                        final Class<? extends ConfigurationSerializable> serializable = getSerializable(path, serializableMap);
+                        final Class<? extends ConfigurationSerializable> serializable = getSerializable(path,
+                                serializableMap);
                         if (Objects.isNull(serializable)) {
                             lang.log.error(I18n.LOAD, object, "尝试读取未注册的可序列化对象: " + path);
                             break;
@@ -142,7 +145,8 @@ public abstract class AutoLoader {
         }
     }
 
-    public static void save(final PPlugin plugin, final String object, final String extraPath, final ConfigurationSection from, final Object to, final Map<String, AutoLoadItem> itemMap) {
+    public static void save(final PPlugin plugin, final String object, final String extraPath,
+                            final ConfigurationSection from, final Object to, final Map<String, AutoLoadItem> itemMap) {
         if (Objects.isNull(from) || Objects.isNull(to)) {
             return;
         }
@@ -154,7 +158,8 @@ public abstract class AutoLoader {
             final String fieldName = entry.getKey();
             final AutoLoadItem item = entry.getValue();
 
-            final String path = (Optional.ofNullable(extraPath).orElse("").length() > 0 ? extraPath + "." : "") + item.getPath();
+            final String path =
+                    (Optional.ofNullable(extraPath).orElse("").length() > 0 ? extraPath + "." : "") + item.getPath();
             final ConfigurationSection section = from.createSection(path);
             try {
                 Field field = clazz.getDeclaredField(fieldName);
@@ -177,7 +182,9 @@ public abstract class AutoLoader {
         }
     }
 
-    private static Class<? extends ConfigurationSerializable> getSerializable(final String path, final Multimap<Class<? extends ConfigurationSerializable>, String> map) {
+    private static Class<? extends ConfigurationSerializable> getSerializable(final String path,
+                                                                              final Multimap<Class<?
+                                                                                      extends ConfigurationSerializable>, String> map) {
         if (!map.containsValue(path)) {
             return null;
         }
@@ -241,8 +248,8 @@ public abstract class AutoLoader {
                 continue;
             }
 
-//            lang.log.action(I18n.CREATE, "新自动加载项目: {0}({1}) -> {2}(组: {3})", field.getName(), type, annotation.path
-//            (), annotation.group());
+            lang.log.action(I18n.CREATE, "新自动加载项目: {0}({1}) -> {2}(组: {3})", field.getName(), type, annotation.path
+                    (), annotation.group());
             add(annotation.group(), annotation.path(), dataType, field.getName());
         }
     }
@@ -259,19 +266,20 @@ public abstract class AutoLoader {
         }
     }
 
-    protected AutoLoadGroup group(final String name, final String path, final ConfigurationSection from, final Object to) {
+    protected AutoLoadGroup group(final String name, final String path, final ConfigurationSection from,
+                                  final Object to) {
         final AutoLoadGroup group = AutoLoadGroup.builder()
                 .name(name)
                 .path(path)
                 .from(from)
                 .to(to)
                 .build();
-//        lang.log.action(I18n.CREATE, "新自动加载数据组: {0}(路径: {1}, 数据源: {2}, {3})",
-//                name,
-//                (Objects.isNull(path) || path.length() == 0 ? "无" : path),
-//                Objects.isNull(from) ? "无" : from.getName(),
-//                Objects.isNull(to) ? "无" : to.getClass().getSimpleName() + ".class"
-//        );
+        lang.log.action(I18n.CREATE, "新自动加载数据组: {0}(路径: {1}, 数据源: {2}, {3})",
+                name,
+                (Objects.isNull(path) || path.length() == 0 ? "无" : path),
+                Objects.isNull(from) ? "无" : from.getName(),
+                Objects.isNull(to) ? "无" : to.getClass().getSimpleName() + ".class"
+        );
         this.groupMap.put(name, group);
         return group;
     }
@@ -318,7 +326,8 @@ public abstract class AutoLoader {
         this.registerSerializable("default", clazz, path);
     }
 
-    protected void registerSerializable(final String group, final Class<? extends ConfigurationSerializable> clazz, final String path) {
+    protected void registerSerializable(final String group, final Class<? extends ConfigurationSerializable> clazz,
+                                        final String path) {
         getGroup(group).registerSerializable(clazz, path);
     }
 }
