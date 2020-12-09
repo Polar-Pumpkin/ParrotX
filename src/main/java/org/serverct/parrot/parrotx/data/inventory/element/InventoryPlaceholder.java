@@ -17,9 +17,9 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public @Data
+@Data
 @Builder
-class InventoryPlaceholder implements InventoryElement {
+public class InventoryPlaceholder implements InventoryElement {
     private final BaseElement base;
     private final Predicate<ItemStack> validate;
     private final Consumer<InventoryClickEvent> onPlace;
@@ -112,5 +112,6 @@ class InventoryPlaceholder implements InventoryElement {
 
         lang.log.debug("事件处理结果: {0}", (Object) event.isCancelled());
         holder.refresh(event.getInventory());
+        holder.getBase().getViewer().updateInventory();
     }
 }
