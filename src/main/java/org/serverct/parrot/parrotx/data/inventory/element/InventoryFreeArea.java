@@ -3,7 +3,9 @@ package org.serverct.parrot.parrotx.data.inventory.element;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
@@ -45,7 +47,13 @@ public class InventoryFreeArea implements InventoryElement {
 
     @Override
     public void click(PInventory<?> holder, InventoryClickEvent event) {
-
+        final Inventory inv = holder.getInventory();
+        base.getPositions().forEach(slot -> {
+            final ItemStack item = inv.getItem(slot);
+            if (Objects.nonNull(item) && !item.getType().isAir()) {
+                this.placedMap.put(slot, inv.getItem(slot));
+            }
+        });
     }
 
     @Override
