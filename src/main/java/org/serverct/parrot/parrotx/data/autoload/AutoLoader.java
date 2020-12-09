@@ -239,7 +239,7 @@ public abstract class AutoLoader {
             if (type instanceof ParameterizedType) {
                 final ParameterizedType parameterizedType = (ParameterizedType) type;
                 Arrays.stream(parameterizedType.getActualTypeArguments()).forEach(actualType -> {
-                    typeName.append("_").append(actualType.getClass().getSimpleName());
+                    typeName.append("_").append(actualType.getTypeName());
                 });
             }
 
