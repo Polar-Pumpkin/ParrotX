@@ -22,6 +22,7 @@ public class InventoryFreeArea implements InventoryElement {
 
     private final BaseElement base;
     private final Consumer<InventoryClickEvent> onPlace;
+    private final PInventory<?> holder;
     @Getter
     private final Map<Integer, ItemStack> placedMap = new HashMap<>();
 
@@ -40,13 +41,7 @@ public class InventoryFreeArea implements InventoryElement {
         return this.placedMap.get(slot);
     }
 
-    @Override
-    public ItemStack parseItem(PInventory<?> inv, int slot) {
-        return this.placedMap.getOrDefault(slot, this.base.getItem().get());
-    }
-
-    @Override
-    public void click(PInventory<?> holder, InventoryClickEvent event) {
+    public void refresh() {
         final Inventory inv = holder.getInventory();
         base.getPositions().forEach(slot -> {
             final ItemStack item = inv.getItem(slot);
@@ -54,6 +49,16 @@ public class InventoryFreeArea implements InventoryElement {
                 this.placedMap.put(slot, inv.getItem(slot));
             }
         });
+    }
+
+    @Override
+    public ItemStack parseItem(PInventory<?> inv, int slot) {
+        return this.placedMap.getOrDefault(slot, this.base.getItem().get());
+    }
+
+    @Override
+    public void click(PInventory<?> holder, InventoryClickEvent event) {
+        refresh();
     }
 
     @Override
