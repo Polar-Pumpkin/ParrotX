@@ -110,7 +110,7 @@ class InventoryPlaceholder implements InventoryElement {
                 break;
         }
 
-        lang.log.debug("事件处理结果: {0}", event.isCancelled());
+        lang.log.debug("事件处理结果: {0}", (Object) event.isCancelled());
         holder.refresh(event.getInventory());
     }
 }
