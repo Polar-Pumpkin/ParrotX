@@ -13,6 +13,7 @@ import org.serverct.parrot.parrotx.utils.i18n.I18n;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.text.MessageFormat;
 import java.util.*;
 
 @SuppressWarnings({"SameParameterValue", "unused"})
@@ -226,7 +227,8 @@ public abstract class AutoLoader {
 
     protected void importItems(final Object to) {
         final Class<?> clazz = to.getClass();
-        lang.log.debug("开始自动导入自动加载项目: {0}", clazz.getSimpleName());
+        int counter = 0;
+
         for (Field field : clazz.getDeclaredFields()) {
             final Load annotation = field.getAnnotation(Load.class);
             if (Objects.isNull(annotation)) {
@@ -254,12 +256,16 @@ public abstract class AutoLoader {
 //            lang.log.action(I18n.CREATE, "新自动加载项目: {0}({1}) -> {2}(组: {3})", field.getName(), type, annotation.path
 //                    (), annotation.group());
             add(annotation.group(), annotation.path(), dataType, field.getName());
+            counter++;
+        }
+
+        if (counter > 0) {
+            lang.log.debug("从 {0}.class 中自动导入了 {1} 个自动加载项目.", clazz.getSimpleName(), counter);
         }
     }
 
     protected void importGroups(final Object to) {
         final Class<?> clazz = to.getClass();
-        lang.log.debug("开始自动导入自动加载项目组: {0}", clazz.getSimpleName());
         final Groups multiAnnotation = clazz.getAnnotation(Groups.class);
         if (Objects.isNull(multiAnnotation)) {
             final Group annotation = clazz.getAnnotation(Group.class);
@@ -273,7 +279,7 @@ public abstract class AutoLoader {
                 group(group.name(), group.path(), defFrom, defTo);
             }
         }
-        lang.log.debug("共自动导入 {0} 个组.", this.groupMap.size());
+        lang.log.debug("从 {0}.class 中自动导入了 {1} 个组.", clazz.getSimpleName(), this.groupMap.size());
     }
 
     protected AutoLoadGroup group(final String name, final String path, final ConfigurationSection from,
@@ -342,13 +348,31 @@ public abstract class AutoLoader {
     }
 
     protected void print() {
-        List<String> info = new ArrayList<>();
+        if (this.groupMap.isEmpty()) {
+            return;
+        }
+        final List<String> info = new ArrayList<>();
 
-        info.add("自动加载项目 >>> ");
+        info.add("AutoLoader " + this.getClass().getSimpleName() + " 的自动加载项目");
         this.groupMap.forEach((name, group) -> {
-            info.add("组 " + name + " -> " + group.getPath() + ": ");
+            final String path = group.getPath();
+            final ConfigurationSection from = group.getFrom();
+            final Object to = group.getTo();
+
+            final String header = MessageFormat.format("组 {0} -> {1}.class, 额外路径: {2}, 数据源: {3}",
+                    name,
+                    Objects.isNull(path) || path.length() == 0 ? "无" : path,
+                    Objects.isNull(from) ? "无" : from.getName(),
+                    Objects.isNull(to) ? "无" : to.getClass().getSimpleName()
+            );
+            info.add(header);
             group.getItemMap().forEach((field, item) -> {
-                info.add("  > 字段 " + field + " (" + item.getType() + ") -> " + item.getPath());
+                final String entry = MessageFormat.format("  > 字段 {0} ({1}) -> {2}",
+                        field,
+                        item.getType(),
+                        item.getPath()
+                );
+                info.add(entry);
             });
         });
 
