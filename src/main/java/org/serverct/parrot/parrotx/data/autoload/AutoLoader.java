@@ -279,7 +279,7 @@ public abstract class AutoLoader {
                 group(group.name(), group.path(), defFrom, defTo);
             }
         }
-        lang.log.debug("从 {0}.class 中自动导入了 {1} 个组.", clazz.getSimpleName(), this.groupMap.size());
+        lang.log.debug("从 {0}.class 中自动导入了 {1} 个自动加载项目组.", clazz.getSimpleName(), this.groupMap.size());
     }
 
     protected AutoLoadGroup group(final String name, final String path, final ConfigurationSection from,
@@ -353,21 +353,21 @@ public abstract class AutoLoader {
         }
         final List<String> info = new ArrayList<>();
 
-        info.add("AutoLoader " + this.getClass().getSimpleName() + " 的自动加载项目");
+        info.add("自动加载器 " + this.getClass().getSimpleName() + " 的自动加载项目");
         this.groupMap.forEach((name, group) -> {
             final String path = group.getPath();
             final ConfigurationSection from = group.getFrom();
             final Object to = group.getTo();
 
-            final String header = MessageFormat.format("组 {0} -> {1}.class, 额外路径: {2}, 数据源: {3}",
+            final String header = MessageFormat.format("- 组 {0} -> {1}, 额外路径: {2}, 数据源: {3}",
                     name,
                     Objects.isNull(path) || path.length() == 0 ? "无" : path,
-                    Objects.isNull(from) ? "无" : from.getName(),
-                    Objects.isNull(to) ? "无" : to.getClass().getSimpleName()
+                    Objects.isNull(from) || from.getName().length() == 0 ? "无" : from.getName(),
+                    Objects.isNull(to) ? "无" : to.getClass().getSimpleName() + ".class"
             );
             info.add(header);
             group.getItemMap().forEach((field, item) -> {
-                final String entry = MessageFormat.format("  > 字段 {0} ({1}) -> {2}",
+                final String entry = MessageFormat.format("|   字段 {0} ({1}) -> {2}",
                         field,
                         item.getType(),
                         item.getPath()
