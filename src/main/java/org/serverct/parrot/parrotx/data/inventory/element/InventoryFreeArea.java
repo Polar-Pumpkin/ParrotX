@@ -44,9 +44,12 @@ public class InventoryFreeArea implements InventoryElement {
     public void refresh() {
         final Inventory inv = holder.getInventory();
         base.getPositions().forEach(slot -> {
-            final ItemStack item = inv.getItem(slot);
-            if (Objects.nonNull(item) && item.getType() != Material.AIR) {
-                this.placedMap.put(slot, inv.getItem(slot));
+            this.placedMap.put(slot, inv.getItem(slot));
+            for (Map.Entry<Integer, ItemStack> entry : this.placedMap.entrySet()) {
+                final ItemStack item = entry.getValue();
+                if (Objects.isNull(item) || item.getType() == Material.AIR) {
+                    this.placedMap.remove(entry.getKey());
+                }
             }
         });
     }
