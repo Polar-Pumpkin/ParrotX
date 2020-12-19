@@ -20,6 +20,7 @@ import parsii.eval.Variable;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -204,7 +205,19 @@ public class BasicUtil {
     }
 
     public static void broadcastTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
-        Bukkit.getOnlinePlayers().forEach(user -> user.sendTitle(title, subtitle, fadeIn * 20, stay * 20, fadeOut * 20));
+        Bukkit.getOnlinePlayers().forEach(user -> user.sendTitle(title, subtitle, fadeIn * 20, stay * 20,
+                fadeOut * 20));
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Map<T, Object> filter(final Map<?, ?> map, final Class<?> clazz) {
+        final Map<T, Object> result = new HashMap<>();
+        map.forEach((key, value) -> {
+            if (clazz.isInstance(key)) {
+                result.put((T) clazz.cast(key), value);
+            }
+        });
+        return result;
     }
 
     @Contract("_, null, _, _, _ -> true; _, !null, _, _, _ -> false")
@@ -212,6 +225,15 @@ public class BasicUtil {
         if (Objects.isNull(object)) {
             plugin.getLang().log.error(action, name, message);
             return true;
+        }
+        return false;
+    }
+
+    public static boolean multiNull(Object... args) {
+        for (Object object : args) {
+            if (Objects.isNull(object)) {
+                return true;
+            }
         }
         return false;
     }

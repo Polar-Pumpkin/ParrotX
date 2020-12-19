@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 public abstract class PPlugin extends JavaPlugin {
 
     public static final int PARROTX_ID = 9515;
+    public final String PARROTX_VERSION = "1.4.7-Alpha (Build 2)";
     private final List<PConfiguration> configs = new ArrayList<>();
     private final List<BaseExpansion> expansions = new ArrayList<>();
     public String localeKey = "Chinese";
@@ -32,6 +33,7 @@ public abstract class PPlugin extends JavaPlugin {
     @Getter
     protected I18n lang;
     private Consumer<PluginManager> listenerRegister = null;
+    private final String versionLog = "本插件基于 ParrotX {0}, 感谢使用.";
     private String timeLog = "插件加载完成, 共耗时&a{0}ms&r.";
     @Getter
     private CommandHandler commandHandler;
@@ -73,6 +75,9 @@ public abstract class PPlugin extends JavaPlugin {
             if (Objects.nonNull(timeLog)) {
                 final long time = System.currentTimeMillis() - timestamp;
                 lang.log.info(timeLog, time);
+            }
+            if (Objects.nonNull(versionLog)) {
+                lang.log.info(versionLog, PARROTX_VERSION);
             }
         } catch (Throwable e) {
             lang.log.error(I18n.INIT, "插件", e, null);
