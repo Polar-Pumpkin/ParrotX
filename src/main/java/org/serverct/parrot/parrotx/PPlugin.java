@@ -148,6 +148,7 @@ public abstract class PPlugin extends JavaPlugin {
                 config.save();
             }
         });
+        this.configs.clear();
     }
 
     @Override

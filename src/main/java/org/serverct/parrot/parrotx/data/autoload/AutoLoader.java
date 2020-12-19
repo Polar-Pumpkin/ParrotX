@@ -260,7 +260,7 @@ public abstract class AutoLoader {
         }
 
         if (counter > 0) {
-            lang.log.debug("从 {0}.class 中自动导入了 {1} 个自动加载项目.", clazz.getSimpleName(), counter);
+            lang.log.debug("从 &c{0}.class &f中自动导入了 &c{1} &f个自动加载项目.", clazz.getSimpleName(), counter);
         }
     }
 
@@ -279,7 +279,7 @@ public abstract class AutoLoader {
                 group(group.name(), group.path(), defFrom, defTo);
             }
         }
-        lang.log.debug("从 {0}.class 中自动导入了 {1} 个自动加载项目组.", clazz.getSimpleName(), this.groupMap.size());
+        lang.log.debug("从 &c{0}.class &f中自动导入了 &c{1} &f个自动加载项目组.", clazz.getSimpleName(), this.groupMap.size());
     }
 
     protected AutoLoadGroup group(final String name, final String path, final ConfigurationSection from,
@@ -353,7 +353,7 @@ public abstract class AutoLoader {
         }
         final List<String> info = new ArrayList<>();
 
-        info.add("自动加载器 " + this.getClass().getSimpleName() + " 的自动加载项目");
+        info.add("自动加载器 &c" + this.getClass().getSimpleName() + " &f的自动加载项目");
         this.groupMap.forEach((name, group) -> {
             final String path = group.getPath();
             final ConfigurationSection from = group.getFrom();
