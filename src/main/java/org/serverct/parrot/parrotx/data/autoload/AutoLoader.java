@@ -359,11 +359,11 @@ public abstract class AutoLoader {
             final ConfigurationSection from = group.getFrom();
             final Object to = group.getTo();
 
-            final String header = MessageFormat.format("&9- &f组 &c{0}{1}&f, {2}数据源: &d{3}",
+            final String header = MessageFormat.format("&9- &f组 &c{0}{1}{2}{3}",
                     name,
-                    Objects.isNull(from) || from.getName().length() == 0 ? "" : " &a-> &6" + from.getName(),
-                    Objects.isNull(path) || path.length() == 0 ? "" : "额外路径: &e" + path + "&f, ",
-                    Objects.isNull(to) ? "无" : to.getClass().getSimpleName() + ".class"
+                    Objects.isNull(to) ? "" : " &a-> &d" + to.getClass().getSimpleName() + ".class",
+                    Objects.isNull(path) || path.length() == 0 ? "" : "&f, 额外路径: &e" + path,
+                    Objects.isNull(from) || from.getName().length() == 0 ? "" : "&f, 数据源: &6" + from.getName()
             );
             info.add(header);
             group.getItemMap().forEach((field, item) -> {
@@ -374,6 +374,7 @@ public abstract class AutoLoader {
                 );
                 info.add(entry);
             });
+            info.add("&7|");
         });
 
         info.forEach(lang.log::debug);
