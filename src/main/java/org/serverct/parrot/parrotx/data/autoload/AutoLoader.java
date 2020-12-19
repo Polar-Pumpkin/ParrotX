@@ -260,7 +260,7 @@ public abstract class AutoLoader {
         }
 
         if (counter > 0) {
-            lang.log.debug("从 &c{0}.class &f中自动导入了 &c{1} &f个自动加载项目.", clazz.getSimpleName(), counter);
+            lang.log.debug("&f从 &c{0}.class &f中自动导入了 &c{1} &f个自动加载项目.", clazz.getSimpleName(), counter);
         }
     }
 
@@ -279,7 +279,7 @@ public abstract class AutoLoader {
                 group(group.name(), group.path(), defFrom, defTo);
             }
         }
-        lang.log.debug("从 &c{0}.class &f中自动导入了 &c{1} &f个自动加载项目组.", clazz.getSimpleName(), this.groupMap.size());
+        lang.log.debug("&f从 &c{0}.class &f中自动导入了 &c{1} &f个自动加载项目组.", clazz.getSimpleName(), this.groupMap.size());
     }
 
     protected AutoLoadGroup group(final String name, final String path, final ConfigurationSection from,
@@ -353,21 +353,21 @@ public abstract class AutoLoader {
         }
         final List<String> info = new ArrayList<>();
 
-        info.add("自动加载器 &c" + this.getClass().getSimpleName() + " &f的自动加载项目");
+        info.add("&f自动加载器 &d" + this.getClass().getSimpleName() + " &f的自动加载项目");
         this.groupMap.forEach((name, group) -> {
             final String path = group.getPath();
             final ConfigurationSection from = group.getFrom();
             final Object to = group.getTo();
 
-            final String header = MessageFormat.format("&d- &f组 &c{0} &f-> &c{1}&f, 额外路径: &c{2}&f, 数据源: &c{3}",
+            final String header = MessageFormat.format("&9- &f组 &c{0}{1}&f, {2}数据源: &d{3}",
                     name,
-                    Objects.isNull(from) || from.getName().length() == 0 ? "无" : from.getName(),
-                    Objects.isNull(path) || path.length() == 0 ? "无" : path,
+                    Objects.isNull(from) || from.getName().length() == 0 ? "" : " &a-> &6" + from.getName(),
+                    Objects.isNull(path) || path.length() == 0 ? "" : "额外路径: &e" + path + "&f, ",
                     Objects.isNull(to) ? "无" : to.getClass().getSimpleName() + ".class"
             );
             info.add(header);
             group.getItemMap().forEach((field, item) -> {
-                final String entry = MessageFormat.format("&7|  &f- 字段 &c{0} &f(&c{1}&f) <- &c{2}",
+                final String entry = MessageFormat.format("&7|  &f- 字段 &c{0} &f(&9{1}&f) &a<- &e{2}",
                         field,
                         item.getType(),
                         item.getPath()
