@@ -359,15 +359,15 @@ public abstract class AutoLoader {
             final ConfigurationSection from = group.getFrom();
             final Object to = group.getTo();
 
-            final String header = MessageFormat.format("- 组 {0} -> {1}, 额外路径: {2}, 数据源: {3}",
+            final String header = MessageFormat.format("&d- &f组 &c{0} &f-> &c{1}&f, 额外路径: &c{2}&f, 数据源: &c{3}",
                     name,
-                    Objects.isNull(path) || path.length() == 0 ? "无" : path,
                     Objects.isNull(from) || from.getName().length() == 0 ? "无" : from.getName(),
+                    Objects.isNull(path) || path.length() == 0 ? "无" : path,
                     Objects.isNull(to) ? "无" : to.getClass().getSimpleName() + ".class"
             );
             info.add(header);
             group.getItemMap().forEach((field, item) -> {
-                final String entry = MessageFormat.format("|   字段 {0} ({1}) -> {2}",
+                final String entry = MessageFormat.format("&7|  &f- 字段 &c{0} &f(&c{1}&f) <- &c{2}",
                         field,
                         item.getType(),
                         item.getPath()
