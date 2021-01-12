@@ -51,6 +51,10 @@
                             <pattern>org.bstats</pattern>
                             <shadedPattern>org.serverct.parrot.parrotx.utils.bstats</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>com.zaxxer</pattern>
+                            <shadedPattern>org.serverct.parrot.parrotx.utils</shadedPattern>
+                        </relocation>
                     </relocations>
                 </configuration>
                 <executions>
@@ -158,6 +162,12 @@
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>1.7</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.4.5</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

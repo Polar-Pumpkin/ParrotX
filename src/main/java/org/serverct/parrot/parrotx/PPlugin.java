@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 public abstract class PPlugin extends JavaPlugin {
 
     public static final int PARROTX_ID = 9515;
-    public final String PARROTX_VERSION = "1.4.7-Alpha (Build 3)";
+    public final String PARROTX_VERSION = "1.4.7-Alpha (Build 4)";
     private final List<PConfiguration> configs = new ArrayList<>();
     private final List<BaseExpansion> expansions = new ArrayList<>();
     public String localeKey = "Chinese";
