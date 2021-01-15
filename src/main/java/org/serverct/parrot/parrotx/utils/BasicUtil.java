@@ -21,6 +21,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -236,5 +237,18 @@ public class BasicUtil {
             }
         }
         return false;
+    }
+
+    public static int indexOf(final List<String> list, final String target) {
+        for (String content : list) {
+            if (content.contains(target)) {
+                return list.indexOf(content);
+            }
+        }
+        return -1;
+    }
+
+    public static boolean contains(final List<String> list, final String target) {
+        return indexOf(list, target) != -1;
     }
 }
