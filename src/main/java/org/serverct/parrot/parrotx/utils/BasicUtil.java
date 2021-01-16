@@ -20,6 +20,7 @@ import parsii.eval.Variable;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,7 @@ public class BasicUtil {
     }
 
     public static void potion(Player target, PotionEffectType type, int level, int duration) {
-        target.addPotionEffect(new PotionEffect(type, duration * 20, level), true);
+        target.addPotionEffect(new PotionEffect(type, duration * 20, level));
     }
 
     public static File[] listFiles(final File folder, final String suffix) {
@@ -64,11 +65,13 @@ public class BasicUtil {
 
     public static String formatLocation(@NonNull Location location) {
         final World world = location.getWorld();
-        String result = "&c" + location.getBlockX() + "&7, &c" + location.getBlockY() + "&7, &c" + location.getBlockZ() + "&7";
+        final StringBuilder builder = new StringBuilder();
+        builder.append(MessageFormat.format("&c{0}&7, &c{1}&7, &c{2}&r", location.getBlockX(), location.getBlockY(),
+                location.getBlockZ()));
         if (Objects.nonNull(world)) {
-            result = result + "(&c" + world.getName() + "&7)&r";
+            builder.append(MessageFormat.format("&7(&c{0}&7)&r", world.getName()));
         }
-        return I18n.color(result);
+        return I18n.color(builder.toString());
     }
 
     public static double calculate(@NonNull PPlugin plugin, String expression, int xValue) {
@@ -250,6 +253,8 @@ public class BasicUtil {
         }
         return false;
     }
+
+    // TODO 选区相关工具
 
     public static int indexOf(final List<String> list, final String target) {
         for (String content : list) {

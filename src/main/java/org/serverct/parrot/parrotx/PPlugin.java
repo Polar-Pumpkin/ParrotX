@@ -142,12 +142,16 @@ public abstract class PPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        getServer().getScheduler().cancelTasks(this);
         this.configs.forEach(config -> {
             if (!config.isReadOnly()) {
                 config.save();
             }
         });
+        preDisable();
+    }
+
+    public void preDisable() {
+        getServer().getScheduler().cancelTasks(this);
         this.configs.clear();
     }
 
