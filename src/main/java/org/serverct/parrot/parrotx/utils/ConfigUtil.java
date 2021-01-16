@@ -6,8 +6,10 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
-import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiFunction;
 
 @SuppressWarnings({"unused"})
 public class ConfigUtil {
@@ -45,5 +47,19 @@ public class ConfigUtil {
             plugin.getLang().log.error(I18n.SAVE, "Location", e, null);
             return null;
         }
+    }
+
+    public static Map<String, String> getStringMap(ConfigurationSection section) {
+        return getCustomMap(section, ConfigurationSection::getString);
+    }
+
+    public static <V> Map<String, V> getCustomMap(ConfigurationSection section, BiFunction<ConfigurationSection,
+            String, V> getter) {
+        final Map<String, V> result = new HashMap<>();
+        if (Objects.isNull(section)) {
+            return result;
+        }
+        section.getKeys(false).forEach(key -> result.put(key, getter.apply(section, key)));
+        return result;
     }
 }

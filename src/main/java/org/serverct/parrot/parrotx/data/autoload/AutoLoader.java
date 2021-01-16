@@ -6,6 +6,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.utils.BasicUtil;
+import org.serverct.parrot.parrotx.utils.ConfigUtil;
 import org.serverct.parrot.parrotx.utils.EnumUtil;
 import org.serverct.parrot.parrotx.utils.ItemUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
@@ -88,18 +90,55 @@ public abstract class AutoLoader {
                         field.set(to, dataSource.getStringList(path));
                         break;
                     case MAP_STRING_STRING:
-                        final Map<String, String> stringMap = new HashMap<>();
-                        if (Objects.nonNull(section)) {
-                            section.getKeys(false).forEach(key -> stringMap.put(key, section.getString(key)));
-                        }
-                        field.set(to, stringMap);
+                        field.set(to, ConfigUtil.getStringMap(section));
                         break;
                     case MAP_STRING_INTEGER:
-                        final Map<String, Integer> intMap = new HashMap<>();
-                        if (Objects.nonNull(section)) {
-                            section.getKeys(false).forEach(key -> intMap.put(key, section.getInt(key)));
-                        }
-                        field.set(to, intMap);
+                        field.set(to, BasicUtil.transformValue(ConfigUtil.getStringMap(section), Integer::parseInt));
+                        break;
+                    case MAP_STRING_LONG:
+                        field.set(to, BasicUtil.transformValue(ConfigUtil.getStringMap(section), Long::parseLong));
+                        break;
+                    case MAP_STRING_DOUBLE:
+                        field.set(to, BasicUtil.transformValue(ConfigUtil.getStringMap(section),
+                                Double::parseDouble));
+                        break;
+                    case MAP_STRING_FLOAT:
+                        field.set(to, BasicUtil.transformValue(ConfigUtil.getStringMap(section), Float::parseFloat));
+                        break;
+                    case MAP_INTEGER_STRING:
+                        field.set(to, BasicUtil.transformKey(ConfigUtil.getStringMap(section), Integer::parseInt));
+                        break;
+                    case MAP_INTEGER_INTEGER:
+                        field.set(
+                                to,
+                                BasicUtil.transformValue(
+                                        BasicUtil.transformKey(ConfigUtil.getStringMap(section), Integer::parseInt),
+                                        Integer::parseInt)
+                        );
+                        break;
+                    case MAP_INTEGER_LONG:
+                        field.set(
+                                to,
+                                BasicUtil.transformValue(
+                                        BasicUtil.transformKey(ConfigUtil.getStringMap(section), Integer::parseInt),
+                                        Long::parseLong)
+                        );
+                        break;
+                    case MAP_INTEGER_DOUBLE:
+                        field.set(
+                                to,
+                                BasicUtil.transformValue(
+                                        BasicUtil.transformKey(ConfigUtil.getStringMap(section), Integer::parseInt),
+                                        Double::parseDouble)
+                        );
+                        break;
+                    case MAP_INTEGER_FLOAT:
+                        field.set(
+                                to,
+                                BasicUtil.transformValue(
+                                        BasicUtil.transformKey(ConfigUtil.getStringMap(section), Integer::parseInt),
+                                        Float::parseFloat)
+                        );
                         break;
                     case SOUND:
                         final String soundName = dataSource.getString(path);

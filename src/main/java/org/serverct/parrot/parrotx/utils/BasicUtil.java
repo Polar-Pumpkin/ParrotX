@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 
 @SuppressWarnings({"unused"})
 public class BasicUtil {
@@ -210,14 +211,25 @@ public class BasicUtil {
                 fadeOut * 20));
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T> Map<T, Object> filter(final Map<?, ?> map, final Class<?> clazz) {
+    public static <T> Map<T, Object> filter(final Map<?, ?> map, final Class<T> clazz) {
         final Map<T, Object> result = new HashMap<>();
         map.forEach((key, value) -> {
             if (clazz.isInstance(key)) {
-                result.put((T) clazz.cast(key), value);
+                result.put(clazz.cast(key), value);
             }
         });
+        return result;
+    }
+
+    public static <T, K, V> Map<T, V> transformKey(final Map<K, V> map, final Function<K, T> constructor) {
+        final Map<T, V> result = new HashMap<>();
+        map.forEach((key, value) -> result.put(constructor.apply(key), value));
+        return result;
+    }
+
+    public static <T, K, V> Map<K, T> transformValue(final Map<K, V> map, final Function<V, T> constructor) {
+        final Map<K, T> result = new HashMap<>();
+        map.forEach((key, value) -> result.put(key, constructor.apply(value)));
         return result;
     }
 
