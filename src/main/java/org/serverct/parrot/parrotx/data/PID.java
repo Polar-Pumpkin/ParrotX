@@ -8,9 +8,9 @@ import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.text.MessageFormat;
 
-public @Data
+@Data
 @AllArgsConstructor
-class PID {
+public class PID {
     private PPlugin plugin;
     private String key;
     private String id;
