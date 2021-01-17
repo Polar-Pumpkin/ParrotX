@@ -254,8 +254,6 @@ public class BasicUtil {
         return false;
     }
 
-    // TODO 选区相关工具
-
     public static int indexOf(final List<String> list, final String target) {
         for (String content : list) {
             if (content.contains(target)) {
