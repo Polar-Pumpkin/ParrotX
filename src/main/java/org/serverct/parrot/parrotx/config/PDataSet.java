@@ -30,8 +30,6 @@ public abstract class PDataSet<T extends UniqueData> implements PConfiguration, 
         this.file = file;
         this.lang = this.plugin.getLang();
         this.name = name;
-
-        plugin.registerConfiguration(this);
     }
 
     @Override

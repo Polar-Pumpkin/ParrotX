@@ -5,8 +5,10 @@ import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PData;
 import org.serverct.parrot.parrotx.data.PID;
 import org.serverct.parrot.parrotx.utils.BasicUtil;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
+import java.util.Objects;
 
 public abstract class PFolder<T extends PData> extends PDataSet<T> {
 
@@ -36,20 +38,32 @@ public abstract class PFolder<T extends PData> extends PDataSet<T> {
 
     @Override
     public void load() {
+        load(this.file);
+    }
+
+    @Override
+    public void load(@NonNull File file) {
         File[] files = BasicUtil.getYamls(file);
         if (files == null || files.length == 0) {
             saveDefault();
             files = BasicUtil.getYamls(file);
         }
         if (files != null && files.length != 0) {
-            for (File file : files) {
-                load(file);
+            for (File dataFile : files) {
+                final T value = loadFromDataFile(dataFile);
+                if (Objects.isNull(value)) {
+                    lang.log.error(I18n.LOAD, name(), "加载数据失败: " + dataFile.getName());
+                    continue;
+                }
+                put(value);
             }
             lang.log.info("共加载 &c" + name() + " &7中的 &c" + dataMap.size() + " &7个数据文件.");
         } else {
             lang.log.warn("&c" + name() + " &7中没有数据可供加载.");
         }
     }
+
+    public abstract T loadFromDataFile(final File dataFile);
 
     public PID buildId(String id) {
         return new PID(plugin, dataKey.toLowerCase(), id);

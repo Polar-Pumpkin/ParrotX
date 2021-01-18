@@ -1,6 +1,7 @@
 package org.serverct.parrot.parrotx.data;
 
 import lombok.NonNull;
+import lombok.Setter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.serverct.parrot.parrotx.data.autoload.AutoLoader;
@@ -15,12 +16,48 @@ public abstract class PData extends AutoLoader implements UniqueData, FileSaved 
     protected PID id;
     protected File file;
     protected FileConfiguration data;
+    private final String typeName;
+    @Setter
+    private boolean readOnly = false;
 
-    public PData(File file, PID id) {
+    public PData(File file, PID id, String typeName) {
         super(id.getPlugin());
         this.file = file;
-        this.data = YamlConfiguration.loadConfiguration(file);
+        this.typeName = typeName;
         this.id = id;
+
+        load(this.file);
+    }
+
+    @Override
+    public void save() {
+        autoSave();
+    }
+
+    @Override
+    public void load(@NonNull File file) {
+        this.data = YamlConfiguration.loadConfiguration(file);
+        defaultFrom(this.data);
+        defaultTo(this);
+        autoLoad();
+    }
+
+    @Override
+    public String name() {
+        return this.typeName + "/" + this.id.getId();
+    }
+
+    @Override
+    public void init() {
+    }
+
+    @Override
+    public void saveDefault() {
+    }
+
+    @Override
+    public boolean isReadOnly() {
+        return this.readOnly;
     }
 
     @Override

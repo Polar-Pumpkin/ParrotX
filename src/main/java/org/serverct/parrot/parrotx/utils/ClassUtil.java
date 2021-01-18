@@ -1,5 +1,7 @@
 package org.serverct.parrot.parrotx.utils;
 
+import org.serverct.parrot.parrotx.PPlugin;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
@@ -18,36 +20,6 @@ import java.util.jar.JarFile;
  * @since v1.4.7.5-alpha
  */
 public class ClassUtil {
-
-    /**
-     * 取得某个接口下所有实现这个接口的类
-     */
-    public static List<Class<?>> getAllClassByInterface(Class<?> c) {
-        List<Class<?>> returnClassList = null;
-
-        if (c.isInterface()) {
-            // 获取当前的包名
-            String packageName = c.getPackage().getName();
-            // 获取当前包下以及子包下所以的类
-            List<Class<?>> allClass = getClasses(packageName);
-            if (!allClass.isEmpty()) {
-                returnClassList = new ArrayList<>();
-                for (Class<?> classes : allClass) {
-                    // 判断是否是同一个接口
-                    if (c.isAssignableFrom(classes)) {
-                        // 本身不加入进去
-                        if (!c.equals(classes)) {
-                            returnClassList.add(classes);
-                        }
-                    }
-                }
-            }
-        }
-
-        return returnClassList;
-    }
-
-
     /*
      * 取得某一类所在包的所有类名 不含迭代
      */
@@ -68,17 +40,18 @@ public class ClassUtil {
     /**
      * 从包package中获取所有的Class
      */
-    public static List<Class<?>> getClasses(String packageName) {
+    public static List<Class<?>> getClasses(PPlugin plugin) {
         //第一个class类的集合
         List<Class<?>> classes = new ArrayList<>();
         //是否循环迭代
         boolean recursive = true;
+        String packageName = plugin.getClass().getPackage().getName();
         //获取包的名字 并进行替换
         String packageDirName = packageName.replace('.', '/');
         //定义一个枚举的集合 并进行循环来处理这个目录下的things
         Enumeration<URL> dirs;
         try {
-            dirs = Thread.currentThread().getContextClassLoader().getResources(packageDirName);
+            dirs = plugin.getClass().getClassLoader().getResources(packageDirName);
             //循环迭代下去
             while (dirs.hasMoreElements()) {
                 //获取下一个元素
@@ -119,7 +92,7 @@ public class ClassUtil {
                                     packageName = name.substring(0, idx).replace('/', '.');
                                 }
                                 //如果可以迭代下去 并且是一个包
-                                if ((idx != -1) || recursive) {
+                                if ((idx != -1 || recursive) && !("util".equalsIgnoreCase(packageName) || "utils".equalsIgnoreCase(packageName))) {
                                     //如果是一个.class文件 而且不是目录
                                     if (name.endsWith(".class") && !entry.isDirectory()) {
                                         //去掉后面的".class" 获取真正的类名

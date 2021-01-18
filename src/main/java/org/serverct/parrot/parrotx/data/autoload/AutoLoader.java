@@ -93,14 +93,13 @@ public abstract class AutoLoader {
                         field.set(to, ConfigUtil.getStringMap(section));
                         break;
                     case MAP_STRING_INTEGER:
-                        field.set(to, BasicUtil.transformValue(ConfigUtil.getStringMap(section), Integer::parseInt));
+                        field.set(to, ConfigUtil.getCustomMap(section, ConfigurationSection::getInt));
                         break;
                     case MAP_STRING_LONG:
-                        field.set(to, BasicUtil.transformValue(ConfigUtil.getStringMap(section), Long::parseLong));
+                        field.set(to, ConfigUtil.getCustomMap(section, ConfigurationSection::getLong));
                         break;
                     case MAP_STRING_DOUBLE:
-                        field.set(to, BasicUtil.transformValue(ConfigUtil.getStringMap(section),
-                                Double::parseDouble));
+                        field.set(to, ConfigUtil.getCustomMap(section, ConfigurationSection::getDouble));
                         break;
                     case MAP_STRING_FLOAT:
                         field.set(to, BasicUtil.transformValue(ConfigUtil.getStringMap(section), Float::parseFloat));
@@ -269,8 +268,10 @@ public abstract class AutoLoader {
         int counter = 0;
 
         for (Field field : clazz.getDeclaredFields()) {
-            final Load annotation = field.getAnnotation(Load.class);
-            if (Objects.isNull(annotation)) {
+            final Load loadAnnotation = field.getAnnotation(Load.class);
+            final Autoload autoloadAnnotation = field.getAnnotation(Autoload.class);
+
+            if (Objects.isNull(loadAnnotation) && Objects.isNull(autoloadAnnotation)) {
                 continue;
             }
 
@@ -292,9 +293,11 @@ public abstract class AutoLoader {
                 continue;
             }
 
-//            lang.log.action(I18n.CREATE, "新自动加载项目: {0}({1}) -> {2}(组: {3})", field.getName(), type, annotation.path
-//                    (), annotation.group());
-            add(annotation.group(), annotation.path(), dataType, field.getName());
+            if (Objects.nonNull(loadAnnotation)) {
+                add(loadAnnotation.group(), loadAnnotation.path(), dataType, field.getName());
+            } else {
+                add("default", field.getName(), dataType, field.getName());
+            }
             counter++;
         }
 
@@ -329,12 +332,6 @@ public abstract class AutoLoader {
                 .from(from)
                 .to(to)
                 .build();
-//        lang.log.action(I18n.CREATE, "新自动加载数据组: {0}(路径: {1}, 数据源: {2}, {3})",
-//                name,
-//                (Objects.isNull(path) || path.length() == 0 ? "无" : path),
-//                Objects.isNull(from) ? "无" : from.getName(),
-//                Objects.isNull(to) ? "无" : to.getClass().getSimpleName() + ".class"
-//        );
         this.groupMap.put(name, group);
         return group;
     }

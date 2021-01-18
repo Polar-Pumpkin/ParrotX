@@ -19,16 +19,15 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
 
     private final String filename;
     private final String typeName;
-    private boolean readonly = false;
-
     @Getter
     protected File file;
     @Getter
     protected FileConfiguration config;
+    private boolean readonly = false;
 
     public PConfig(@NonNull PPlugin plugin, String filename, String typename) {
         super(plugin);
-        this.file = new File(plugin.getDataFolder(), filename + (filename.endsWith(".yml") ? "" : ".yml"));
+        this.file = new File(plugin.getDataFolder(), filename.endsWith(".yml") ? filename : filename + ".yml");
         this.filename = BasicUtil.getNoExFileName(this.file.getName());
         this.typeName = typename;
     }
@@ -62,7 +61,7 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
                 lang.log.error("无法自动生成 &c" + name() + "&7.");
             }
         }
-        config = YamlConfiguration.loadConfiguration(file);
+        this.config = YamlConfiguration.loadConfiguration(file);
 
         try {
             defaultFrom(config);
@@ -87,6 +86,7 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
 
     @Override
     public void load(@NonNull File file) {
+        config = YamlConfiguration.loadConfiguration(file);
         autoLoad();
     }
 
@@ -115,10 +115,12 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
         }
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @Override
     public void saveDefault() {
-        if (Objects.nonNull(plugin.getResource(filename + ".yml"))) plugin.saveResource(filename + ".yml", false);
-        else {
+        if (Objects.nonNull(plugin.getResource(filename.endsWith(".yml") ? filename : filename + ".yml"))) {
+            plugin.saveResource(filename + ".yml", false);
+        } else {
             try {
                 if (!file.createNewFile()) {
                     lang.log.error(I18n.GENERATE, name(), "自动生成失败");

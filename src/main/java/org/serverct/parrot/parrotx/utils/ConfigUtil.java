@@ -53,13 +53,18 @@ public class ConfigUtil {
         return getCustomMap(section, ConfigurationSection::getString);
     }
 
-    public static <V> Map<String, V> getCustomMap(ConfigurationSection section, BiFunction<ConfigurationSection,
-            String, V> getter) {
+    public static <V> Map<String, V> getCustomMap(ConfigurationSection section,
+                                                  BiFunction<ConfigurationSection, String, V> getter) {
         final Map<String, V> result = new HashMap<>();
         if (Objects.isNull(section)) {
             return result;
         }
-        section.getKeys(false).forEach(key -> result.put(key, getter.apply(section, key)));
+        section.getKeys(false).forEach(key -> {
+            final V value = getter.apply(section, key);
+            if (Objects.nonNull(value)) {
+                result.put(key, value);
+            }
+        });
         return result;
     }
 }

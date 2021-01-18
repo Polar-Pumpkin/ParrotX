@@ -2,54 +2,46 @@ package org.serverct.parrot.parrotx;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.api.ParrotXAPI;
 import org.serverct.parrot.parrotx.command.CommandHandler;
 import org.serverct.parrot.parrotx.config.PConfig;
-import org.serverct.parrot.parrotx.config.PDataSet;
 import org.serverct.parrot.parrotx.data.PConfiguration;
 import org.serverct.parrot.parrotx.data.UniqueData;
 import org.serverct.parrot.parrotx.data.flags.DataSet;
 import org.serverct.parrot.parrotx.hooks.BaseExpansion;
-import org.serverct.parrot.parrotx.utils.ClassUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public abstract class PPlugin extends JavaPlugin {
 
     public static final int PARROTX_ID = 9515;
     public final String PARROTX_VERSION = "1.4.7-Alpha (Build 5)";
-
     private final List<Listener> listeners = new ArrayList<>();
     private final List<BaseExpansion> expansions = new ArrayList<>();
-    private final List<Class<?>> classes = new ArrayList<>();
-    private final Map<Class<? extends UniqueData>, Class<? extends PDataSet<? extends UniqueData>>> dataManagers =
-            new HashMap<>();
-    private final Map<Class<? extends PConfiguration>, PConfiguration> configs = new HashMap<>();
-
     public String localeKey = "Chinese";
-
     protected PConfig pConfig;
+    protected PIndex index;
     @Getter
     protected I18n lang;
-    private Consumer<PluginManager> listenerRegister = null;
+
     @Getter
     private CommandHandler commandHandler;
-
+    @Setter
     private String versionLog = "本插件基于 ParrotX {0}, 感谢使用.";
+    @Setter
     private String timeLog = "插件加载完成, 共耗时&a{0}ms&r.";
 
     @Override
@@ -58,8 +50,8 @@ public abstract class PPlugin extends JavaPlugin {
         final long timestamp = System.currentTimeMillis();
 
         try {
-            this.classes.addAll(ClassUtil.getClasses(this.getClass().getPackage().getName()));
             ParrotXAPI.registerPlugin(this);
+            index = new PIndex(this);
 
             beforeInit();
 
@@ -67,10 +59,8 @@ public abstract class PPlugin extends JavaPlugin {
 
             afterInit();
 
-
-            this.listeners.forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, this));
-            if (Objects.nonNull(listenerRegister)) {
-                listenerRegister.accept(Bukkit.getPluginManager());
+            if (!this.listeners.isEmpty()) {
+                this.listeners.forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, this));
                 lang.log.info("已注册监听器.");
             }
 
@@ -104,50 +94,19 @@ public abstract class PPlugin extends JavaPlugin {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void init() {
         lang = new I18n(this, localeKey);
 
         preload();
 
-        try {
-            for (Class<?> clazz : classes) {
-                final Object instance = clazz.getConstructor().newInstance();
-                if (PConfiguration.class.isAssignableFrom(clazz)) {
-                    registerConfiguration((PConfiguration) instance);
-                }
-                if (Listener.class.isAssignableFrom(clazz)) {
-                    registerListener((Listener) instance);
-                }
-                if (PDataSet.class.isAssignableFrom(clazz)) {
-                    final Type type = clazz.getGenericSuperclass();
-                    if (type instanceof ParameterizedType) {
-                        final ParameterizedType pType = (ParameterizedType) type;
-                        final Type[] types = pType.getActualTypeArguments();
-                        if (types.length > 0) {
-                            Class<?> dataClass = Class.forName(types[0].getTypeName());
-                            if (UniqueData.class.isAssignableFrom(dataClass)) {
-                                this.dataManagers.put(
-                                        (Class<? extends UniqueData>) dataClass,
-                                        (Class<? extends PDataSet<?>>) clazz
-                                );
-                                ParrotXAPI.registerDataClass((Class<? extends UniqueData>) dataClass, this.getClass());
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            lang.log.debug("尝试自动初始化 PConfiguration 遇到错误: {0}", e.getMessage());
-        }
-
+        index.init();
 
         if (Objects.nonNull(pConfig)) {
             pConfig.init();
             localeKey = pConfig.getConfig().getString("Language");
         }
 
-        this.configs.forEach((clazz, instance) -> instance.init());
+        index.initConfig();
 
         load();
     }
@@ -162,18 +121,6 @@ public abstract class PPlugin extends JavaPlugin {
     }
 
     protected void afterInit() {
-    }
-
-    protected void listen(Consumer<PluginManager> register) {
-        this.listenerRegister = register;
-    }
-
-    protected void setTimeLog(final String format) {
-        this.timeLog = format;
-    }
-
-    protected void nonVersionLog() {
-        this.versionLog = null;
     }
 
     protected <T extends BaseExpansion> void registerExpansion(final T expansions) {
@@ -191,11 +138,6 @@ public abstract class PPlugin extends JavaPlugin {
         }
     }
 
-    public void registerConfiguration(final PConfiguration configuration) {
-        this.configs.put(configuration.getClass(), configuration);
-        ParrotXAPI.registerConfigClass(configuration.getClass(), this.getClass());
-    }
-
     public void registerListener(final Listener listener) {
         this.listeners.add(listener);
     }
@@ -203,17 +145,23 @@ public abstract class PPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        this.configs.forEach((clazz, config) -> {
-            if (!config.isReadOnly()) {
-                config.save();
-            }
-        });
+        index.saveConfig();
         preDisable();
     }
 
     public void preDisable() {
         getServer().getScheduler().cancelTasks(this);
-        this.configs.clear();
+        index.clearConfig();
+    }
+
+    public <T extends PConfiguration> T getManager(final Class<T> clazz) {
+        return index.getConfigurationInstance(clazz);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends UniqueData, U extends DataSet<T>> U getDataSet(final Class<T> dataClass) {
+        final Class<U> managerClass = (Class<U>) index.getDataHandler(dataClass);
+        return managerClass.cast(getManager((Class<? extends PConfiguration>) managerClass));
     }
 
     @Override
@@ -222,15 +170,6 @@ public abstract class PPlugin extends JavaPlugin {
             return super.getConfig();
         }
         return this.pConfig.getConfig();
-    }
-
-    public <T extends PConfiguration> T getManager(final Class<T> clazz) {
-        return clazz.cast(this.configs.get(clazz));
-    }
-
-    public <T extends UniqueData, U extends DataSet<T>> U getDataSet(final Class<T> dataClass) {
-        final Class<U> managerClass = (Class<U>) this.dataManagers.get(dataClass);
-        return managerClass.cast(getManager((Class<? extends PConfiguration>) managerClass));
     }
 
     public File getFile(final String path) {

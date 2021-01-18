@@ -4,7 +4,9 @@ import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PConfiguration;
+import org.serverct.parrot.parrotx.data.PID;
 import org.serverct.parrot.parrotx.data.UniqueData;
+import org.serverct.parrot.parrotx.data.flags.DataSet;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,13 +38,21 @@ public class ParrotXAPI {
         CONFIG_CLASS_MAP.put(clazz, pluginClass);
     }
 
-    public static <T extends UniqueData> T getData(final String id, final Class<T> clazz) {
-        return getPlugin(DATA_CLASS_MAP.get(clazz)).getDataSet(clazz).get(id);
+    public static <T extends UniqueData> T getData(@NotNull final PID id,
+                                                   @NotNull final Class<T> dataClass) {
+        return getPlugin(DATA_CLASS_MAP.get(dataClass)).getDataSet(dataClass).get(id);
     }
 
-    public static <T extends PConfiguration> T getManager(final Class<T> clazz) {
-        return getPlugin(CONFIG_CLASS_MAP.get(clazz)).getManager(clazz);
+    public static <T extends UniqueData> T getData(@NotNull final String id,
+                                                   @NotNull final Class<T> dataClass) {
+        return getPlugin(DATA_CLASS_MAP.get(dataClass)).getDataSet(dataClass).get(id);
     }
 
+    public static <T extends UniqueData, U extends DataSet<T>> U getDataHandler(@NotNull final Class<T> dataClass) {
+        return getPlugin(DATA_CLASS_MAP.get(dataClass)).getDataSet(dataClass);
+    }
 
+    public static <T extends PConfiguration> T getConfigManager(@NotNull final Class<T> configClass) {
+        return getPlugin(CONFIG_CLASS_MAP.get(configClass)).getManager(configClass);
+    }
 }

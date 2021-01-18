@@ -17,13 +17,14 @@ import java.util.Objects;
 public abstract class PStructSet<T extends PStruct> extends PDataSet<T> {
 
     @Getter
-    protected final FileConfiguration config;
+    protected FileConfiguration config;
     protected final String rootName;
     private final String filename;
     protected ConfigurationSection root;
 
     public PStructSet(@NonNull PPlugin plugin, String filename, String typename, String root) {
-        super(plugin, new File(plugin.getDataFolder(), filename + ".yml"), typename);
+        super(plugin, new File(plugin.getDataFolder(), filename.endsWith(".yml") ? filename : filename + ".yml"),
+                typename);
         this.filename = filename;
         this.rootName = root;
         this.config = YamlConfiguration.loadConfiguration(file);
@@ -44,12 +45,12 @@ public abstract class PStructSet<T extends PStruct> extends PDataSet<T> {
 
     @Override
     public void load() {
-        load(file);
+        load(this.file);
     }
-
 
     @Override
     public void load(@NonNull File file) {
+        config = YamlConfiguration.loadConfiguration(file);
         root = config.getConfigurationSection(this.rootName);
         if (Objects.isNull(root)) {
             root = config.createSection(this.rootName);
@@ -60,7 +61,12 @@ public abstract class PStructSet<T extends PStruct> extends PDataSet<T> {
                 lang.log.error(I18n.LOAD, name(), "存在非数据节: " + key);
                 continue;
             }
-            put(load(section));
+            final T value = loadFromDataSection(section);
+            if (Objects.isNull(value)) {
+                lang.log.error(I18n.LOAD, name(), "加载数据失败: " + key);
+                continue;
+            }
+            put(value);
         }
 
         if (dataMap.isEmpty()) {
@@ -87,10 +93,12 @@ public abstract class PStructSet<T extends PStruct> extends PDataSet<T> {
         lang.log.action(I18n.CLEAR, name());
     }
 
+    @SuppressWarnings("DuplicatedCode")
     @Override
     public void saveDefault() {
-        if (Objects.nonNull(plugin.getResource(filename + ".yml"))) plugin.saveResource(filename + ".yml", false);
-        else {
+        if (Objects.nonNull(plugin.getResource(filename.endsWith(".yml") ? filename : filename + ".yml"))) {
+            plugin.saveResource(filename + ".yml", false);
+        } else {
             try {
                 if (!file.createNewFile()) {
                     lang.log.error(I18n.GENERATE, name(), "自动生成失败");
@@ -101,7 +109,7 @@ public abstract class PStructSet<T extends PStruct> extends PDataSet<T> {
         }
     }
 
-    public abstract T load(final ConfigurationSection section);
+    public abstract T loadFromDataSection(final ConfigurationSection section);
 
     public PID buildId(String id) {
         return new PID(plugin, rootName.toLowerCase(), id);
