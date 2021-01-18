@@ -51,7 +51,6 @@ public abstract class PPlugin extends JavaPlugin {
 
         try {
             ParrotXAPI.registerPlugin(this);
-            index = new PIndex(this);
 
             beforeInit();
 
@@ -96,6 +95,8 @@ public abstract class PPlugin extends JavaPlugin {
 
     public void init() {
         lang = new I18n(this, localeKey);
+
+        index = new PIndex(this);
 
         preload();
 

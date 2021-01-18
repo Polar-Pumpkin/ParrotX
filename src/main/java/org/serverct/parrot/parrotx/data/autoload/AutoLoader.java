@@ -204,10 +204,23 @@ public abstract class AutoLoader {
                 Field field = clazz.getDeclaredField(fieldName);
                 field.setAccessible(true);
                 switch (item.getType()) {
+                    case MAP_INTEGER_DOUBLE:
+                    case MAP_INTEGER_FLOAT:
+                    case MAP_INTEGER_INTEGER:
+                    case MAP_INTEGER_LONG:
+                    case MAP_INTEGER_STRING:
                     case MAP_STRING_INTEGER:
                     case MAP_STRING_STRING:
+                    case MAP_STRING_DOUBLE:
+                    case MAP_STRING_FLOAT:
+                    case MAP_STRING_LONG:
                         final Map<?, ?> map = (Map<?, ?>) field.get(to);
-                        map.forEach((key, value) -> section.set((String) key, value));
+                        map.forEach((key, value) -> section.set(String.valueOf(key), value));
+                        break;
+                    case LIST_MAP:
+                        @SuppressWarnings("unchecked") final List<Map<?, ?>> list = (List<Map<?, ?>>) field.get(to);
+                        list.forEach(listMap -> listMap.forEach((key, value) -> section.set(String.valueOf(key),
+                                value)));
                         break;
                     default:
                         from.set(path, field.get(to));

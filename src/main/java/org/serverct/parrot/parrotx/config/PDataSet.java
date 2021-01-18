@@ -86,6 +86,7 @@ public abstract class PDataSet<T extends UniqueData> implements PConfiguration, 
 
     @Override
     public void put(T data) {
+        lang.log.debug("已加载数据: " + data.getID().getId());
         this.dataMap.put(data.getID(), data);
     }
 

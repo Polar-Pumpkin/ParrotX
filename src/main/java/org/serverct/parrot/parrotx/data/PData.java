@@ -25,8 +25,6 @@ public abstract class PData extends AutoLoader implements UniqueData, FileSaved 
         this.file = file;
         this.typeName = typeName;
         this.id = id;
-
-        load(this.file);
     }
 
     @Override
