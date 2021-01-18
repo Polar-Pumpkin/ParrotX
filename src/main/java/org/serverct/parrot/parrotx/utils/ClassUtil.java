@@ -99,9 +99,11 @@ public class ClassUtil {
                                         String className = name.substring(packageName.length() + 1, name.length() - 6);
                                         try {
                                             //添加到classes
-                                            classes.add(Class.forName(packageName + '.' + className));
+                                            final Class<?> clazz = Class.forName(packageName + '.' + className);
+                                            classes.add(clazz);
+                                            plugin.getLang().log.debug("找到类: " + clazz.getName());
                                         } catch (ClassNotFoundException e) {
-                                            e.printStackTrace();
+                                            plugin.getLang().log.debug("未找到类: " + packageName + "." + className);
                                         }
                                     }
                                 }
