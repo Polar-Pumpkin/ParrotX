@@ -91,8 +91,13 @@ public class ClassUtil {
                                     //获取包名 把"/"替换成"."
                                     packageName = name.substring(0, idx).replace('/', '.');
                                 }
+
+                                if (packageName.contains("util") || packageName.contains("parrotx")) {
+                                    continue;
+                                }
+
                                 //如果可以迭代下去 并且是一个包
-                                if ((idx != -1 || recursive) && !("util".equalsIgnoreCase(packageName) || "utils".equalsIgnoreCase(packageName))) {
+                                if ((idx != -1 || recursive)) {
                                     //如果是一个.class文件 而且不是目录
                                     if (name.endsWith(".class") && !entry.isDirectory()) {
                                         //去掉后面的".class" 获取真正的类名
