@@ -44,7 +44,7 @@ public class ConfigUtil {
         try {
             return new Location(world, x, y, z);
         } catch (Throwable e) {
-            plugin.getLang().log.error(I18n.SAVE, "Location", e, null);
+            plugin.getLang().log.error(I18n.SAVE, "Location", e, plugin.getPackageName());
             return null;
         }
     }

@@ -20,7 +20,7 @@ public class ReloadCommand extends BaseCommand {
             sender.sendMessage(plugin.getLang().data.info("重载配置文件成功."));
         } catch (Throwable e) {
             sender.sendMessage(plugin.getLang().data.info("重载配置文件失败, 请查看控制台中的错误信息."));
-            plugin.getLang().log.error(I18n.RELOAD, "配置文件", e, null);
+            lang.log.error(I18n.RELOAD, "配置文件", e, plugin.getPackageName());
         }
     }
 }

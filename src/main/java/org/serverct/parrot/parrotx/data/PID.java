@@ -19,7 +19,7 @@ public class PID {
         try {
             return new NamespacedKey(plugin, key.toLowerCase());
         } catch (Throwable e) {
-            plugin.getLang().log.error(I18n.BUILD, "NamespacedKey", e, null);
+            plugin.getLang().log.error(I18n.BUILD, "NamespacedKey", e, plugin.getPackageName());
         }
         return null;
     }

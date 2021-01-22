@@ -6,7 +6,7 @@ import org.serverct.parrot.parrotx.command.CommandHandler;
 import org.serverct.parrot.parrotx.config.PDataSet;
 import org.serverct.parrot.parrotx.data.PConfiguration;
 import org.serverct.parrot.parrotx.data.UniqueData;
-import org.serverct.parrot.parrotx.data.autoload.Autoload;
+import org.serverct.parrot.parrotx.data.autoload.PAutoload;
 import org.serverct.parrot.parrotx.utils.ClassUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
@@ -44,13 +44,12 @@ public class PIndex {
 
     protected void clearConfig() {
         this.configs.clear();
-        // TODO ParrotXAPI 也要 clear;
     }
 
     protected void init() {
         for (Class<?> clazz : classes) {
             try {
-                final Autoload annotation = clazz.getAnnotation(Autoload.class);
+                final PAutoload annotation = clazz.getAnnotation(PAutoload.class);
                 if (Objects.isNull(annotation)) {
                     continue;
                 }
@@ -89,7 +88,7 @@ public class PIndex {
                     }
                 }
             } catch (NoSuchMethodException exception) {
-                lang.log.error(I18n.REGISTER, clazz.getName(), exception, plugin.getClass().getPackage().getName());
+                lang.log.error(I18n.REGISTER, clazz.getName(), exception, plugin.getPackageName());
             } catch (Exception exception) {
                 lang.log.debug("自动加载({0})遇到错误: {1}", clazz.getName(), exception.getMessage());
             }

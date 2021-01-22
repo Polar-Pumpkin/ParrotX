@@ -27,8 +27,8 @@ public abstract class PDataSet<T extends UniqueData> implements PConfiguration, 
 
     public PDataSet(PPlugin plugin, File file, String name) {
         this.plugin = plugin;
-        this.file = file;
         this.lang = this.plugin.getLang();
+        this.file = file;
         this.name = name;
     }
 

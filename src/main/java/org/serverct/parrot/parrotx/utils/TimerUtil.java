@@ -65,7 +65,7 @@ public class TimerUtil {
 
             return true;
         } catch (Throwable e) {
-            id.getPlugin().getLang().log.error(I18n.REGISTER, "定时刷新任务", e, null);
+            id.getPlugin().getLang().log.error(I18n.REGISTER, "定时刷新任务", e, id.getPlugin().getPackageName());
             return false;
         }
     }

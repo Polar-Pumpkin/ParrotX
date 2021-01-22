@@ -86,7 +86,7 @@ public class BasicUtil {
             lang.log.action(I18n.CALCULATE, "数学表达式({0}, x={1}, 值={2})", expression, xValue, result);
             return result;
         } catch (Throwable e) {
-            lang.log.error(I18n.CALCULATE, "数学表达式(" + expression + ", x=" + xValue + ")", e, null);
+            lang.log.error(I18n.CALCULATE, "数学表达式(" + expression + ", x=" + xValue + ")", e, plugin.getPackageName());
         }
         return 0;
     }
@@ -105,7 +105,8 @@ public class BasicUtil {
             lang.log.action(I18n.CALCULATE, "数学表达式({0} = {1}): {2}", expression, result, variable.toString());
             return result;
         } catch (Throwable e) {
-            lang.log.error(I18n.CALCULATE, "数学表达式(" + expression + "): " + variable.toString(), e, null);
+            lang.log.error(I18n.CALCULATE, "数学表达式(" + expression + "): " + variable.toString(), e,
+                    plugin.getPackageName());
         }
         return 0;
     }

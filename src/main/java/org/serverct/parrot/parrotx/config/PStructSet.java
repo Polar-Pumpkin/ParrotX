@@ -82,7 +82,7 @@ public abstract class PStructSet<T extends PStruct> extends PDataSet<T> {
         try {
             this.config.save(file);
         } catch (IOException e) {
-            lang.log.error(I18n.SAVE, name(), e, null);
+            lang.log.error(I18n.SAVE, name(), e, plugin.getPackageName());
         }
     }
 
@@ -104,7 +104,7 @@ public abstract class PStructSet<T extends PStruct> extends PDataSet<T> {
                     lang.log.error(I18n.GENERATE, name(), "自动生成失败");
                 }
             } catch (IOException e) {
-                lang.log.error(I18n.GENERATE, name(), e, null);
+                lang.log.error(I18n.GENERATE, name(), e, plugin.getPackageName());
             }
         }
     }

@@ -4,15 +4,19 @@ import lombok.NonNull;
 import lombok.Setter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.serverct.parrot.parrotx.data.autoload.AutoLoader;
+import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.data.autoload.Autoloader;
 import org.serverct.parrot.parrotx.data.flags.FileSaved;
 import org.serverct.parrot.parrotx.utils.BasicUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
+import java.io.IOException;
 
-public abstract class PData extends AutoLoader implements UniqueData, FileSaved {
+public abstract class PData implements UniqueData, FileSaved {
 
+    protected PPlugin plugin;
+    protected I18n lang;
     protected PID id;
     protected File file;
     protected FileConfiguration data;
@@ -21,23 +25,27 @@ public abstract class PData extends AutoLoader implements UniqueData, FileSaved 
     private boolean readOnly = false;
 
     public PData(File file, PID id, String typeName) {
-        super(id.getPlugin());
+        this.plugin = id.getPlugin();
+        this.lang = this.plugin.getLang();
         this.file = file;
+        this.data = YamlConfiguration.loadConfiguration(file);
         this.typeName = typeName;
         this.id = id;
     }
 
     @Override
     public void save() {
-        autoSave();
+        try {
+            Autoloader.execute(plugin, this.data, this, false);
+            this.data.save(this.file);
+        } catch (IOException e) {
+            lang.log.error(I18n.SAVE, name(), e, plugin.getPackageName());
+        }
     }
 
     @Override
     public void load(@NonNull File file) {
         this.data = YamlConfiguration.loadConfiguration(file);
-        defaultFrom(this.data);
-        defaultTo(this);
-        autoLoad();
     }
 
     @Override
@@ -83,7 +91,8 @@ public abstract class PData extends AutoLoader implements UniqueData, FileSaved 
     @Override
     public void load() {
         load(this.file);
-        plugin.getLang().log.action(I18n.LOAD, name());
+        Autoloader.execute(plugin, this.data, this, true);
+        lang.log.action(I18n.LOAD, name());
     }
 
     @Override
@@ -94,9 +103,9 @@ public abstract class PData extends AutoLoader implements UniqueData, FileSaved 
     @Override
     public void delete() {
         if (this.file.delete()) {
-            plugin.getLang().log.action(I18n.DELETE, name());
+            lang.log.action(I18n.DELETE, name());
         } else {
-            plugin.getLang().log.error(I18n.DELETE, name(), "删除文件失败");
+            lang.log.error(I18n.DELETE, name(), "删除文件失败");
         }
     }
 }

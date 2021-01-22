@@ -3,7 +3,8 @@ package org.serverct.parrot.parrotx.data.autoload;
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.FIELD})
+@Target(ElementType.TYPE)
 @Documented
-public @interface Autoload {
+public @interface PAutoloadGroups {
+    PAutoloadGroup[] value();
 }

@@ -22,6 +22,7 @@ import java.util.Map;
 public class Goal implements Timestamp, Unique {
 
     private final PPlugin plugin;
+    private final I18n lang;
     private final PID id;
     private long startTime;
     @Getter
@@ -32,6 +33,7 @@ public class Goal implements Timestamp, Unique {
     public Goal(PID id, Map<Type, Integer> digital, Map<Material, Integer> item) {
         this.id = id;
         this.plugin = id.getPlugin();
+        this.lang = this.plugin.getLang();
         this.digitalRemain = digital;
         this.itemRemain = item;
         this.startTime = System.currentTimeMillis();
@@ -51,6 +53,7 @@ public class Goal implements Timestamp, Unique {
     public Goal(PID id, @NonNull ConfigurationSection section) {
         this.id = id;
         this.plugin = id.getPlugin();
+        this.lang = this.plugin.getLang();
         this.startTime = section.getLong("StartTime");
 
         try {
@@ -64,7 +67,7 @@ public class Goal implements Timestamp, Unique {
                     itemRemain.put(EnumUtil.getMaterial(material.toUpperCase()), item.getInt(material));
             }
         } catch (Throwable e) {
-            plugin.getLang().log.error(I18n.LOAD, "目标/" + id.getKey(), e, null);
+            lang.log.error(I18n.LOAD, "目标/" + id.getKey(), e, plugin.getPackageName());
         }
     }
 
@@ -79,7 +82,7 @@ public class Goal implements Timestamp, Unique {
 
     public int contribute(Type type, int amount) {
         if (type == Type.ITEM) {
-            plugin.getLang().log.error(I18n.CONTRIBUTE, "目标/" + id.getKey(), "尝试数字化提交物品");
+            lang.log.error(I18n.CONTRIBUTE, "目标/" + id.getKey(), "尝试数字化提交物品");
             return 0;
         }
         int result = digitalRemain.get(type) - amount;

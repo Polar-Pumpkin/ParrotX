@@ -4,15 +4,18 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.Nullable;
-import org.serverct.parrot.parrotx.data.autoload.AutoLoader;
+import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.data.autoload.Autoloader;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public abstract class PStruct extends AutoLoader implements UniqueData {
+public abstract class PStruct implements UniqueData {
 
+    protected final PPlugin plugin;
+    protected final I18n lang;
     protected final PID id;
     protected final ConfigurationSection section;
     @Getter
@@ -22,22 +25,21 @@ public abstract class PStruct extends AutoLoader implements UniqueData {
     protected boolean readOnly = false;
 
     public PStruct(PID id, ConfigurationSection section, String typeName) {
-        super(id.getPlugin());
         this.id = id;
+        this.plugin = id.getPlugin();
+        this.lang = this.plugin.getLang();
         this.section = section;
         this.typeName = typeName;
     }
 
     @Override
     public void load() {
-        defaultFrom(this.section);
-        defaultTo(this);
-        autoLoad();
+        Autoloader.execute(plugin, section, this, true);
     }
 
     @Override
     public void save() {
-        autoSave();
+        Autoloader.execute(plugin, section, this, false);
     }
 
     @Override

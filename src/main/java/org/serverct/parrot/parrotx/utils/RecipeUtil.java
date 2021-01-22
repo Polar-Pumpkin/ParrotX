@@ -43,7 +43,8 @@ public class RecipeUtil {
                 try {
                     plugin.getServer().addRecipe(recipe);
                 } catch (Throwable e) {
-                    plugin.getLang().log.error(I18n.LOAD, "自定义配方/" + namespacedKey.toString(), e, null);
+                    plugin.getLang().log.error(I18n.LOAD, "自定义配方/" + namespacedKey.toString(), e,
+                            plugin.getPackageName());
                 }
             }
         }

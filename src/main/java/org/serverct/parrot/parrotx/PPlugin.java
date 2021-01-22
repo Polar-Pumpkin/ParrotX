@@ -28,7 +28,7 @@ import java.util.Objects;
 public abstract class PPlugin extends JavaPlugin {
 
     public static final int PARROTX_ID = 9515;
-    public final String PARROTX_VERSION = "1.4.7-Alpha (Build 5)";
+    public final String PARROTX_VERSION = "1.4.7-Alpha (Build 6)";
     private final List<Listener> listeners = new ArrayList<>();
     private final List<BaseExpansion> expansions = new ArrayList<>();
     public String localeKey = "Chinese";
@@ -88,7 +88,7 @@ public abstract class PPlugin extends JavaPlugin {
                 lang.log.info(versionLog, PARROTX_VERSION);
             }
         } catch (Throwable e) {
-            lang.log.error(I18n.INIT, "插件", e, null);
+            lang.log.error(I18n.INIT, "插件", e, getPackageName());
             this.setEnabled(false);
         }
     }
@@ -175,5 +175,9 @@ public abstract class PPlugin extends JavaPlugin {
 
     public File getFile(final String path) {
         return new File(getDataFolder(), path);
+    }
+
+    public String getPackageName() {
+        return getClass().getPackage().getName();
     }
 }

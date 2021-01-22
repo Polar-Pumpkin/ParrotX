@@ -69,7 +69,7 @@ public class ItemUtil {
 
             result.setItemMeta(meta);
         } catch (Throwable e) {
-            plugin.getLang().log.error(I18n.BUILD, "ItemStack/" + map, e, null);
+            plugin.getLang().log.error(I18n.BUILD, "ItemStack/" + map, e, plugin.getPackageName());
         }
         return result;
     }
@@ -131,7 +131,7 @@ public class ItemUtil {
 
             result.setItemMeta(meta);
         } catch (Throwable e) {
-            plugin.getLang().log.error(I18n.BUILD, "ItemStack/" + section.getName(), e, null);
+            plugin.getLang().log.error(I18n.BUILD, "ItemStack/" + section.getName(), e, plugin.getPackageName());
         }
         return result;
     }

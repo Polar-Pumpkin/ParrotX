@@ -6,7 +6,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PConfiguration;
-import org.serverct.parrot.parrotx.data.autoload.AutoLoader;
+import org.serverct.parrot.parrotx.data.autoload.Autoloader;
 import org.serverct.parrot.parrotx.data.flags.FileSaved;
 import org.serverct.parrot.parrotx.utils.BasicUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
@@ -15,7 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-public abstract class PConfig extends AutoLoader implements PConfiguration, FileSaved {
+public abstract class PConfig implements PConfiguration, FileSaved {
 
     private final String filename;
     private final String typeName;
@@ -23,11 +23,15 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
     protected File file;
     @Getter
     protected FileConfiguration config;
+    protected PPlugin plugin;
+    protected I18n lang;
     private boolean readonly = false;
 
     public PConfig(@NonNull PPlugin plugin, String filename, String typename) {
-        super(plugin);
+        this.plugin = plugin;
+        this.lang = this.plugin.getLang();
         this.file = new File(plugin.getDataFolder(), filename.endsWith(".yml") ? filename : filename + ".yml");
+        this.config = YamlConfiguration.loadConfiguration(this.file);
         this.filename = BasicUtil.getNoExFileName(this.file.getName());
         this.typeName = typename;
     }
@@ -61,16 +65,12 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
                 lang.log.error("无法自动生成 &c" + name() + "&7.");
             }
         }
-        this.config = YamlConfiguration.loadConfiguration(file);
 
         try {
-            defaultFrom(config);
-            defaultTo(this);
-
             load();
             lang.log.info("已加载 &c" + name() + "&7.");
         } catch (Throwable e) {
-            lang.log.error(I18n.LOAD, name(), e, null);
+            lang.log.error(I18n.LOAD, name(), e, plugin.getPackageName());
         }
     }
 
@@ -82,12 +82,12 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
     @Override
     public void load() {
         load(file);
+        Autoloader.execute(plugin, config, this, true);
     }
 
     @Override
     public void load(@NonNull File file) {
         config = YamlConfiguration.loadConfiguration(file);
-        autoLoad();
     }
 
     @Override
@@ -99,10 +99,10 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
     @Override
     public void save() {
         try {
-            autoSave();
-            config.save(file);
+            Autoloader.execute(plugin, this.config, this, false);
+            this.config.save(this.file);
         } catch (IOException e) {
-            lang.log.error(I18n.SAVE, name(), e, null);
+            lang.log.error(I18n.SAVE, name(), e, plugin.getPackageName());
         }
     }
 
@@ -126,7 +126,7 @@ public abstract class PConfig extends AutoLoader implements PConfiguration, File
                     lang.log.error(I18n.GENERATE, name(), "自动生成失败");
                 }
             } catch (IOException e) {
-                lang.log.error(I18n.GENERATE, name(), e, null);
+                lang.log.error(I18n.GENERATE, name(), e, plugin.getPackageName());
             }
         }
     }

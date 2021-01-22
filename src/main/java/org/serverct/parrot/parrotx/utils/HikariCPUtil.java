@@ -36,7 +36,7 @@ public class HikariCPUtil {
         try {
             return sqlConnectionPool.getConnection();
         } catch (SQLException e) {
-            plugin.getLang().log.error(I18n.GET, "数据库链接", e, "serverct");
+            plugin.getLang().log.error(I18n.GET, "数据库链接", e, plugin.getPackageName());
         }
         return null;
     }
