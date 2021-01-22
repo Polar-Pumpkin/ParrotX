@@ -31,14 +31,18 @@ public abstract class Autoloader {
 
     static {
         registerLoader(
-                new SimpleLoader<>(String.class, ConfigurationSection::getString),
+                new SimpleLoader<>(int.class, ConfigurationSection::getInt),
                 new SimpleLoader<>(Integer.class, ConfigurationSection::getInt),
+                new SimpleLoader<>(long.class, ConfigurationSection::getLong),
                 new SimpleLoader<>(Long.class, ConfigurationSection::getLong),
+                new SimpleLoader<>(double.class, ConfigurationSection::getDouble),
                 new SimpleLoader<>(Double.class, ConfigurationSection::getDouble),
+                new SimpleLoader<>(boolean.class, ConfigurationSection::getBoolean),
+                new SimpleLoader<>(Boolean.class, ConfigurationSection::getBoolean),
+                new SimpleLoader<>(String.class, ConfigurationSection::getString),
                 new SimpleLoader<>(ItemStack.class, ConfigurationSection::getItemStack),
                 new SimpleLoader<>(Location.class, ConfigurationSection::getLocation),
                 new SimpleLoader<>(Vector.class, ConfigurationSection::getVector),
-                new SimpleLoader<>(Boolean.class, ConfigurationSection::getBoolean),
                 new ListLoader(),
                 new MapLoader(),
                 new SerializableLoader()

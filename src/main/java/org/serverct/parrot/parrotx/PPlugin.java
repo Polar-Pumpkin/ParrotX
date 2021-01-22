@@ -104,6 +104,7 @@ public abstract class PPlugin extends JavaPlugin {
 
         if (Objects.nonNull(pConfig)) {
             pConfig.init();
+            index.registerConfiguration(pConfig);
             localeKey = pConfig.getConfig().getString("Language");
         }
 
@@ -116,6 +117,7 @@ public abstract class PPlugin extends JavaPlugin {
     }
 
     protected void preload() {
+
     }
 
     protected void load() {
