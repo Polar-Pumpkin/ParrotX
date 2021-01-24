@@ -32,8 +32,8 @@ public abstract class PPlugin extends JavaPlugin {
     private final List<Listener> listeners = new ArrayList<>();
     private final List<BaseExpansion> expansions = new ArrayList<>();
     public String localeKey = "Chinese";
+    public PIndex index;
     protected PConfig pConfig;
-    protected PIndex index;
     @Getter
     protected I18n lang;
 
@@ -130,7 +130,7 @@ public abstract class PPlugin extends JavaPlugin {
         this.expansions.add(expansions);
     }
 
-    protected void registerCommand(@NonNull CommandHandler handler) {
+    public void registerCommand(@NonNull CommandHandler handler) {
         PluginCommand command = Bukkit.getPluginCommand(handler.mainCmd);
         if (command != null) {
             this.commandHandler = handler;

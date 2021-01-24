@@ -14,6 +14,10 @@ import org.serverct.parrot.parrotx.data.autoload.loader.ListLoader;
 import org.serverct.parrot.parrotx.data.autoload.loader.MapLoader;
 import org.serverct.parrot.parrotx.data.autoload.loader.SerializableLoader;
 import org.serverct.parrot.parrotx.data.autoload.loader.SimpleLoader;
+import org.serverct.parrot.parrotx.data.autoload.register.CommandHandlerRegister;
+import org.serverct.parrot.parrotx.data.autoload.register.ConfigurationRegister;
+import org.serverct.parrot.parrotx.data.autoload.register.DataSetRegister;
+import org.serverct.parrot.parrotx.data.autoload.register.ListenerRegister;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.lang.reflect.Field;
@@ -28,6 +32,7 @@ public abstract class Autoloader {
 
     private static final Map<Class<?>, AutoloadSetting> MODEL_MAP = new HashMap<>();
     private static final Map<Class<?>, DataLoader<?>> LOADER_MAP = new HashMap<>();
+    private static final Map<Class<?>, AutoRegister> REGISTER_MAP = new HashMap<>();
 
     static {
         registerLoader(
@@ -48,6 +53,12 @@ public abstract class Autoloader {
                 new SerializableLoader()
         );
 
+        registerRegister(
+                new CommandHandlerRegister(),
+                new ConfigurationRegister(),
+                new DataSetRegister(),
+                new ListenerRegister()
+        );
     }
 
     public static void registerLoader(DataLoader<?>... loaders) {
@@ -57,6 +68,19 @@ public abstract class Autoloader {
         for (DataLoader<?> loader : loaders) {
             LOADER_MAP.put(loader.getType(), loader);
         }
+    }
+
+    public static void registerRegister(AutoRegister... registers) {
+        if (Objects.isNull(registers) || registers.length <= 0) {
+            return;
+        }
+        for (AutoRegister register : registers) {
+            REGISTER_MAP.put(register.getType(), register);
+        }
+    }
+
+    public static Collection<Map.Entry<Class<?>, AutoRegister>> getRegisterEntries() {
+        return REGISTER_MAP.entrySet();
     }
 
     @SuppressWarnings("unchecked")

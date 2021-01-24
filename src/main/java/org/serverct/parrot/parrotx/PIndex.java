@@ -1,11 +1,11 @@
 package org.serverct.parrot.parrotx;
 
-import org.bukkit.event.Listener;
 import org.serverct.parrot.parrotx.api.ParrotXAPI;
-import org.serverct.parrot.parrotx.command.CommandHandler;
 import org.serverct.parrot.parrotx.config.PDataSet;
 import org.serverct.parrot.parrotx.data.PConfiguration;
 import org.serverct.parrot.parrotx.data.UniqueData;
+import org.serverct.parrot.parrotx.data.autoload.AutoRegister;
+import org.serverct.parrot.parrotx.data.autoload.Autoloader;
 import org.serverct.parrot.parrotx.data.autoload.PAutoload;
 import org.serverct.parrot.parrotx.utils.ClassUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
@@ -55,36 +55,10 @@ public class PIndex {
                 }
                 final Object instance = clazz.getConstructor().newInstance();
 
-                if (PConfiguration.class.isAssignableFrom(clazz)) {
-                    registerConfiguration((PConfiguration) instance);
-                }
-
-                if (Listener.class.isAssignableFrom(clazz)) {
-                    plugin.registerListener((Listener) instance);
-                }
-
-                if (CommandHandler.class.isAssignableFrom(clazz)) {
-                    plugin.registerCommand((CommandHandler) instance);
-                }
-
-                if (PDataSet.class.isAssignableFrom(clazz)) {
-                    final Type type = clazz.getGenericSuperclass();
-                    if (type instanceof ParameterizedType) {
-                        final ParameterizedType pType = (ParameterizedType) type;
-                        final Type[] types = pType.getActualTypeArguments();
-                        if (types.length > 0) {
-                            Class<?> dataClass = Class.forName(types[0].getTypeName());
-                            if (UniqueData.class.isAssignableFrom(dataClass)) {
-                                this.dataManagers.put(
-                                        (Class<? extends UniqueData>) dataClass,
-                                        (Class<? extends PDataSet<?>>) clazz
-                                );
-                                ParrotXAPI.registerDataClass(
-                                        (Class<? extends UniqueData>) dataClass,
-                                        this.plugin.getClass()
-                                );
-                            }
-                        }
+                for (Map.Entry<Class<?>, AutoRegister> entry : Autoloader.getRegisterEntries()) {
+                    final AutoRegister register = entry.getValue();
+                    if (register.shouldRegister(clazz)) {
+                        register.register(plugin, clazz, instance);
                     }
                 }
             } catch (NoSuchMethodException exception) {
@@ -95,16 +69,39 @@ public class PIndex {
         }
     }
 
-    protected void registerConfiguration(final PConfiguration configuration) {
+    public void registerConfiguration(final PConfiguration configuration) {
         this.configs.put(configuration.getClass(), configuration);
         ParrotXAPI.registerConfigClass(configuration.getClass(), this.plugin.getClass());
     }
 
-    protected <T extends PConfiguration> T getConfigurationInstance(final Class<T> clazz) {
+    public void registerDataSet(final Class<? extends PDataSet<?>> clazz) {
+        try {
+            final Type type = clazz.getGenericSuperclass();
+            if (type instanceof ParameterizedType) {
+                final ParameterizedType pType = (ParameterizedType) type;
+                final Type[] types = pType.getActualTypeArguments();
+                if (types.length > 0) {
+                    Class<?> dataClass = Class.forName(types[0].getTypeName());
+
+                    if (UniqueData.class.isAssignableFrom(dataClass)) {
+                        this.dataManagers.put((Class<? extends UniqueData>) dataClass, clazz);
+                        ParrotXAPI.registerDataClass(
+                                (Class<? extends UniqueData>) dataClass,
+                                this.plugin.getClass()
+                        );
+                    }
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            lang.log.debug("自动加载({0})遇到错误: {1}", clazz.getName(), e.getMessage());
+        }
+    }
+
+    public <T extends PConfiguration> T getConfigurationInstance(final Class<T> clazz) {
         return clazz.cast(this.configs.get(clazz));
     }
 
-    protected <T extends UniqueData> Class<? extends PDataSet<?>> getDataHandler(final Class<T> clazz) {
+    public <T extends UniqueData> Class<? extends PDataSet<?>> getDataHandler(final Class<T> clazz) {
         return this.dataManagers.get(clazz);
     }
 }
