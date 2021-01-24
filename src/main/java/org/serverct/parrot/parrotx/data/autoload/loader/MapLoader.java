@@ -90,9 +90,15 @@ public class MapLoader implements DataLoader<Map> {
             to.set(path, null);
             return;
         }
+
+        ConfigurationSection mapSection = to.getConfigurationSection(path);
+        if (Objects.isNull(mapSection)) {
+            mapSection = to.createSection(path);
+        }
+
         final Map<Object, Object> map = (Map<Object, Object>) value;
         for (Map.Entry<Object, Object> entry : map.entrySet()) {
-            to.set(String.valueOf(entry.getKey()), entry.getValue());
+            mapSection.set(String.valueOf(entry.getKey()), entry.getValue());
         }
     }
 }
