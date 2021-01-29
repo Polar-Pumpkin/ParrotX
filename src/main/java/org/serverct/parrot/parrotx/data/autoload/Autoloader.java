@@ -46,12 +46,17 @@ public abstract class Autoloader {
                 new SimpleLoader<>(Boolean.class, ConfigurationSection::getBoolean),
                 new SimpleLoader<>(String.class, ConfigurationSection::getString),
                 new SimpleLoader<>(ItemStack.class, ConfigurationSection::getItemStack),
-                new SimpleLoader<>(Location.class, ConfigurationSection::getLocation),
                 new SimpleLoader<>(Vector.class, ConfigurationSection::getVector),
                 new ListLoader(),
                 new MapLoader(),
                 new SerializableLoader()
         );
+
+        try {
+            ConfigurationSection.class.getMethod("getLocation", String.class);
+            new SimpleLoader<>(Location.class, ConfigurationSection::getLocation);
+        } catch (NoSuchMethodException ignored) {
+        }
 
         registerRegister(
                 new CommandHandlerRegister(),
