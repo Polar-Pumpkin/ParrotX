@@ -35,7 +35,7 @@ class InventoryTemplate<T> implements InventoryElement {
         if (Objects.isNull(data)) {
             return new ItemStack(Material.AIR);
         }
-        final ItemStack item = getBase().getItem().get();
+        final ItemStack item = getBase().getItem().get().clone();
         if (Objects.isNull(applyTemple)) {
             return item;
         }
@@ -120,7 +120,9 @@ class InventoryTemplate<T> implements InventoryElement {
         contentMap.put(page, contents);
         lang.log.debug("分页数据集: {0}", contentMap);
 
-        this.currentPage = 1;
+        if (this.currentPage < 1 || this.currentPage > getMaxPage()) {
+            this.currentPage = 1;
+        }
         return getBase();
     }
 
