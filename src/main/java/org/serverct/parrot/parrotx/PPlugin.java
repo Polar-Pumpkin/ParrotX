@@ -104,11 +104,11 @@ public abstract class PPlugin extends JavaPlugin {
 
         if (Objects.nonNull(pConfig)) {
             pConfig.init();
-            index.registerConfiguration(pConfig);
             localeKey = pConfig.getConfig().getString("Language");
         }
 
         index.initConfig();
+        index.registerConfiguration(pConfig);
 
         load();
     }
