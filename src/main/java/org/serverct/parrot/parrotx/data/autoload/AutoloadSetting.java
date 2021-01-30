@@ -56,18 +56,10 @@ public class AutoloadSetting {
                     continue;
                 }
 
-                final List<Class<?>> paramTypes = new ArrayList<>();
-
-                final Type type = field.getGenericType();
-                if (type instanceof ParameterizedType) {
-                    final ParameterizedType paramType = (ParameterizedType) type;
-                    for (Type argument : paramType.getActualTypeArguments()) {
-                        paramTypes.add(Class.forName(argument.getTypeName()));
-                    }
-                }
+                final List<Class<?>> classChain = chain(field.getGenericType(), new ArrayList<>());
 
                 if (ConfigurationSerializable.class.isAssignableFrom(field.getType())) {
-                    paramTypes.add(field.getType());
+                    classChain.add(field.getType());
                 }
 
                 newItem(AutoloadItem.builder()
@@ -75,7 +67,7 @@ public class AutoloadSetting {
                         .path(annotation.value().replace("{FIELD}", field.getName()))
                         .field(field.getName())
                         .type(field.getType())
-                        .paramTypes(paramTypes)
+                        .classChain(classChain)
                         .build());
                 counter++;
             }
@@ -129,7 +121,7 @@ public class AutoloadSetting {
 
             items.forEach(item -> {
                 final StringBuilder paramType = new StringBuilder("[");
-                Iterator<Class<?>> iterator = item.getParamTypes().iterator();
+                Iterator<Class<?>> iterator = item.getClassChain().iterator();
                 while (iterator.hasNext()) {
                     final Class<?> clazz = iterator.next();
                     paramType.append(clazz.getSimpleName()).append(".class");
@@ -150,5 +142,24 @@ public class AutoloadSetting {
         });
 
         info.forEach(lang.log::debug);
+    }
+
+    private List<Class<?>> chain(final Type type, final List<Class<?>> classes) {
+        try {
+            if (type instanceof ParameterizedType) {
+                final ParameterizedType paramType = (ParameterizedType) type;
+                classes.add(Class.forName(paramType.getRawType().getTypeName()));
+                for (Type argument : paramType.getActualTypeArguments()) {
+                    if (argument instanceof ParameterizedType) {
+                        return chain(argument, classes);
+                    }
+                    classes.add(Class.forName(argument.getTypeName()));
+
+                }
+            }
+        } catch (ClassNotFoundException error) {
+            error.printStackTrace();
+        }
+        return classes;
     }
 }

@@ -42,12 +42,12 @@ public class ListLoader implements DataLoader<List> {
 
     @Override
     public @Nullable List load(@NotNull String path, @NotNull ConfigurationSection section,
-                               @NotNull List<Class<?>> paramTypes) {
-        if (paramTypes.isEmpty()) {
+                               @NotNull List<Class<?>> classChain) {
+        if (classChain.size() < 2) {
             Autoloader.log("加载 List 数据时未提供泛型类型, 路径: {0}, 数据节: {1}", path, section.getName());
             return new ArrayList();
         }
-        final Class<?> element = paramTypes.get(0);
+        final Class<?> element = classChain.get(1);
         if (!GETTER_MAP.containsKey(element)) {
             Autoloader.log("加载 List 数据时未注册对应加载器: {0}", element);
             return section.getList(path, new ArrayList<>());
@@ -57,7 +57,7 @@ public class ListLoader implements DataLoader<List> {
 
     @Override
     public void save(@NotNull String path, @NotNull ConfigurationSection to, Object value,
-                     @NotNull List<Class<?>> paramTypes) {
+                     @NotNull List<Class<?>> classChain) {
         to.set(path, value);
     }
 }

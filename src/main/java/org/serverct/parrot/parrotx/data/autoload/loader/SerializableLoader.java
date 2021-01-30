@@ -19,14 +19,14 @@ public class SerializableLoader implements DataLoader<ConfigurationSerializable>
     @Nullable
     @Override
     public ConfigurationSerializable load(@NotNull String path, @NotNull ConfigurationSection section,
-                                          @NotNull List<Class<?>> paramTypes) {
-        if (paramTypes.isEmpty()) {
+                                          @NotNull List<Class<?>> classChain) {
+        if (classChain.isEmpty()) {
             Autoloader.log("加载 Serializable 数据时未提供泛型类型, 路径: {0}, 数据节: {1}", path, section.getName());
             return null;
         }
-        final Class<?> type = paramTypes.get(0);
+        final Class<?> type = classChain.get(0);
         if (!ConfigurationSerializable.class.isAssignableFrom(type)) {
-            Autoloader.log("加载 Serializable 数据时需求类型未实现序列化接口: {0}", paramTypes.get(0));
+            Autoloader.log("加载 Serializable 数据时需求类型未实现序列化接口: {0}", classChain.get(0));
             return null;
         }
         final Class<? extends ConfigurationSerializable> serializableClass = (Class<?
@@ -36,7 +36,7 @@ public class SerializableLoader implements DataLoader<ConfigurationSerializable>
 
     @Override
     public void save(@NotNull String path, @NotNull ConfigurationSection to,
-                     Object value, @NotNull List<Class<?>> paramTypes) {
+                     Object value, @NotNull List<Class<?>> classChain) {
         to.set(path, value);
     }
 }

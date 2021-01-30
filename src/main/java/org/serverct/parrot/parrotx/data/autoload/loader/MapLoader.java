@@ -6,7 +6,10 @@ import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.data.autoload.Autoloader;
 import org.serverct.parrot.parrotx.data.autoload.DataLoader;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 @SuppressWarnings("rawtypes")
@@ -35,21 +38,21 @@ public class MapLoader implements DataLoader<Map> {
 
     @Override
     public @Nullable Map load(@NotNull String path, @NotNull ConfigurationSection section,
-                              @NotNull List<Class<?>> paramTypes) {
+                              @NotNull List<Class<?>> classChain) {
         final Map<Object, Object> map = new HashMap<>();
-        if (paramTypes.size() < 2) {
+        if (classChain.size() < 3) {
             Autoloader.log("加载 Map 数据时未提供泛型类型, 路径: {0}, 数据节: {1}", path, section.getName());
             return map;
         }
 
-        final Function<String, ?> keyParser = PARSER_MAP.get(paramTypes.get(0));
-        final DataLoader<?> valueLoader = Autoloader.getLoader(paramTypes.get(1));
+        final Function<String, ?> keyParser = PARSER_MAP.get(classChain.get(1));
+        final DataLoader<?> valueLoader = Autoloader.getLoader(classChain.get(2));
         if (Objects.isNull(keyParser)) {
-            Autoloader.log("加载 Map 数据时未注册 Key 对应分析函数: {0}", paramTypes.get(0));
+            Autoloader.log("加载 Map 数据时未注册 Key 对应分析函数: {0}", classChain.get(1));
             return map;
         }
         if (Objects.isNull(valueLoader)) {
-            Autoloader.log("加载 Map 数据时未注册 Value 对应加载器: {0}", paramTypes.get(1));
+            Autoloader.log("加载 Map 数据时未注册 Value 对应加载器: {0}", classChain.get(2));
             return map;
         }
 
@@ -59,7 +62,8 @@ public class MapLoader implements DataLoader<Map> {
             return map;
         }
 
-        final List<Class<?>> cacheTypes = new ArrayList<>();
+
+        final List<Class<?>> cacheTypes = classChain.subList(2, classChain.size() - 1);
         for (String key : mapSection.getKeys(false)) {
             if (mapSection.isConfigurationSection(key)) {
                 Autoloader.log("加载 Map 数据时遇到数据节: {0}", key);
@@ -85,7 +89,7 @@ public class MapLoader implements DataLoader<Map> {
     @SuppressWarnings("unchecked")
     @Override
     public void save(@NotNull String path, @NotNull ConfigurationSection to, Object value,
-                     @NotNull List<Class<?>> paramTypes) {
+                     @NotNull List<Class<?>> classChain) {
         if (Objects.isNull(value)) {
             to.set(path, null);
             return;

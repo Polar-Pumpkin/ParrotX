@@ -13,9 +13,9 @@ public interface DataLoader<T> {
 
     @Nullable
     T load(@NotNull final String path, @NotNull final ConfigurationSection section,
-           @NotNull final List<Class<?>> paramTypes);
+           @NotNull final List<Class<?>> classChain);
 
     void save(@NotNull final String path, @NotNull final ConfigurationSection to,
-              final Object value, @NotNull final List<Class<?>> paramTypes);
+              final Object value, @NotNull final List<Class<?>> classChain);
 
 }

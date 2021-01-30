@@ -137,9 +137,9 @@ public abstract class Autoloader {
                         field.setAccessible(true);
 
                         if (load) {
-                            field.set(to, loader.load(path, from, item.getParamTypes()));
+                            field.set(to, loader.load(path, from, item.getClassChain()));
                         } else {
-                            loader.save(path, from, field.get(to), item.getParamTypes());
+                            loader.save(path, from, field.get(to), item.getClassChain());
                         }
                     } catch (NoSuchFieldException e) {
                         lang.log.error(prefix, className, "目标字段未找到: " + item.getField());

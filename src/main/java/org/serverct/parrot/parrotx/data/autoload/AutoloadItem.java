@@ -13,6 +13,6 @@ public class AutoloadItem {
     private final String path;
     private final String field;
     private final Class<?> type;
-    private final List<Class<?>> paramTypes;
+    private final List<Class<?>> classChain;
 
 }

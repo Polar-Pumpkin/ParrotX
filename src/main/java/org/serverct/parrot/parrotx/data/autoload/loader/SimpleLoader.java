@@ -25,13 +25,13 @@ public class SimpleLoader<T> implements DataLoader<T> {
 
     @Override
     public @Nullable T load(@NotNull String path, @NotNull ConfigurationSection section,
-                            @NotNull List<Class<?>> paramTypes) {
+                            @NotNull List<Class<?>> classChain) {
         return getter.apply(section, path);
     }
 
     @Override
     public void save(@NotNull String path, @NotNull ConfigurationSection to, Object value,
-                     @NotNull List<Class<?>> paramTypes) {
+                     @NotNull List<Class<?>> classChain) {
         to.set(path, value);
     }
 }
