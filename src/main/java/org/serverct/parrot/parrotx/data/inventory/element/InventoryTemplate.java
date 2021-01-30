@@ -104,7 +104,7 @@ class InventoryTemplate<T> implements InventoryElement {
 
         this.contentMap.clear();
 
-        final Iterator<Integer> slotIterator = getBase().getPositions().iterator();
+        Iterator<Integer> slotIterator = getBase().getPositions().iterator();
         Map<Integer, T> contents = new HashMap<>();
         int page = 1;
 
@@ -112,6 +112,7 @@ class InventoryTemplate<T> implements InventoryElement {
             if (!slotIterator.hasNext()) {
                 this.contentMap.put(page, contents);
                 contents = new HashMap<>();
+                slotIterator = getBase().getPositions().iterator();
                 page++;
             }
             contents.put(slotIterator.next(), content);
