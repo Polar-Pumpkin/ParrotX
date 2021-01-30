@@ -44,7 +44,7 @@ public class ListLoader implements DataLoader<List> {
     public @Nullable List load(@NotNull String path, @NotNull ConfigurationSection section,
                                @NotNull List<Class<?>> classChain) {
         if (classChain.size() < 2) {
-            Autoloader.log("加载 List 数据时未提供泛型类型, 路径: {0}, 数据节: {1}", path, section.getName());
+            Autoloader.log("加载 List 数据时未提供泛型类型, 路径: {0}, 数据节: {1}, 类型链: {2}", path, section.getName(), classChain);
             return new ArrayList();
         }
         final Class<?> element = classChain.get(1);

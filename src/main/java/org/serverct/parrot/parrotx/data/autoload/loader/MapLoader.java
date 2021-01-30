@@ -41,7 +41,7 @@ public class MapLoader implements DataLoader<Map> {
                               @NotNull List<Class<?>> classChain) {
         final Map<Object, Object> map = new HashMap<>();
         if (classChain.size() < 3) {
-            Autoloader.log("加载 Map 数据时未提供泛型类型, 路径: {0}, 数据节: {1}", path, section.getName());
+            Autoloader.log("加载 Map 数据时未提供泛型类型, 路径: {0}, 数据节: {1}, 类型链: {2}", path, section.getName(), classChain);
             return map;
         }
 

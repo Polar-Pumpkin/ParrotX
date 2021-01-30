@@ -154,7 +154,7 @@ public abstract class Autoloader {
     }
 
     public static void log(@NotNull final String message, final Object... args) {
-        Bukkit.getLogger().info(I18n.color("&bParrotX &aAutoloader 2 &f>> &r" + MessageFormat.format(message, args)));
+        Bukkit.getConsoleSender().sendMessage(I18n.color("&bParrotX &aAutoloader 2 &f>> &r" + MessageFormat.format(message, args)));
     }
 
 }
