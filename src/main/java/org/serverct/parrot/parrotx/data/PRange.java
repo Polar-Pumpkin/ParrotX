@@ -108,6 +108,11 @@ public class PRange<C extends Comparable> {
     @NotNull
     public Range<C> toRange(final BiFunction<C, C, Range<C>> constructor) {
         swap();
-        return constructor.apply(max, min);
+        return constructor.apply(min, max);
+    }
+
+    @NotNull
+    public String describe(final String symbol) {
+        return min + symbol + max;
     }
 }
