@@ -95,7 +95,7 @@ public class PRange<C extends Comparable> {
 
     public boolean inRange(final C value) {
         swap();
-        return max.compareTo(value) <= 0 && min.compareTo(value) >= 0;
+        return max.compareTo(value) >= 0 && min.compareTo(value) <= 0;
     }
 
     @NotNull
