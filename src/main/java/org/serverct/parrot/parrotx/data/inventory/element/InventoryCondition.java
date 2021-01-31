@@ -28,16 +28,10 @@ public class InventoryCondition implements InventoryElement {
     }
 
     public InventoryElement getElement() {
-        ParrotX.debug("获取 InventoryCondition 的具体元素: {0} - {1}.",
-                baseElement.getBase().getName(),
-                passElement.getBase().getName());
         if (Objects.isNull(condition)) {
-            ParrotX.debug("由于条件判断函数为 null, 最终返回基元素.");
             return baseElement;
         }
-        final InventoryElement element = (condition.test(user) ? passElement : baseElement);
-        ParrotX.debug("具体元素为: {0}.", element.getBase().getName());
-        return element;
+        return (condition.test(user) ? passElement : baseElement);
     }
 
     @Override
@@ -58,6 +52,9 @@ public class InventoryCondition implements InventoryElement {
 
     @Override
     public void click(final PInventory<?> holder, final InventoryClickEvent event) {
-        getElement().click(holder, event);
+        final InventoryElement element = getElement();
+        ParrotX.debug("由 {0}({1}) 元素受理该 InventoryCondition 的点击.",
+                element.getBase().getName(), element.getClass().getSimpleName());
+        element.click(holder, event);
     }
 }

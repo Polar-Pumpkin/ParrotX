@@ -10,6 +10,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.ParrotX;
 import org.serverct.parrot.parrotx.data.inventory.element.BaseElement;
 
 import java.io.File;
@@ -20,9 +21,9 @@ public abstract class PInventory<T> extends AutoRefreshInventory {
     @Getter
     protected final T data;
     @Getter
-    private final Map<String, InventoryElement> elementMap = new HashMap<>();
+    private final Map<String, InventoryElement> elements = new HashMap<>();
     @Getter
-    private final Map<Integer, String> slotMap = new HashMap<>();
+    private final Map<Integer, InventoryElement> slotMap = new HashMap<>();
     protected Inventory inventory;
 
     public PInventory(PPlugin plugin, T data, Player user, File file) {
@@ -47,7 +48,7 @@ public abstract class PInventory<T> extends AutoRefreshInventory {
     public Inventory construct(final InventoryHolder executor) {
         final Inventory result = base.construct(this);
 
-        final List<InventoryElement> elements = new ArrayList<>(this.elementMap.values());
+        final List<InventoryElement> elements = new ArrayList<>(this.elements.values());
         elements.sort(Comparator.comparingInt(InventoryElement::getPriority));
 
         for (InventoryElement element : elements) {
@@ -58,7 +59,7 @@ public abstract class PInventory<T> extends AutoRefreshInventory {
             }
 
             for (int slot : element.getPositions()) {
-                this.slotMap.put(slot, base.getName());
+                this.slotMap.put(slot, element);
                 result.setItem(slot, element.parseItem(this, slot));
             }
         }
@@ -94,22 +95,24 @@ public abstract class PInventory<T> extends AutoRefreshInventory {
 
         final InventoryElement element = getElement(event.getSlot());
         if (Objects.isNull(element) || !element.isClickable()) {
+            ParrotX.debug("被点击槽位没有没有元素或者元素不可点击: {0}.", element);
             event.setCancelled(true);
             return;
         }
 
+        ParrotX.debug("被点击槽位内的元素名为 {0}.", element.getBase().getName());
         element.click(this, event);
     }
 
     protected void addElement(InventoryElement element) {
-        this.elementMap.put(element.getBase().getName(), element);
+        this.elements.put(element.getBase().getName(), element);
     }
 
     public InventoryElement getElement(String name) {
-        return this.elementMap.get(name);
+        return this.elements.get(name);
     }
 
     public InventoryElement getElement(int slot) {
-        return getElement(this.slotMap.get(slot));
+        return this.slotMap.get(slot);
     }
 }
