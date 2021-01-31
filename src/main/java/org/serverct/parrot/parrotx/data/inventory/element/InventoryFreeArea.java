@@ -8,6 +8,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
 import org.serverct.parrot.parrotx.data.inventory.PInventory;
 
@@ -26,6 +27,7 @@ public class InventoryFreeArea implements InventoryElement {
     @Getter
     private final Map<Integer, ItemStack> placedMap = new HashMap<>();
 
+    @Nullable
     public static InventoryFreeArea get(final PInventory<?> inv, final String name) {
         return (InventoryFreeArea) inv.getElement(name);
     }
@@ -37,8 +39,20 @@ public class InventoryFreeArea implements InventoryElement {
         onPlace.accept(event);
     }
 
+    @Nullable
     public ItemStack getPlaced(final int slot) {
-        return this.placedMap.get(slot);
+        final ItemStack item = this.placedMap.get(slot);
+        if (Objects.isNull(item)) {
+            return null;
+        }
+        return item.clone();
+    }
+
+    public void addPlaced(final int slot, final ItemStack item) {
+        if (Objects.isNull(item)) {
+            return;
+        }
+        this.placedMap.put(slot, item.clone());
     }
 
     public void refresh() {
