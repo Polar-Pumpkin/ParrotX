@@ -90,6 +90,7 @@ public abstract class PInventory<T> extends AutoRefreshInventory {
     @Override
     public void execute(InventoryClickEvent event) {
         if (!check(this, event)) {
+            ParrotX.debug("被点击位置非该 Gui.");
             return;
         }
 

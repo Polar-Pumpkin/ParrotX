@@ -2,6 +2,7 @@ package org.serverct.parrot.parrotx.listener;
 
 import lombok.NonNull;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -22,7 +23,7 @@ public class InventoryListener implements Listener {
     }
 
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onClick(InventoryClickEvent event) {
         final InventoryHolder holder = event.getInventory().getHolder();
         if (holder instanceof InventoryExecutor) {
