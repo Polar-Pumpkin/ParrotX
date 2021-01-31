@@ -11,7 +11,9 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.ParrotX;
 import org.serverct.parrot.parrotx.data.MappedData;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
@@ -74,12 +76,13 @@ public class ItemUtil {
         return result;
     }
 
-    public static ItemStack build(final PPlugin plugin, final ConfigurationSection section) {
+    @NotNull
+    public static ItemStack build(final ConfigurationSection section) {
         final ConfigurationSection itemSection = section.getConfigurationSection("ItemStack");
         ItemStack result = new ItemStack(Material.AIR);
 
         if (itemSection == null) {
-            plugin.getLang().log.error(I18n.BUILD, "ItemStack/" + section.getName(), "未找到 ItemStack 数据节");
+            ParrotX.log("未找到数据节: {0}.", section.getName());
             return result;
         }
 
@@ -109,7 +112,7 @@ public class ItemUtil {
                     for (String name : enchant.getKeys(false)) {
                         Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(name.toLowerCase()));
                         if (enchantment == null) {
-                            plugin.getLang().log.error(I18n.BUILD, "ItemStack", "目标附魔不存在: " + name);
+                            ParrotX.log("目标附魔不存在: {0}.", name);
                             continue;
                         }
                         meta.addEnchant(enchantment, enchant.getInt(name), true);
@@ -122,7 +125,7 @@ public class ItemUtil {
                 for (String flagName : itemFlag) {
                     ItemFlag flag = EnumUtil.valueOf(ItemFlag.class, flagName.toUpperCase());
                     if (flag == null) {
-                        plugin.getLang().log.error(I18n.BUILD, "ItemStack", "目标 ItemFlag 不存在: " + flagName);
+                        ParrotX.log("目标 ItemFlag 不存在: {0}.", flagName);
                         continue;
                     }
                     meta.addItemFlags(flag);
@@ -131,7 +134,7 @@ public class ItemUtil {
 
             result.setItemMeta(meta);
         } catch (Throwable e) {
-            plugin.getLang().log.error(I18n.BUILD, "ItemStack/" + section.getName(), e, plugin.getPackageName());
+            ParrotX.log("构建 ItemStack({0}) 时遇到错误: {1}.", section.getName(), e.getMessage());
         }
         return result;
     }

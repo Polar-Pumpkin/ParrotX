@@ -1,5 +1,6 @@
 package org.serverct.parrot.parrotx.data.autoload;
 
+import com.cryptomorin.xseries.XItemStack;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -18,6 +19,7 @@ import org.serverct.parrot.parrotx.data.autoload.register.CommandHandlerRegister
 import org.serverct.parrot.parrotx.data.autoload.register.ConfigurationRegister;
 import org.serverct.parrot.parrotx.data.autoload.register.DataSetRegister;
 import org.serverct.parrot.parrotx.data.autoload.register.ListenerRegister;
+import org.serverct.parrot.parrotx.utils.ItemUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.lang.reflect.Field;
@@ -45,8 +47,19 @@ public abstract class Autoloader {
                 new SimpleLoader<>(boolean.class, ConfigurationSection::getBoolean),
                 new SimpleLoader<>(Boolean.class, ConfigurationSection::getBoolean),
                 new SimpleLoader<>(String.class, ConfigurationSection::getString),
-                new SimpleLoader<>(ItemStack.class, ConfigurationSection::getItemStack),
+                new SimpleLoader<>(ItemStack.class, (section, path) -> {
+                    final ItemStack fromSection = section.getItemStack(path);
+                    if (Objects.nonNull(fromSection)) {
+                        return fromSection;
+                    }
+                    final ItemStack fromXSeries = XItemStack.deserialize(section);
+                    if (Objects.nonNull(fromXSeries)) {
+                        return fromXSeries;
+                    }
+                    return ItemUtil.build(section);
+                }),
                 new SimpleLoader<>(Vector.class, ConfigurationSection::getVector),
+                new SimpleLoader<>(ConfigurationSection.class, ConfigurationSection::getConfigurationSection),
                 new ListLoader(),
                 new MapLoader(),
                 new SerializableLoader()

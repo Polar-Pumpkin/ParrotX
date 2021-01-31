@@ -1,7 +1,11 @@
 package org.serverct.parrot.parrotx;
 
 import org.bstats.bukkit.Metrics;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
+
+import java.text.MessageFormat;
 
 public final class ParrotX extends JavaPlugin {
 
@@ -13,5 +17,9 @@ public final class ParrotX extends JavaPlugin {
         metrics.addCustomChart(new Metrics.SimplePie("integration_method", () -> "Depend"));
 
         final org.serverct.parrot.parrotx.utils.Metrics cStats = new org.serverct.parrot.parrotx.utils.Metrics(this);
+    }
+
+    public static void log(final String message, final Object... args) {
+        Bukkit.getConsoleSender().sendMessage(I18n.color("&aParrotX &7>> &r" + MessageFormat.format(message, args)));
     }
 }
