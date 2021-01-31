@@ -1,22 +1,25 @@
 package org.serverct.parrot.parrotx.utils.i18n;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
-import org.serverct.parrot.parrotx.utils.BasicUtil;
+import org.serverct.parrot.parrotx.utils.FileUtil;
 
 import java.io.File;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author EntityParrot_
@@ -93,7 +96,7 @@ public class I18n {
     /**
      * 快速向玩家发送信息。
      *
-     * @param user    目标玩家。
+     * @param user    目标玩家
      * @param message 消息内容
      */
     public static void send(Player user, String message, Object... args) {
@@ -105,10 +108,10 @@ public class I18n {
     /**
      * 异步向玩家发送信息。
      *
-     * @param user    目标玩家。
+     * @param user    目标玩家
      * @param message 消息内容
      */
-    public static void sendAsync(@NonNull PPlugin plugin, Player user, String message, Object... args) {
+    public static void sendAsync(@NotNull PPlugin plugin, Player user, String message, Object... args) {
         if (user != null) {
             new BukkitRunnable() {
                 @Override
@@ -117,6 +120,29 @@ public class I18n {
                 }
             }.runTaskLater(plugin, 1);
         }
+    }
+
+    /**
+     * 快速向全服玩家公告消息。
+     *
+     * @param msg 消息内容
+     */
+    public static void broadcast(String msg) {
+        Bukkit.getOnlinePlayers().forEach(user -> send(user, msg));
+    }
+
+    /**
+     * 快速向全服玩家公告 Title
+     *
+     * @param title    Title 内容
+     * @param subtitle Subtitle 内容
+     * @param fadeIn   淡入时间
+     * @param stay     停留时间
+     * @param fadeOut  淡出时间
+     */
+    public static void broadcastTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+        Bukkit.getOnlinePlayers().forEach(user -> user.sendTitle(title, subtitle, fadeIn * 20, stay * 20,
+                fadeOut * 20));
     }
 
     /**
@@ -143,6 +169,57 @@ public class I18n {
     }
 
     /**
+     * 快速格式化位置数据。
+     *
+     * @param location 需要格式化的位置。
+     * @return 格式化后的位置文本。
+     */
+    @NotNull
+    public static String formatLocation(@NotNull Location location) {
+        final World world = location.getWorld();
+        final StringBuilder builder = new StringBuilder();
+        builder.append(MessageFormat.format(
+                "&c{0}&f, &c{1}&f, &c{2}&r",
+                location.getBlockX(), location.getBlockY(), location.getBlockZ()
+        ));
+        if (Objects.nonNull(world)) {
+            builder.append(MessageFormat.format("&f(&c{0}&f)&r", world.getName()));
+        }
+        return color(builder.toString());
+    }
+
+    @NotNull
+    public static List<String> formatItemStack(@NotNull ItemStack item) {
+        final List<String> result = new ArrayList<>();
+        result.add("Material: " + item.getType().name());
+        result.add("Amount: " + item.getAmount());
+
+        final ItemMeta meta = item.getItemMeta();
+        if (Objects.isNull(meta)) {
+            return result;
+        }
+
+        if (meta.hasDisplayName()) {
+            result.add("Display: " + meta.getDisplayName());
+        }
+        if (meta.hasLore()) {
+            result.add("Lore:");
+            result.addAll(Optional.ofNullable(meta.getLore()).orElse(new ArrayList<>()));
+        }
+        if (meta.hasEnchants()) {
+            result.add("Enchantments:");
+            meta.getEnchants().forEach((enchant, level) -> result.add(enchant.getKey().getKey() + " - " + level));
+        }
+        final Set<ItemFlag> flags = meta.getItemFlags();
+        if (!flags.isEmpty()) {
+            result.add("ItemFlags:");
+            flags.forEach(flag -> result.add(flag.name()));
+        }
+
+        return result;
+    }
+
+    /**
      * 初始化语言工具，比如生成默认语言文件啥的。
      */
     public void init() {
@@ -161,15 +238,15 @@ public class I18n {
                 this.log.log("尝试生成语言文件夹失败.", Type.ERROR, true);
             }
         }
-        File[] files = BasicUtil.getYamls(dataFolder);
+        File[] files = FileUtil.getYamls(dataFolder);
         if (files == null || files.length == 0) {
             saveDefault();
-            files = BasicUtil.getYamls(dataFolder);
+            files = FileUtil.getYamls(dataFolder);
         }
         if (files != null && files.length > 0) {
             boolean check = false;
             for (File file : files) {
-                if (BasicUtil.getNoExFileName(file.getName()).equals(defaultLocaleKey)) {
+                if (FileUtil.getNoExFilename(file).equals(defaultLocaleKey)) {
                     check = true;
                 }
             }
@@ -193,10 +270,10 @@ public class I18n {
      */
     public void load() {
         this.log.log("版本: &c" + TOOL_VERSION, Type.INFO, true);
-        File[] localeDataFiles = BasicUtil.getYamls(dataFolder);
+        File[] localeDataFiles = FileUtil.getYamls(dataFolder);
         if (localeDataFiles != null && localeDataFiles.length > 0) {
             for (File dataFile : localeDataFiles) {
-                locales.put(BasicUtil.getNoExFileName(dataFile.getName()), YamlConfiguration.loadConfiguration(dataFile));
+                locales.put(FileUtil.getNoExFilename(dataFile), YamlConfiguration.loadConfiguration(dataFile));
             }
         }
         this.log.log("语言数据加载成功, 共加载了 &c" + locales.size() + " &7个语言文件.", Type.INFO, true);

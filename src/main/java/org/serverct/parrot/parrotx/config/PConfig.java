@@ -8,7 +8,7 @@ import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PConfiguration;
 import org.serverct.parrot.parrotx.data.autoload.Autoloader;
 import org.serverct.parrot.parrotx.data.flags.FileSaved;
-import org.serverct.parrot.parrotx.utils.BasicUtil;
+import org.serverct.parrot.parrotx.utils.FileUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
@@ -32,7 +32,7 @@ public abstract class PConfig implements PConfiguration, FileSaved {
         this.lang = this.plugin.getLang();
         this.file = new File(plugin.getDataFolder(), filename.endsWith(".yml") ? filename : filename + ".yml");
         this.config = YamlConfiguration.loadConfiguration(this.file);
-        this.filename = BasicUtil.getNoExFileName(this.file.getName());
+        this.filename = FileUtil.getNoExFilename(this.file);
         this.typeName = typename;
     }
 

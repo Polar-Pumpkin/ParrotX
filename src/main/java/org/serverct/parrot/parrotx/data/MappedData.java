@@ -3,7 +3,7 @@ package org.serverct.parrot.parrotx.data;
 import org.bukkit.configuration.MemorySection;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.jetbrains.annotations.NotNull;
-import org.serverct.parrot.parrotx.utils.BasicUtil;
+import org.serverct.parrot.parrotx.utils.MapUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +24,7 @@ import java.util.Map;
 public class MappedData extends HashMap<String, Object> implements ConfigurationSerializable {
 
     public static Map<String, Object> filter(Map<?, ?> map) {
-        return BasicUtil.filter(map, String.class);
+        return MapUtil.filter(map, String.class);
     }
 
     public static MappedData of(Map<String, Object> map) {

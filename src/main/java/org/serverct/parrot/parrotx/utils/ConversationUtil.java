@@ -6,15 +6,16 @@ import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.Objects;
-import java.util.function.Consumer;
 
 public class ConversationUtil {
-    public static void start(@NonNull PPlugin plugin, @NonNull Player user, Prompt firstPrompt, int timedOut, String message) {
-        BasicUtil.closeInventory(plugin, user);
+    public static void start(@NotNull PPlugin plugin, @NotNull Player user, Prompt firstPrompt, int timedOut,
+                             String message) {
+        InventoryUtil.closeInventory(plugin, user);
         Conversation conversation = new ConversationFactory(plugin)
                 .withFirstPrompt(firstPrompt)
                 .withLocalEcho(false)
@@ -30,7 +31,7 @@ public class ConversationUtil {
                         I18n.send(user, I18n.color(message));
                     }
                 }
-            }.runTaskLater(plugin, timedOut * 20);
+            }.runTaskLater(plugin, timedOut * 20L);
         }
     }
 

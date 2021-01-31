@@ -131,7 +131,7 @@ public class PLogger {
      */
     public void printStackTrace(Throwable exception, String packageFilter) {
         String msg = exception.getLocalizedMessage();
-        log("&7=========================&c&l printStackTrace &7=========================");
+        log("&7===================================&c&l printStackTrace &7===================================");
         log("&7Exception Type ▶");
         log(ChatColor.RED + exception.getClass().getName());
         log(ChatColor.RED + ((msg == null || msg.length() == 0) ? "&7No description." : msg));
@@ -169,7 +169,7 @@ public class PLogger {
                 log("  &7▶ at Class &c" + className + "&7, Method &c" + elem.getMethodName() + "&7. (&c" + elem.getFileName() + "&7, Line &c" + elem.getLineNumber() + "&7)");
             }
         }
-        log("&7=========================&c&l printStackTrace &7=========================");
+        log("&7===================================&c&l printStackTrace &7===================================");
     }
 
     /**

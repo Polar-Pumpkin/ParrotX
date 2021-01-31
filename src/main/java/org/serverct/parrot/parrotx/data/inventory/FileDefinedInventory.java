@@ -10,6 +10,7 @@ import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.flags.FileSaved;
 import org.serverct.parrot.parrotx.data.inventory.element.BaseElement;
 import org.serverct.parrot.parrotx.utils.BasicUtil;
+import org.serverct.parrot.parrotx.utils.FileUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
@@ -63,7 +64,7 @@ public class FileDefinedInventory extends BaseInventory implements FileSaved {
 
     @Override
     public String getFilename() {
-        return BasicUtil.getNoExFileName(file.getName());
+        return FileUtil.getNoExFilename(file);
     }
 
     @Override

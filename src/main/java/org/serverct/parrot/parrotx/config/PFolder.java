@@ -4,7 +4,7 @@ import lombok.NonNull;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PData;
 import org.serverct.parrot.parrotx.data.PID;
-import org.serverct.parrot.parrotx.utils.BasicUtil;
+import org.serverct.parrot.parrotx.utils.FileUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
@@ -43,10 +43,10 @@ public abstract class PFolder<T extends PData> extends PDataSet<T> {
 
     @Override
     public void load(@NonNull File file) {
-        File[] files = BasicUtil.getYamls(file);
+        File[] files = FileUtil.getYamls(file);
         if (files == null || files.length == 0) {
             saveDefault();
-            files = BasicUtil.getYamls(file);
+            files = FileUtil.getYamls(file);
         }
         if (files != null && files.length != 0) {
             for (File dataFile : files) {
