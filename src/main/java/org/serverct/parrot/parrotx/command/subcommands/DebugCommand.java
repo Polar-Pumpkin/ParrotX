@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.ParrotX;
 import org.serverct.parrot.parrotx.command.BaseCommand;
 
 public class DebugCommand extends BaseCommand {
@@ -18,6 +19,7 @@ public class DebugCommand extends BaseCommand {
         final FileConfiguration config = plugin.getConfig();
         final boolean debug = !config.getBoolean("Debug", false);
         config.set("Debug", debug);
+        ParrotX.setDebugMode(debug);
         if (sender instanceof Player) {
             plugin.getLang().sender.infoMessage(user, "Debug 模式已{0}", debug ? "&a&l开启" : "&c&l关闭");
         } else {

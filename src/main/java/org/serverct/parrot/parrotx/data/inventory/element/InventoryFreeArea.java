@@ -95,7 +95,7 @@ public class InventoryFreeArea implements InventoryElement {
 
     public void refresh() {
         lang.log.debug("刷新 InventoryFreeArea: {0}", getBase().getName());
-        lang.log.debug("初始数据集: {0}", this.placedMap);
+        lang.log.debug("初始数据集: {0}", this.placedMap.size());
 
         final Inventory inv = holder.getInventory();
         for (int slot : base.getPositions()) {
@@ -113,7 +113,7 @@ public class InventoryFreeArea implements InventoryElement {
 
         this.placedMap.clear();
         filter.forEach(entry -> this.placedMap.put(entry.getKey(), entry.getValue()));
-        lang.log.debug("过滤后数据集: {0}", this.placedMap);
+        lang.log.debug("过滤后数据集: {0}", this.placedMap.size());
     }
 
     @Override

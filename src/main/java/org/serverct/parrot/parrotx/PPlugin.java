@@ -105,6 +105,7 @@ public abstract class PPlugin extends JavaPlugin {
         if (Objects.nonNull(pConfig)) {
             pConfig.init();
             localeKey = pConfig.getConfig().getString("Language");
+            ParrotX.setDebugMode(pConfig.getConfig().getBoolean("Debug", false));
         }
 
         index.initConfig();
@@ -117,7 +118,6 @@ public abstract class PPlugin extends JavaPlugin {
     }
 
     protected void preload() {
-
     }
 
     protected void load() {

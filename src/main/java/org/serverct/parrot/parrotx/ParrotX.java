@@ -1,5 +1,7 @@
 package org.serverct.parrot.parrotx;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -11,6 +13,10 @@ public final class ParrotX extends JavaPlugin {
 
     public static final int PLUGIN_ID = 9515;
 
+    @Getter
+    @Setter
+    private static boolean debugMode;
+
     @Override
     public void onEnable() {
         final Metrics metrics = new Metrics(this, PLUGIN_ID);
@@ -21,5 +27,12 @@ public final class ParrotX extends JavaPlugin {
 
     public static void log(final String message, final Object... args) {
         Bukkit.getConsoleSender().sendMessage(I18n.color("&aParrotX &7>> &r" + MessageFormat.format(message, args)));
+    }
+
+    public static void debug(final String message, final Object... args) {
+        if (!debugMode) {
+            return;
+        }
+        log(message, args);
     }
 }
