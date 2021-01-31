@@ -16,7 +16,6 @@ import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 @Data
 public class InventoryFreeArea implements InventoryElement {
@@ -106,14 +105,6 @@ public class InventoryFreeArea implements InventoryElement {
             }
             this.placedMap.put(slot, item);
         }
-
-        final List<Map.Entry<Integer, ItemStack>> filter = this.placedMap.entrySet().stream().filter(entry -> {
-            final ItemStack item = entry.getValue();
-            return Objects.nonNull(item) && item.getType() != Material.AIR;
-        }).collect(Collectors.toList());
-
-        this.placedMap.clear();
-        filter.forEach(entry -> this.placedMap.put(entry.getKey(), entry.getValue()));
         lang.log.debug("过滤后数据集: {0}", this.placedMap.size());
     }
 
@@ -124,7 +115,7 @@ public class InventoryFreeArea implements InventoryElement {
 
     @Override
     public void click(PInventory<?> holder, InventoryClickEvent event) {
-        Bukkit.getScheduler().runTask(plugin, this::refresh);
+        Bukkit.getScheduler().runTaskLater(plugin, this::refresh, 10L);
     }
 
     @Override
