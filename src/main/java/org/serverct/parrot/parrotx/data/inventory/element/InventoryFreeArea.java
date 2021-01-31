@@ -14,10 +14,7 @@ import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
 import org.serverct.parrot.parrotx.data.inventory.PInventory;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -67,11 +64,29 @@ public class InventoryFreeArea implements InventoryElement {
         return item.clone();
     }
 
-    public void addPlaced(final int slot, final ItemStack item) {
-        if (Objects.isNull(item)) {
-            return;
+    @NotNull
+    public List<ItemStack> addPlaced(final ItemStack... items) {
+        refresh();
+        final List<ItemStack> result = new ArrayList<>();
+        if (Objects.isNull(items) || items.length <= 0) {
+            return result;
         }
-        this.placedMap.put(slot, item.clone());
+
+        final Iterator<ItemStack> iterator = Arrays.asList(items).iterator();
+        for (int slot : getPositions()) {
+            if (!iterator.hasNext()) {
+                break;
+            }
+            if (this.placedMap.containsKey(slot)) {
+                continue;
+            }
+            this.placedMap.put(slot, iterator.next().clone());
+        }
+
+        while (iterator.hasNext()) {
+            result.add(iterator.next().clone());
+        }
+        return result;
     }
 
     public void clear() {
