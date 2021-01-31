@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
 import org.serverct.parrot.parrotx.data.inventory.PInventory;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
@@ -26,6 +27,7 @@ public class InventoryPlaceholder implements InventoryElement {
     @Getter
     private final Map<Integer, ItemStack> placedMap = new HashMap<>();
 
+    @Nullable
     public static InventoryPlaceholder get(final PInventory<?> inv, final String name) {
         return (InventoryPlaceholder) inv.getElement(name);
     }
@@ -37,8 +39,8 @@ public class InventoryPlaceholder implements InventoryElement {
         onPlace.accept(event);
     }
 
-    public boolean validate(final ItemStack item) {
-        return Objects.isNull(validate) || validate.test(item);
+    public boolean invalid(final ItemStack item) {
+        return Objects.nonNull(validate) && !validate.test(item);
     }
 
     public ItemStack getPlaced(final int slot) {
@@ -70,7 +72,7 @@ public class InventoryPlaceholder implements InventoryElement {
         switch (event.getAction()) {
             case PLACE_ALL:
                 if (Objects.isNull(slotItem) || slotItem.getType() == Material.AIR) {
-                    if (!validate(cursorItem)) {
+                    if (invalid(cursorItem)) {
                         event.setCancelled(true);
                         return;
                     }
@@ -81,7 +83,7 @@ public class InventoryPlaceholder implements InventoryElement {
                 }
                 break;
             case SWAP_WITH_CURSOR:
-                if (!validate(cursorItem) || Objects.isNull(cursorItem)) {
+                if (invalid(cursorItem) || Objects.isNull(cursorItem)) {
                     event.setCancelled(true);
                     return;
                 }

@@ -37,7 +37,7 @@ class BaseElement implements InventoryElement {
             return null;
         }
         final String name = section.getName();
-        final Supplier<ItemStack> item = () -> ItemUtil.build(plugin, section);
+        final Supplier<ItemStack> item = () -> ItemUtil.build(section);
 
         final ConfigurationSection posSection = section.getConfigurationSection("Position");
         if (BasicUtil.isNull(plugin, posSection, I18n.LOAD, "Gui 元素 " + name, "未找到 Position 数据节")) {

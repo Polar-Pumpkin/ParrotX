@@ -14,8 +14,8 @@ import java.util.*;
 import java.util.function.BiFunction;
 
 @SuppressWarnings({"unused", "unchecked"})
-public @Data
-class InventoryTemplate<T> implements InventoryElement {
+@Data
+public class InventoryTemplate<T> implements InventoryElement {
 
     private final InventoryElement base;
     private final List<T> contents;

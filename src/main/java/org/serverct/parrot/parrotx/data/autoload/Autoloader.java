@@ -52,11 +52,21 @@ public abstract class Autoloader {
                     if (Objects.nonNull(fromSection)) {
                         return fromSection;
                     }
-                    final ItemStack fromXSeries = XItemStack.deserialize(section);
+                    final ConfigurationSection item = section.getConfigurationSection(path);
+                    if (Objects.isNull(item)) {
+                        return null;
+                    }
+                    final ItemStack fromXSeries = XItemStack.deserialize(item);
                     if (Objects.nonNull(fromXSeries)) {
                         return fromXSeries;
                     }
-                    return ItemUtil.build(section);
+                    return ItemUtil.build(item);
+                }).setter((section, path, item) -> {
+                    ConfigurationSection target = section.getConfigurationSection(path);
+                    if (Objects.isNull(target)) {
+                        target = section.createSection(path);
+                    }
+                    ItemUtil.save(item, target);
                 }),
                 new SimpleLoader<>(Vector.class, ConfigurationSection::getVector),
                 new SimpleLoader<>(ConfigurationSection.class, ConfigurationSection::getConfigurationSection),
