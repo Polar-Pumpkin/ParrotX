@@ -97,6 +97,7 @@ public class InventoryFreeArea implements InventoryElement {
         lang.log.debug("刷新 InventoryFreeArea: {0}", getBase().getName());
         lang.log.debug("初始数据集: {0}", this.placedMap.size());
 
+        this.placedMap.clear();
         final Inventory inv = holder.getInventory();
         for (int slot : base.getPositions()) {
             final ItemStack item = inv.getItem(slot);
@@ -123,7 +124,7 @@ public class InventoryFreeArea implements InventoryElement {
 
     @Override
     public void click(PInventory<?> holder, InventoryClickEvent event) {
-        Bukkit.getScheduler().runTaskLater(plugin, this::refresh, 1L);
+        Bukkit.getScheduler().runTask(plugin, this::refresh);
     }
 
     @Override

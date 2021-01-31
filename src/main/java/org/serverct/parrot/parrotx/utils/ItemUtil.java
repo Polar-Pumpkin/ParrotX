@@ -151,8 +151,10 @@ public class ItemUtil {
         if (meta.hasDisplayName()) {
             itemSection.set("Display", meta.getDisplayName());
         }
-        if (meta.hasLocalizedName()) {
-            itemSection.set("Lore", meta.getLore());
+        if (meta.hasLore()) {
+            final List<String> lore = new ArrayList<>(Optional.ofNullable(meta.getLore()).orElse(new ArrayList<>()));
+            lore.replaceAll(content -> I18n.deColor(content, '&'));
+            itemSection.set("Lore", lore);
         }
         if (meta.hasEnchants()) {
             final ConfigurationSection enchantSection = itemSection.createSection("Enchants");
