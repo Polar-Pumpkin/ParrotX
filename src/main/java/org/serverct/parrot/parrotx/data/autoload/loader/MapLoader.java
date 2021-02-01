@@ -65,10 +65,10 @@ public class MapLoader implements DataLoader<Map> {
 
         final List<Class<?>> cacheTypes = classChain.subList(2, classChain.size());
         for (String key : mapSection.getKeys(false)) {
-            if (mapSection.isConfigurationSection(key)) {
-                Autoloader.log("加载 Map 数据时遇到数据节: {0}", key);
-                continue;
-            }
+//            if (mapSection.isConfigurationSection(key)) {
+//                Autoloader.log("加载 Map 数据时遇到数据节: {0}", key);
+//                continue;
+//            }
 
             final Object mapKey = keyParser.apply(key);
             final Object mapValue = valueLoader.load(key, mapSection, cacheTypes);
