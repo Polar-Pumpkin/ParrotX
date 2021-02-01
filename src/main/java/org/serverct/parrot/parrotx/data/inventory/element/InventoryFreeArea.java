@@ -23,14 +23,14 @@ public class InventoryFreeArea implements InventoryElement {
     private final PPlugin plugin;
     private final I18n lang;
     private final BaseElement base;
-    private final Consumer<InventoryClickEvent> onPlace;
+    private final Consumer<InventoryClickEvent> onClick;
     private final PInventory<?> holder;
     private final Map<Integer, ItemStack> placedMap = new HashMap<>();
 
     @Builder
-    public InventoryFreeArea(BaseElement base, Consumer<InventoryClickEvent> onPlace, PInventory<?> holder) {
+    public InventoryFreeArea(BaseElement base, Consumer<InventoryClickEvent> onClick, PInventory<?> holder) {
         this.base = base;
-        this.onPlace = onPlace;
+        this.onClick = onClick;
         this.holder = holder;
 
         this.plugin = holder.getPlugin();
@@ -47,11 +47,11 @@ public class InventoryFreeArea implements InventoryElement {
         return placedMap;
     }
 
-    public void place(final InventoryClickEvent event) {
-        if (Objects.isNull(onPlace)) {
+    public void onClick(final InventoryClickEvent event) {
+        if (Objects.isNull(onClick)) {
             return;
         }
-        onPlace.accept(event);
+        onClick.accept(event);
     }
 
     @Nullable
@@ -115,6 +115,7 @@ public class InventoryFreeArea implements InventoryElement {
 
     @Override
     public void click(PInventory<?> holder, InventoryClickEvent event) {
+        onClick(event);
         Bukkit.getScheduler().runTaskLater(plugin, this::refresh, 10L);
     }
 
