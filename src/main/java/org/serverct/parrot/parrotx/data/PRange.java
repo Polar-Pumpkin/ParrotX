@@ -47,7 +47,7 @@ public class PRange<C extends Comparable> {
     public static <C extends Comparable> PRange<C> ofString(@NotNull String value,
                                                             @NotNull Function<String, C> converter,
                                                             @NotNull BiFunction<C, C, Integer> offsetFunction) {
-        return PRange.ofString(value, "-", converter, offsetFunction);
+        return PRange.ofString(value, "~", converter, offsetFunction);
     }
 
     public void update(final C value, final boolean upgrade) {
