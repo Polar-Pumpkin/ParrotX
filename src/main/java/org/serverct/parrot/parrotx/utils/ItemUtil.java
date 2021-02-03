@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.ParrotX;
 import org.serverct.parrot.parrotx.data.MappedData;
@@ -82,7 +83,6 @@ public class ItemUtil {
         ItemStack result = new ItemStack(Material.AIR);
 
         if (itemSection == null) {
-            ParrotX.log("未找到数据节: {0}.", section.getName());
             return result;
         }
 
@@ -139,7 +139,14 @@ public class ItemUtil {
         return result;
     }
 
-    public static void save(final @NonNull ItemStack item, final @NonNull ConfigurationSection section) {
+    public static void save(@Nullable final ItemStack item, @Nullable final ConfigurationSection section) {
+        if (Objects.isNull(section)) {
+            return;
+        }
+        if (Objects.isNull(item)) {
+            section.set("ItemStack", null);
+            return;
+        }
         final ConfigurationSection itemSection = section.createSection("ItemStack");
         itemSection.set("Material", item.getType().name());
 

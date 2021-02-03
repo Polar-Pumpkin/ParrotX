@@ -134,7 +134,7 @@ public class AutoloadSetting {
             if (Objects.isNull(group)) {
                 continue;
             }
-            final String extraPath = group.value();
+            final String extraPath = group.value().replace("{GROUP}", groupName);
             final String header = MessageFormat.format("&9- &f组 &c{0}{1}&f, 忽略默认组路径: {2}",
                     groupName,
                     StringUtils.isEmpty(extraPath) ? "" : "&f, 额外路径: &e" + extraPath,
