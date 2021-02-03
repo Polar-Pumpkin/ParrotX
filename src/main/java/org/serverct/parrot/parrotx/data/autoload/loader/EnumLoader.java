@@ -46,6 +46,6 @@ public class EnumLoader implements DataLoader<Enum> {
     @Override
     public void save(@NotNull String path, @NotNull ConfigurationSection to, Object value,
                      @NotNull List<Class<?>> classChain) {
-        to.set(path, ((Enum) value).name());
+        to.set(path, Objects.isNull(value) ? null : ((Enum) value).name());
     }
 }

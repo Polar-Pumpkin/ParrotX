@@ -71,7 +71,7 @@ public abstract class Autoloader {
                         return null;
                     }
                     return UUID.fromString(uuid);
-                }),
+                }).setter((section, path, uuid) -> section.set(path, uuid.toString())),
                 new ListLoader(),
                 new MapLoader(),
                 new SerializableLoader(),
@@ -154,6 +154,8 @@ public abstract class Autoloader {
                                 pathBuilder.append(StringUtils.isEmpty(defaultPath) ? "" : defaultPath + ".");
                             }
                             extraPath = extraPath.replace("{GROUP}", groupName);
+                        } else {
+                            extraPath = extraPath.replace("{GROUP}", "");
                         }
                         pathBuilder.append(StringUtils.isEmpty(extraPath) ? "" : extraPath + ".");
 
