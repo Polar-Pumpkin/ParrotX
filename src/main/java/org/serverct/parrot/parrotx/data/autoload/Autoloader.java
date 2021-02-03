@@ -151,7 +151,11 @@ public abstract class Autoloader {
                             pathBuilder.append(StringUtils.isEmpty(defaultPath) ? "" : defaultPath + ".");
                         }
 
-                        final String extraPath = group.value().replace("{GROUP}", groupName);
+
+                        String extraPath = group.value();
+                        if (!"default".equalsIgnoreCase(groupName)) {
+                            extraPath = extraPath.replace("{GROUP}", groupName);
+                        }
                         pathBuilder.append(StringUtils.isEmpty(extraPath) ? "" : extraPath + ".");
 
                         pathBuilder.append(item.getPath());
