@@ -147,15 +147,12 @@ public abstract class Autoloader {
                         }
 
                         final StringBuilder pathBuilder = new StringBuilder();
-
-                        if (!group.ignoreDefaultPath()) {
-                            final String defaultPath = setting.getExtraPath("default");
-                            pathBuilder.append(StringUtils.isEmpty(defaultPath) ? "" : defaultPath + ".");
-                        }
-
-
                         String extraPath = group.value();
                         if (!"default".equalsIgnoreCase(groupName)) {
+                            if (!group.ignoreDefaultPath()) {
+                                final String defaultPath = setting.getExtraPath("default");
+                                pathBuilder.append(StringUtils.isEmpty(defaultPath) ? "" : defaultPath + ".");
+                            }
                             extraPath = extraPath.replace("{GROUP}", groupName);
                         }
                         pathBuilder.append(StringUtils.isEmpty(extraPath) ? "" : extraPath + ".");
