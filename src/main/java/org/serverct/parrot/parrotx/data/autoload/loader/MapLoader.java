@@ -6,10 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.data.autoload.Autoloader;
 import org.serverct.parrot.parrotx.data.autoload.DataLoader;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 
 @SuppressWarnings("rawtypes")
@@ -24,6 +21,7 @@ public class MapLoader implements DataLoader<Map> {
         registerParser(Long.class, Long::parseLong);
         registerParser(Float.class, Float::parseFloat);
         registerParser(Double.class, Double::parseDouble);
+        registerParser(UUID.class, UUID::fromString);
     }
 
     public static void registerParser(@NotNull final Class<?> type,

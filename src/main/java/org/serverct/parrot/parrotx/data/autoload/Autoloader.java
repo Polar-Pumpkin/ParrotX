@@ -12,10 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.autoload.annotations.PAutoloadGroup;
-import org.serverct.parrot.parrotx.data.autoload.loader.ListLoader;
-import org.serverct.parrot.parrotx.data.autoload.loader.MapLoader;
-import org.serverct.parrot.parrotx.data.autoload.loader.SerializableLoader;
-import org.serverct.parrot.parrotx.data.autoload.loader.SimpleLoader;
+import org.serverct.parrot.parrotx.data.autoload.loader.*;
 import org.serverct.parrot.parrotx.data.autoload.register.CommandHandlerRegister;
 import org.serverct.parrot.parrotx.data.autoload.register.ConfigurationRegister;
 import org.serverct.parrot.parrotx.data.autoload.register.DataSetRegister;
@@ -25,10 +22,7 @@ import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.lang.reflect.Field;
 import java.text.MessageFormat;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @SuppressWarnings({"SameParameterValue", "unused"})
 public abstract class Autoloader {
@@ -71,9 +65,17 @@ public abstract class Autoloader {
                 }),
                 new SimpleLoader<>(Vector.class, ConfigurationSection::getVector),
                 new SimpleLoader<>(ConfigurationSection.class, ConfigurationSection::getConfigurationSection),
+                new SimpleLoader<>(UUID.class, (section, path) -> {
+                    final String uuid = section.getString(path);
+                    if (Objects.isNull(uuid)) {
+                        return null;
+                    }
+                    return UUID.fromString(uuid);
+                }),
                 new ListLoader(),
                 new MapLoader(),
-                new SerializableLoader()
+                new SerializableLoader(),
+                new EnumLoader()
         );
 
         try {
@@ -163,13 +165,16 @@ public abstract class Autoloader {
                         final String path = pathBuilder.toString();
                         DataLoader<?> loader = getLoader(item.getType());
                         if (Objects.isNull(loader)) {
-                            if (!ConfigurationSerializable.class.isAssignableFrom(item.getType())) {
+                            if (ConfigurationSerializable.class.isAssignableFrom(item.getType())) {
+                                loader = getLoader(ConfigurationSerializable.class);
+                            }
+                            if (Enum.class.isAssignableFrom(item.getType())) {
+                                loader = getLoader(Enum.class);
+                            }
+
+                            if (Objects.isNull(loader)) {
                                 lang.log.error(prefix, className,
                                         "未注册该数据类型的加载器: " + item.getType().getSimpleName() + ".class");
-                                continue;
-                            }
-                            loader = getLoader(ConfigurationSerializable.class);
-                            if (Objects.isNull(loader)) {
                                 continue;
                             }
                         }

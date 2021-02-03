@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -116,22 +115,37 @@ public class CommandHandler implements TabExecutor {
     }
 
     public List<String> formatHelp() {
-        List<String> result = new ArrayList<>();
-        PluginDescriptionFile description = plugin.getDescription();
+        final List<String> result = new ArrayList<>();
+        final PluginDescriptionFile description = plugin.getDescription();
 
-        result.add(I18n.color("&9&l" + plugin.getName() + " &7" + description.getVersion()));
-        StringBuilder author = new StringBuilder();
-        List<String> authors = description.getAuthors();
-        for (int index = 0; index < authors.size(); index++) {
-            author.append(I18n.color("&c" + authors.get(index)));
-            if (index != authors.size() - 1) author.append(I18n.color("&7, "));
-            else author.append(ChatColor.GRAY);
+        result.add(I18n.color("&9&l{0} &fv{1}", description.getName(), description.getVersion()));
+
+        final String authorList = description.getAuthors().toString();
+        if (authorList.length() > 2) {
+            final String authors = authorList.substring(1);
+            result.add(I18n.color("&7作者: &f{0}", authors));
         }
-        if (!authors.isEmpty()) result.add(I18n.color("&7作者: " + author.toString()));
         result.add("");
 
-        commands.forEach((cmd, pCmd) -> result.add(I18n.color("&d/" + mainCmd + " " + cmd + " &9- &7&o" + pCmd.getDescription())));
-        if (commands.containsKey("help")) result.add(I18n.color("&6▶ &7使用 &d/" + mainCmd + " help &7指令查看更多信息."));
+        final String prefix = "/" + mainCmd;
+        boolean first = true;
+        for (Map.Entry<String, PCommand> entry : commands.entrySet()) {
+            final String command = entry.getKey();
+            final PCommand executor = entry.getValue();
+
+            if (first) {
+                result.add(I18n.color("&f{0} {1}", prefix, command));
+            } else {
+                result.add(I18n.color("{0}&7- &f{0}", I18n.blank(prefix.length() - 1), command));
+            }
+            result.add(I18n.color("{0} &7{1}", I18n.blank(prefix.length()), executor.getDescription()));
+            first = false;
+        }
+
+        if (commands.containsKey("help")) {
+            result.add("");
+            result.add(I18n.color("&6▶ &7使用 &f/{0} help &7指令查看更多信息.", mainCmd));
+        }
         return result;
     }
 

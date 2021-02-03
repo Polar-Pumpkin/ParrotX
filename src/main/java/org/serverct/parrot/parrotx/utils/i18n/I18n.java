@@ -151,10 +151,37 @@ public class I18n {
      *
      * @param text 文本。
      * @return 上色后的文本。
-     * @see ChatColor
+     * @see ChatColor#translateAlternateColorCodes(char, String)
      */
     public static String color(String text) {
         return ChatColor.translateAlternateColorCodes('&', text);
+    }
+
+    /**
+     * 快速给文本上色，同时替换变量。
+     * 因为 ChatColor.translateAlternateColorCodes() 方法名字太长了。
+     *
+     * @param text 文本。
+     * @param args 变量。
+     * @return 上色后的文本。
+     * @see ChatColor#translateAlternateColorCodes(char, String)
+     */
+    public static String color(String text, Object... args) {
+        return ChatColor.translateAlternateColorCodes('&', MessageFormat.format(text, args));
+    }
+
+    /**
+     * 生成指定长度的空格字符串。
+     *
+     * @param length 空格的长度。
+     * @return 空格字符串。
+     */
+    public static String blank(int length) {
+        final StringBuilder builder = new StringBuilder();
+        for (int i = length; i > 0; i--) {
+            builder.append(" ");
+        }
+        return builder.toString();
     }
 
     /**
