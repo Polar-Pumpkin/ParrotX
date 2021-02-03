@@ -1,4 +1,4 @@
-package org.serverct.parrot.parrotx.data.autoload;
+package org.serverct.parrot.parrotx.data.autoload.annotations;
 
 import java.lang.annotation.*;
 

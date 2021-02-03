@@ -11,6 +11,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.data.autoload.annotations.PAutoloadGroup;
 import org.serverct.parrot.parrotx.data.autoload.loader.ListLoader;
 import org.serverct.parrot.parrotx.data.autoload.loader.MapLoader;
 import org.serverct.parrot.parrotx.data.autoload.loader.SerializableLoader;
@@ -132,17 +133,30 @@ public abstract class Autoloader {
         try {
             for (Map.Entry<String, Collection<AutoloadItem>> entry :
                     setting.getItems().asMap().entrySet()) {
-                final String group = entry.getKey();
+                final String groupName = entry.getKey();
                 final Collection<AutoloadItem> items = entry.getValue();
 
                 for (AutoloadItem item : items) {
                     try {
-                        final StringBuilder pathBuilder = new StringBuilder();
-                        final String extraPath = setting.getExtraPath(group);
-                        pathBuilder.append(StringUtils.isEmpty(extraPath) ? "" : extraPath + ".");
-                        pathBuilder.append(item.getPath());
-                        final String path = pathBuilder.toString();
+                        final PAutoloadGroup group = setting.getGroup(groupName);
+                        if (Objects.isNull(group)) {
+                            lang.log.error(prefix, className, "未声明项目组: " + groupName);
+                            continue;
+                        }
 
+                        final StringBuilder pathBuilder = new StringBuilder();
+
+                        if (!group.ignoreDefaultPath()) {
+                            final String defaultPath = setting.getExtraPath("default");
+                            pathBuilder.append(StringUtils.isEmpty(defaultPath) ? "" : defaultPath + ".");
+                        }
+
+                        final String extraPath = group.value().replace("{GROUP}", groupName);
+                        pathBuilder.append(StringUtils.isEmpty(extraPath) ? "" : extraPath + ".");
+
+                        pathBuilder.append(item.getPath());
+
+                        final String path = pathBuilder.toString();
                         DataLoader<?> loader = getLoader(item.getType());
                         if (Objects.isNull(loader)) {
                             if (!ConfigurationSerializable.class.isAssignableFrom(item.getType())) {

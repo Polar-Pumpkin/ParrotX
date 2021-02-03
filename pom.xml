@@ -36,12 +36,12 @@
                     <finalName>ParrotX</finalName>
                     <relocations>
                         <relocation>
-                            <pattern>com.cryptomorin</pattern>
-                            <shadedPattern>org.serverct.parrot.parrotx.utils</shadedPattern>
+                            <pattern>com.cryptomorin.xseries</pattern>
+                            <shadedPattern>org.serverct.parrot.parrotx.utils.xseries</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>net.wesjd</pattern>
-                            <shadedPattern>org.serverct.parrot.parrotx.utils</shadedPattern>
+                            <pattern>net.wesjd.anvilgui</pattern>
+                            <shadedPattern>org.serverct.parrot.parrotx.utils.anvilgui</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>parsii</pattern>
@@ -52,8 +52,12 @@
                             <shadedPattern>org.serverct.parrot.parrotx.utils.bstats</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>com.zaxxer</pattern>
-                            <shadedPattern>org.serverct.parrot.parrotx.utils</shadedPattern>
+                            <pattern>com.zaxxer.hikari</pattern>
+                            <shadedPattern>org.serverct.parrot.parrotx.utils.hikari</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>de.tr7zw.changeme.nbtapi</pattern>
+                            <shadedPattern>org.serverct.parrot.parrotx.utils.nbtapi</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -160,6 +164,12 @@
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>3.4.5</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>de.tr7zw</groupId>
+            <artifactId>item-nbt-api-plugin</artifactId>
+            <version>2.7.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

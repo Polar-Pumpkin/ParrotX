@@ -6,7 +6,7 @@ import org.serverct.parrot.parrotx.data.PConfiguration;
 import org.serverct.parrot.parrotx.data.UniqueData;
 import org.serverct.parrot.parrotx.data.autoload.AutoRegister;
 import org.serverct.parrot.parrotx.data.autoload.Autoloader;
-import org.serverct.parrot.parrotx.data.autoload.PAutoload;
+import org.serverct.parrot.parrotx.data.autoload.annotations.PAutoload;
 import org.serverct.parrot.parrotx.utils.ClassUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 

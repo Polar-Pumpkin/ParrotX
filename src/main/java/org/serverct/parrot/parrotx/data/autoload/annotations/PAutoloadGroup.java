@@ -1,4 +1,4 @@
-package org.serverct.parrot.parrotx.data.autoload;
+package org.serverct.parrot.parrotx.data.autoload.annotations;
 
 import java.lang.annotation.*;
 
@@ -9,5 +9,7 @@ import java.lang.annotation.*;
 public @interface PAutoloadGroup {
     String name() default "default";
 
-    String value() default "";
+    String value() default "{GROUP}";
+
+    boolean ignoreDefaultPath() default false;
 }
