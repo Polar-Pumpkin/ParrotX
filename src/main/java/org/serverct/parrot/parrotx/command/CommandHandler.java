@@ -136,7 +136,7 @@ public class CommandHandler implements TabExecutor {
             if (first) {
                 result.add(I18n.color("&f{0} {1}", prefix, command));
             } else {
-                result.add(I18n.color("{0}&7- &f{0}", I18n.blank(prefix.length() - 1), command));
+                result.add(I18n.color("{0}&7- &f{1}", I18n.blank(prefix.length() - 1), command));
             }
             result.add(I18n.color("{0} &7{1}", I18n.blank(prefix.length()), executor.getDescription()));
             first = false;

@@ -1,6 +1,7 @@
 package org.serverct.parrot.parrotx.data.autoload;
 
 import com.cryptomorin.xseries.XItemStack;
+import com.cryptomorin.xseries.XMaterial;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -61,7 +62,11 @@ public abstract class Autoloader {
                     if (Objects.isNull(target)) {
                         target = section.createSection(path);
                     }
-                    ItemUtil.save(item, target);
+                    if (XMaterial.isNewVersion()) {
+                        ItemUtil.save(item, target);
+                    } else {
+                        XItemStack.serialize(item, target);
+                    }
                 }),
                 new SimpleLoader<>(Vector.class, ConfigurationSection::getVector),
                 new SimpleLoader<>(ConfigurationSection.class, ConfigurationSection::getConfigurationSection),
@@ -71,7 +76,7 @@ public abstract class Autoloader {
                         return null;
                     }
                     return UUID.fromString(uuid);
-                }).setter((section, path, uuid) -> section.set(path, uuid.toString())),
+                }).setter((section, path, uuid) -> section.set(path, Objects.isNull(uuid) ? null : uuid.toString())),
                 new ListLoader(),
                 new MapLoader(),
                 new SerializableLoader(),
