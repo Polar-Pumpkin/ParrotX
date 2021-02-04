@@ -13,7 +13,9 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.utils.FileUtil;
 
@@ -193,6 +195,25 @@ public class I18n {
      */
     public static String deColor(String text, char alternateColorCode) {
         return text.replace("§", String.valueOf(alternateColorCode));
+    }
+
+    /**
+     * 快速替换字符串中的变量。
+     *
+     * @param template 模板字符串。
+     * @param args     变量参数。
+     * @return 替换变量后的字符串。
+     */
+    @Contract("null,_ -> null;!null,_ -> !null")
+    @Nullable
+    public static String format(@Nullable final String template, @Nullable final Object... args) {
+        if (Objects.isNull(template)) {
+            return null;
+        }
+        if (Objects.isNull(args) || args.length <= 0) {
+            return template;
+        }
+        return MessageFormat.format(template, args);
     }
 
     /**

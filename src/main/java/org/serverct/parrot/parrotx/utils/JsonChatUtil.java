@@ -103,9 +103,9 @@ public class JsonChatUtil {
         }
     }
 
-    public @Data
+    @Data
     @Builder
-    static class EditAction {
+    public static class EditAction {
         private final String display;
         private final String hover;
         private final String command;
