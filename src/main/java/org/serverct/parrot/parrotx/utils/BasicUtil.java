@@ -4,6 +4,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.ParrotX;
 import parsii.eval.Expression;
@@ -16,6 +18,7 @@ import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @SuppressWarnings({"unused"})
 public class BasicUtil {
@@ -145,5 +148,10 @@ public class BasicUtil {
             }
         }
         return false;
+    }
+
+    @NotNull
+    public static <T> T thisOrElse(@Nullable final T value, @NotNull final T other) {
+        return Optional.ofNullable(value).orElse(other);
     }
 }

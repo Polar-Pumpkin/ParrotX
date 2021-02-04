@@ -1,8 +1,13 @@
 package org.serverct.parrot.parrotx.utils;
 
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -32,6 +37,43 @@ public class ListUtil {
 
     public static boolean contains(@NotNull final List<String> list, @NotNull final String target) {
         return indexOf(list, target) != -1;
+    }
+
+    @NotNull
+    public static List<String> insert(@Nullable final List<String> list, @Nullable final List<String> contents,
+                                      @Nullable final String keyword, @Nullable final String nonContent) {
+        final List<String> result = new ArrayList<>();
+        if (Objects.isNull(list) || list.isEmpty()) {
+            return result;
+        }
+        if (StringUtils.isEmpty(keyword)) {
+            return list;
+        }
+
+        final int index = indexOf(list, keyword);
+        if (index == -1) {
+            return list;
+        }
+        final String template = list.get(index);
+        final String prefix = template.substring(0, template.indexOf(keyword.replace("[", "\\[").replace("(", "\\(")));
+
+        if (Objects.isNull(contents) || contents.isEmpty()) {
+            result.set(index, prefix + BasicUtil.thisOrElse(nonContent, "无"));
+        } else {
+            int current = index;
+            for (String content : contents) {
+                final String build = prefix + content;
+                if (current == index) {
+                    result.set(current, build);
+                } else {
+                    result.add(current, build);
+                }
+                current++;
+            }
+        }
+
+        result.replaceAll(I18n::color);
+        return result;
     }
 
 }
