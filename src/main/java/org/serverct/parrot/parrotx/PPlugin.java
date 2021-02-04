@@ -106,10 +106,11 @@ public abstract class PPlugin extends JavaPlugin {
             pConfig.init();
             localeKey = pConfig.getConfig().getString("Language");
             ParrotX.setDebugMode(pConfig.getConfig().getBoolean("Debug", false));
+
+            index.initConfig();
+            index.registerConfiguration(pConfig);
         }
 
-        index.initConfig();
-        index.registerConfiguration(pConfig);
 
         load();
     }
