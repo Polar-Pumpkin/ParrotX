@@ -65,15 +65,15 @@ public class PArea {
         final int y2 = pos2.getBlockY();
         final int z2 = pos2.getBlockZ();
 
-        this.xRange = new PRange<>(Math.max(x1, x2), Math.min(x1, x2), (max, min) -> max - min);
-        this.yRange = new PRange<>(Math.max(y1, y2), Math.min(y1, y2), (max, min) -> max - min);
-        this.zRange = new PRange<>(Math.max(z1, z2), Math.min(z1, z2), (max, min) -> max - min);
+        this.xRange = new PRange<>(Math.max(x1, x2), Math.min(x1, x2), (max, min) -> (double) (max - min));
+        this.yRange = new PRange<>(Math.max(y1, y2), Math.min(y1, y2), (max, min) -> (double) (max - min));
+        this.zRange = new PRange<>(Math.max(z1, z2), Math.min(z1, z2), (max, min) -> (double) (max - min));
     }
 
     @Nullable
     public Location getRandom() {
-        final BiFunction<Integer, Integer, Integer> random = (min, offset) -> min + (offset == 0 ? 0 :
-                this.random.nextInt(offset));
+        final BiFunction<Integer, Double, Integer> random = (min, offset) -> min + (offset == 0 ? 0 :
+                BasicUtil.roundToInt(offset * this.random.nextDouble()));
         return new Location(
                 this.world,
                 this.xRange.random(random),

@@ -70,6 +70,9 @@ public class PIndex {
     }
 
     public void registerConfiguration(final PConfiguration configuration) {
+        if (Objects.isNull(configuration)) {
+            return;
+        }
         this.configs.put(configuration.getClass(), configuration);
         ParrotXAPI.registerConfigClass(configuration.getClass(), this.plugin.getClass());
     }

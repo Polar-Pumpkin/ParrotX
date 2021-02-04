@@ -4,6 +4,7 @@ import com.google.common.collect.Range;
 import lombok.Builder;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
+import org.serverct.parrot.parrotx.utils.BasicUtil;
 
 import java.util.Random;
 import java.util.function.BiFunction;
@@ -16,9 +17,9 @@ public class PRange<C extends Comparable> {
 
     private C max;
     private C min;
-    private BiFunction<C, C, Integer> offsetFunction;
+    private BiFunction<C, C, Double> offsetFunction;
 
-    public PRange(@NotNull C max, @NotNull C min, @NotNull BiFunction<C, C, Integer> offsetFunction) {
+    public PRange(@NotNull C max, @NotNull C min, @NotNull BiFunction<C, C, Double> offsetFunction) {
         this.max = max;
         this.min = min;
         this.offsetFunction = offsetFunction;
@@ -28,14 +29,14 @@ public class PRange<C extends Comparable> {
     public static <T, C extends Comparable> PRange<C> of(@NotNull T value1,
                                                          @NotNull T value2,
                                                          @NotNull Function<T, C> converter,
-                                                         @NotNull BiFunction<C, C, Integer> offsetFunction) {
+                                                         @NotNull BiFunction<C, C, Double> offsetFunction) {
         return new PRange<>(converter.apply(value1), converter.apply(value2), offsetFunction);
     }
 
     public static <C extends Comparable> PRange<C> ofString(@NotNull String value,
                                                             @NotNull String symbol,
                                                             @NotNull Function<String, C> converter,
-                                                            @NotNull BiFunction<C, C, Integer> offsetFunction) {
+                                                            @NotNull BiFunction<C, C, Double> offsetFunction) {
         final String[] values = value.split("[" + symbol + "]");
         if (values.length < 2) {
             final C onlyValue = converter.apply(value);
@@ -46,7 +47,7 @@ public class PRange<C extends Comparable> {
 
     public static <C extends Comparable> PRange<C> ofString(@NotNull String value,
                                                             @NotNull Function<String, C> converter,
-                                                            @NotNull BiFunction<C, C, Integer> offsetFunction) {
+                                                            @NotNull BiFunction<C, C, Double> offsetFunction) {
         return PRange.ofString(value, "~", converter, offsetFunction);
     }
 
@@ -99,10 +100,10 @@ public class PRange<C extends Comparable> {
     }
 
     @NotNull
-    public C random(final BiFunction<C, Integer, C> method) {
+    public C random(final BiFunction<C, Double, C> method) {
         swap();
-        final int offset = Math.abs(offsetFunction.apply(max, min));
-        return method.apply(min, offset == 0 ? 0 : new Random().nextInt(offset));
+        final double offset = Math.abs(offsetFunction.apply(max, min));
+        return method.apply(min, offset == 0 ? 0 : BasicUtil.roundToDouble(offset * (new Random().nextDouble())));
     }
 
     @NotNull
