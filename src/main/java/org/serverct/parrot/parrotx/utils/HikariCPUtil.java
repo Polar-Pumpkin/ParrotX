@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 
 public class HikariCPUtil {
 
@@ -78,14 +79,16 @@ public class HikariCPUtil {
     }
 
     @Nullable
-    public static ResultSet query(@NotNull final PPlugin plugin, @NotNull final String sql,
-                                  @Nullable final String... args) {
+    public static <T> T query(@NotNull final PPlugin plugin, @NotNull final String sql,
+                              @NotNull final Function<ResultSet, T> getter, @Nullable final String... args) {
         final Connection connection = getConnection(plugin);
         if (Objects.isNull(connection)) {
             return null;
         }
 
         PreparedStatement statement = null;
+        ResultSet result = null;
+        T value = null;
         try {
             statement = connection.prepareStatement(sql);
             if (Objects.nonNull(args) && args.length > 0) {
@@ -93,13 +96,14 @@ public class HikariCPUtil {
                     statement.setString(index + 1, args[index]);
                 }
             }
-            return statement.executeQuery();
+            result = statement.executeQuery();
+            value = getter.apply(result);
         } catch (SQLException exception) {
             plugin.getLang().log.error(I18n.EXECUTE, "MySQL 语句", exception, plugin.getPackageName());
         } finally {
-            close(plugin, connection, statement, null);
+            close(plugin, connection, statement, result);
         }
-        return null;
+        return value;
     }
 
     public static void close(@NotNull final PPlugin plugin,
