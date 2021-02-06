@@ -103,6 +103,16 @@ public class ItemUtil {
     }
 
     @NotNull
+    public static ItemStack build(final ConfigurationSection section,
+                                  @NotNull final Function<String, ItemStack> constructor) {
+        final ConfigurationSection itemSection = section.getConfigurationSection("ItemStack");
+        if (itemSection == null) {
+            return new ItemStack(Material.AIR);
+        }
+        return build(itemSection.getValues(false), constructor);
+    }
+
+    @NotNull
     public static ItemStack getByXMaterial(final String material) {
         final Optional<XMaterial> xMaterial = XMaterial.matchXMaterial(material);
         if (!xMaterial.isPresent()) {
