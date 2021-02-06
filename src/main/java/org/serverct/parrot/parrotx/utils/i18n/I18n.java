@@ -2,6 +2,7 @@ package org.serverct.parrot.parrotx.utils.i18n;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -102,6 +103,9 @@ public class I18n {
      * @param message 消息内容
      */
     public static void send(Player user, String message, Object... args) {
+        if (StringUtils.isEmpty(message)) {
+            return;
+        }
         if (user != null) {
             user.sendMessage(MessageFormat.format(color(message), args));
         }
@@ -120,7 +124,7 @@ public class I18n {
                 public void run() {
                     send(user, message, args);
                 }
-            }.runTaskLater(plugin, 1);
+            }.runTask(plugin);
         }
     }
 

@@ -1,5 +1,6 @@
 package org.serverct.parrot.parrotx.utils.i18n;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.serverct.parrot.parrotx.PPlugin;
@@ -39,14 +40,14 @@ public class PLocaleManager {
             }
         }
 
-        if (Objects.nonNull(testGet) && !testGet.equalsIgnoreCase("")) {
+        if (Objects.nonNull(testGet)) {
             message = testGet;
         } else {
             String[] getError = {
                     "尝试获取原始语言数据时遇到错误 ▶",
                     "  插件: &c" + plugin.getName(),
                     "  语言: &c" + key,
-                    "  节点: &c" + (section == null ? "未指定" : section),
+                    "  节点: &c" + (section == null ? "未指定" : (StringUtils.isEmpty(section) ? "根节点" : section)),
                     "  路径: &c" + path,
                     "------------------------------"
             };
