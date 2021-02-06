@@ -3,6 +3,7 @@ package org.serverct.parrot.parrotx.utils.i18n;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
 
 import java.text.MessageFormat;
@@ -121,7 +122,11 @@ public class PLocaleManager {
      * @param message 消息内容。
      * @return 带有格式化前缀的文本信息。
      */
+    @NotNull
     public String build(final String key, final I18n.Type type, final String message, final Object... args) {
+        if (StringUtils.isEmpty(message)) {
+            return "";
+        }
         String pluginPrefix = plugin.getName() + " ";
         String typePrefix = "&3▶&r ";
         if (type == I18n.Type.DEBUG) {
