@@ -56,7 +56,7 @@ public class HikariCPUtil {
     }
 
     public static void execute(@NotNull final PPlugin plugin, @NotNull final String sql,
-                               @Nullable final String... args) {
+                               @Nullable final Function<PreparedStatement, PreparedStatement> args) {
         final Connection connection = getConnection(plugin);
         if (Objects.isNull(connection)) {
             return;
@@ -65,10 +65,11 @@ public class HikariCPUtil {
         PreparedStatement statement = null;
         try {
             statement = connection.prepareStatement(sql);
-            if (Objects.nonNull(args) && args.length > 0) {
-                for (int index = 0; index < args.length; index++) {
-                    statement.setString(index + 1, args[index]);
-                }
+            if (Objects.nonNull(args)) {
+                statement = args.apply(statement);
+            }
+            if (Objects.isNull(statement)) {
+                return;
             }
             statement.execute();
         } catch (SQLException exception) {
@@ -80,7 +81,8 @@ public class HikariCPUtil {
 
     @Nullable
     public static <T> T query(@NotNull final PPlugin plugin, @NotNull final String sql,
-                              @NotNull final Function<ResultSet, T> getter, @Nullable final String... args) {
+                              @NotNull final Function<ResultSet, T> getter,
+                              @Nullable final Function<PreparedStatement, PreparedStatement> args) {
         final Connection connection = getConnection(plugin);
         if (Objects.isNull(connection)) {
             return null;
@@ -91,10 +93,11 @@ public class HikariCPUtil {
         T value = null;
         try {
             statement = connection.prepareStatement(sql);
-            if (Objects.nonNull(args) && args.length > 0) {
-                for (int index = 0; index < args.length; index++) {
-                    statement.setString(index + 1, args[index]);
-                }
+            if (Objects.nonNull(args)) {
+                statement = args.apply(statement);
+            }
+            if (Objects.isNull(statement)) {
+                return null;
             }
             result = statement.executeQuery();
             value = getter.apply(result);
