@@ -1,16 +1,16 @@
 package org.serverct.parrot.parrotx.utils;
 
+import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
-import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
@@ -19,51 +19,67 @@ import org.serverct.parrot.parrotx.data.MappedData;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class ItemUtil {
 
-    public static ItemStack build(final PPlugin plugin, final LinkedHashMap<?, ?> map) {
+    @NotNull
+    public static ItemStack build(@NotNull final Map<?, ?> map,
+                                  @NotNull final Function<String, ItemStack> constructor) {
         final MappedData data = MappedData.of(MappedData.filter(map));
         ItemStack result = new ItemStack(Material.AIR);
 
         try {
-            result = XMaterial.valueOf(data.getString("Material")).parseItem();
+            result = constructor.apply(data.getString("Material"));
 
             if (Objects.isNull(result)) {
                 result = new ItemStack(Material.AIR);
                 return result;
             }
+
             ItemMeta meta = result.getItemMeta();
-            if (meta == null) meta = Bukkit.getItemFactory().getItemMeta(result.getType());
-            if (meta == null) return result;
+            if (Objects.isNull(meta)) {
+                meta = Bukkit.getItemFactory().getItemMeta(result.getType());
+            }
+            if (Objects.isNull(meta)) {
+                return result;
+            }
 
             final String display = data.getString("Display");
-            if (display != null) meta.setDisplayName(I18n.color(display));
+            if (Objects.nonNull(display)) {
+                meta.setDisplayName(I18n.color(display));
+            }
 
-            List<String> lore = data.getList("Lore", String.class);
+            final List<String> lore = data.getList("Lore", String.class);
             if (!lore.isEmpty()) {
                 lore.replaceAll(I18n::color);
                 meta.setLore(lore);
             }
 
             if (data.containsKey("Enchants")) {
-                final MappedData enchant = MappedData.of(MappedData.filter((Map<?, ?>) data.get("Enchants")));
-                for (String name : enchant.keySet()) {
-                    Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(name.toLowerCase()));
-                    if (enchantment == null) {
-                        plugin.getLang().log.error(I18n.BUILD, "ItemStack", "目标附魔不存在: " + name);
+                final MappedData enchants = data.getMappedData("Enchants");
+                for (final String name : enchants.keySet()) {
+                    final Optional<XEnchantment> xEnchantment = XEnchantment.matchXEnchantment(name.toLowerCase());
+                    if (!xEnchantment.isPresent()) {
+                        ParrotX.log("构建 ItemStack 时读取到未知附魔: {0}.", name);
                         continue;
                     }
-                    meta.addEnchant(enchantment, enchant.getInt(name), true);
+
+                    final Enchantment enchantment = xEnchantment.get().parseEnchantment();
+                    if (Objects.isNull(enchantment)) {
+                        ParrotX.log("构建 ItemStack 时读取到未知附魔: {0}.", name);
+                        continue;
+                    }
+                    meta.addEnchant(enchantment, enchants.getInt(name), true);
                 }
             }
 
             if (data.containsKey("ItemFlags")) {
-                final List<String> itemFlag = data.getList("ItemFlags", String.class);
-                for (String flagName : itemFlag) {
-                    ItemFlag flag = EnumUtil.valueOf(ItemFlag.class, flagName.toUpperCase());
+                final List<String> flags = data.getList("ItemFlags", String.class);
+                for (final String name : flags) {
+                    final ItemFlag flag = EnumUtil.valueOf(ItemFlag.class, name.toUpperCase());
                     if (flag == null) {
-                        plugin.getLang().log.error(I18n.BUILD, "ItemStack", "目标 ItemFlag 不存在: " + flagName);
+                        ParrotX.log("构建 ItemStack 时读取到未知 ItemFlag: {0}.", name);
                         continue;
                     }
                     meta.addItemFlags(flag);
@@ -71,8 +87,8 @@ public class ItemUtil {
             }
 
             result.setItemMeta(meta);
-        } catch (Throwable e) {
-            plugin.getLang().log.error(I18n.BUILD, "ItemStack/" + map, e, plugin.getPackageName());
+        } catch (final Exception exception) {
+            ParrotX.log("构建 ItemStack 时遇到错误: {0}.", exception.getMessage());
         }
         return result;
     }
@@ -80,66 +96,27 @@ public class ItemUtil {
     @NotNull
     public static ItemStack build(final ConfigurationSection section) {
         final ConfigurationSection itemSection = section.getConfigurationSection("ItemStack");
-        ItemStack result = new ItemStack(Material.AIR);
-
         if (itemSection == null) {
-            return result;
+            return new ItemStack(Material.AIR);
         }
-
-        try {
-            result = XMaterial.valueOf(itemSection.getString("Material")).parseItem();
-
-            if (Objects.isNull(result)) {
-                result = new ItemStack(Material.AIR);
-                return result;
-            }
-            ItemMeta meta = result.getItemMeta();
-            if (meta == null) meta = Bukkit.getItemFactory().getItemMeta(result.getType());
-            if (meta == null) return result;
-
-            final String display = itemSection.getString("Display");
-            if (display != null) meta.setDisplayName(I18n.color(display));
-
-            List<String> lore = itemSection.getStringList("Lore");
-            if (!lore.isEmpty()) {
-                lore.replaceAll(I18n::color);
-                meta.setLore(lore);
-            }
-
-            if (itemSection.isConfigurationSection("Enchants")) {
-                ConfigurationSection enchant = itemSection.getConfigurationSection("Enchants");
-                if (enchant != null) {
-                    for (String name : enchant.getKeys(false)) {
-                        Enchantment enchantment = Enchantment.getByKey(NamespacedKey.minecraft(name.toLowerCase()));
-                        if (enchantment == null) {
-                            ParrotX.log("目标附魔不存在: {0}.", name);
-                            continue;
-                        }
-                        meta.addEnchant(enchantment, enchant.getInt(name), true);
-                    }
-                }
-            }
-
-            List<String> itemFlag = itemSection.getStringList("ItemFlags");
-            if (!itemFlag.isEmpty()) {
-                for (String flagName : itemFlag) {
-                    ItemFlag flag = EnumUtil.valueOf(ItemFlag.class, flagName.toUpperCase());
-                    if (flag == null) {
-                        ParrotX.log("目标 ItemFlag 不存在: {0}.", flagName);
-                        continue;
-                    }
-                    meta.addItemFlags(flag);
-                }
-            }
-
-            result.setItemMeta(meta);
-        } catch (Throwable e) {
-            ParrotX.log("构建 ItemStack({0}) 时遇到错误: {1}.", section.getName(), e.getMessage());
-        }
-        return result;
+        return build(itemSection.getValues(false), ItemUtil::getByXMaterial);
     }
 
-    public static void save(@Nullable final ItemStack item, @Nullable final ConfigurationSection section) {
+    @NotNull
+    public static ItemStack getByXMaterial(final String material) {
+        final Optional<XMaterial> xMaterial = XMaterial.matchXMaterial(material);
+        if (!xMaterial.isPresent()) {
+            return new ItemStack(Material.AIR);
+        }
+
+        final ItemStack item = xMaterial.get().parseItem();
+        if (Objects.isNull(item)) {
+            return new ItemStack(Material.AIR);
+        }
+        return item;
+    }
+
+    public static void save(@Nullable final ConfigurationSection section, @Nullable final ItemStack item) {
         if (Objects.isNull(section)) {
             return;
         }
@@ -175,22 +152,44 @@ public class ItemUtil {
         }
     }
 
-    public static String getName(final @NonNull PPlugin plugin, final @NonNull Material material) {
+    @NotNull
+    public static String getName(final @NotNull PPlugin plugin, final @Nullable Material material) {
+        if (Objects.isNull(material)) {
+            return "未知物品";
+        }
         String name = material.name();
         if (plugin.getLang().hasLocale("Material")) {
             String result = plugin.getLang().data.get("Material", "Material", name);
-            if (!result.contains("错误")) name = ChatColor.stripColor(result);
+            if (!result.contains("错误")) {
+                name = ChatColor.stripColor(result);
+            }
         }
         return name;
     }
 
-    public static ItemStack replace(final @NonNull ItemStack item, final String placeholder, final String value) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta == null) return item;
-        if (meta.hasDisplayName()) meta.setDisplayName(meta.getDisplayName().replace(placeholder, value));
-        List<String> lore = meta.getLore();
-        if (lore != null) {
-            lore.replaceAll(s -> s.replace(placeholder, value));
+
+    @Contract("null, _, _ -> null;!null, _, _ -> !null")
+    @Nullable
+    public static ItemStack replace(@Nullable final ItemStack item, @Nullable final String placeholder,
+                                    @Nullable final String value) {
+        if (Objects.isNull(item)) {
+            return null;
+        }
+        if (Objects.isNull(placeholder)) {
+            return item;
+        }
+
+        final ItemMeta meta = item.getItemMeta();
+        if (meta == null) {
+            return item;
+        }
+
+        if (meta.hasDisplayName()) {
+            meta.setDisplayName(meta.getDisplayName().replace(placeholder, BasicUtil.thisOrElse(value, "")));
+        }
+        final List<String> lore = meta.getLore();
+        if (Objects.nonNull(lore)) {
+            lore.replaceAll(content -> content.replace(placeholder, BasicUtil.thisOrElse(value, "")));
             meta.setLore(lore);
         }
         item.setItemMeta(meta);
