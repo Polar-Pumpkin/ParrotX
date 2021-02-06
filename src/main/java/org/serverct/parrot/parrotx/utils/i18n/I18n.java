@@ -129,12 +129,30 @@ public class I18n {
     }
 
     /**
+     * 快速向全服玩家公告 Title
+     *
+     * @param title    Title 内容
+     * @param subtitle Subtitle 内容
+     * @param fadeIn   淡入时间
+     * @param stay     停留时间
+     * @param fadeOut  淡出时间
+     */
+    public static void sendTitle(final Player user, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+        if (Objects.isNull(user)) {
+            return;
+        }
+        user.sendTitle(title, subtitle, fadeIn * 20, stay * 20, fadeOut * 20);
+    }
+
+    /**
      * 快速向全服玩家公告消息。
      *
      * @param msg 消息内容
      */
     public static void broadcast(String msg) {
-        Bukkit.getOnlinePlayers().forEach(user -> send(user, msg));
+        for (Player user : Bukkit.getOnlinePlayers()) {
+            send(user, msg);
+        }
     }
 
     /**
@@ -147,8 +165,9 @@ public class I18n {
      * @param fadeOut  淡出时间
      */
     public static void broadcastTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
-        Bukkit.getOnlinePlayers().forEach(user -> user.sendTitle(title, subtitle, fadeIn * 20, stay * 20,
-                fadeOut * 20));
+        for (Player user : Bukkit.getOnlinePlayers()) {
+            user.sendTitle(title, subtitle, fadeIn * 20, stay * 20, fadeOut * 20);
+        }
     }
 
     /**
