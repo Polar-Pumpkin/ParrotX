@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.utils.BasicUtil;
 import org.serverct.parrot.parrotx.utils.FileUtil;
 
 import java.io.File;
@@ -118,6 +119,9 @@ public class I18n {
      * @param message 消息内容
      */
     public static void sendAsync(@NotNull PPlugin plugin, Player user, String message, Object... args) {
+        if (StringUtils.isEmpty(message)) {
+            return;
+        }
         if (user != null) {
             new BukkitRunnable() {
                 @Override
@@ -137,11 +141,16 @@ public class I18n {
      * @param stay     停留时间
      * @param fadeOut  淡出时间
      */
-    public static void sendTitle(final Player user, String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+    public static void sendTitle(final Player user, String title, String subtitle, double fadeIn, double stay,
+                                 double fadeOut) {
         if (Objects.isNull(user)) {
             return;
         }
-        user.sendTitle(title, subtitle, fadeIn * 20, stay * 20, fadeOut * 20);
+        if (StringUtils.isEmpty(title) && StringUtils.isEmpty(subtitle)) {
+            return;
+        }
+        user.sendTitle(title, subtitle, BasicUtil.roundToInt(fadeIn * 20), BasicUtil.roundToInt(stay * 20),
+                BasicUtil.roundToInt(fadeOut * 20));
     }
 
     /**
@@ -150,6 +159,9 @@ public class I18n {
      * @param msg 消息内容
      */
     public static void broadcast(String msg) {
+        if (StringUtils.isEmpty(msg)) {
+            return;
+        }
         for (Player user : Bukkit.getOnlinePlayers()) {
             send(user, msg);
         }
@@ -165,6 +177,9 @@ public class I18n {
      * @param fadeOut  淡出时间
      */
     public static void broadcastTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+        if (StringUtils.isEmpty(title) && StringUtils.isEmpty(subtitle)) {
+            return;
+        }
         for (Player user : Bukkit.getOnlinePlayers()) {
             user.sendTitle(title, subtitle, fadeIn * 20, stay * 20, fadeOut * 20);
         }

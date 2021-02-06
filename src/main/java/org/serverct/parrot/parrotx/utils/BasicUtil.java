@@ -31,6 +31,10 @@ public class BasicUtil {
         return BigDecimal.valueOf(number).setScale(2, RoundingMode.HALF_DOWN).intValue();
     }
 
+    public static long roundToLong(final double number) {
+        return BigDecimal.valueOf(number).setScale(2, RoundingMode.HALF_DOWN).longValueExact();
+    }
+
     public static void potion(Player target, PotionEffectType type, int level, int duration) {
         target.addPotionEffect(new PotionEffect(type, duration * 20, level));
     }
