@@ -3,6 +3,7 @@ package org.serverct.parrot.parrotx.data.inventory.element;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -113,7 +114,9 @@ public class InventoryPlaceholder implements InventoryElement {
         }
 
         lang.log.debug("事件处理结果: {0}", (Object) event.isCancelled());
-        holder.refresh(event.getInventory());
-        holder.getBase().getViewer().updateInventory();
+        Bukkit.getScheduler().runTask(holder.getPlugin(), () -> {
+            holder.refresh(event.getInventory());
+            holder.getBase().getViewer().updateInventory();
+        });
     }
 }
