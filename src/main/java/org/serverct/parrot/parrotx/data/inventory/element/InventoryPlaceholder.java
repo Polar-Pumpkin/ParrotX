@@ -74,7 +74,7 @@ public class InventoryPlaceholder implements InventoryElement {
                 if (Objects.isNull(slotItem) || slotItem.getType() == Material.AIR) {
                     if (invalid(cursorItem)) {
                         event.setCancelled(true);
-                        return;
+                        break;
                     }
 
                     this.placedMap.put(event.getSlot(), cursorItem);
@@ -85,7 +85,7 @@ public class InventoryPlaceholder implements InventoryElement {
             case SWAP_WITH_CURSOR:
                 if (invalid(cursorItem) || Objects.isNull(cursorItem)) {
                     event.setCancelled(true);
-                    return;
+                    break;
                 }
 
                 this.placedMap.put(event.getSlot(), cursorItem.clone());
@@ -97,7 +97,7 @@ public class InventoryPlaceholder implements InventoryElement {
                         public void run() {
                             event.getView().setCursor(null);
                         }
-                    }.runTaskLater(holder.getPlugin(), 1L);
+                    }.runTask(holder.getPlugin());
                 }
                 break;
             case PICKUP_ALL:
