@@ -74,6 +74,10 @@ public abstract class PPlugin extends JavaPlugin {
                 if (!Bukkit.getPluginManager().isPluginEnabled("ParrotX")) {
                     metrics.addCustomChart(new Metrics.SimplePie("integration_method", () -> "Compile"));
                 }
+                if (Objects.nonNull(getConfig().getConfigurationSection("PluginID"))) {
+                    final int PLUGIN_ID = getConfig().getInt("PluginID");
+                    final Metrics metrics1 = new Metrics(this, PLUGIN_ID);
+                }
                 lang.log.info("已启用 bStats 数据统计.");
                 lang.log.info("若您需要禁用此功能, 一般情况下可于配置文件 config.yml 中编辑或新增 \"bStats: false\" 关闭此功能.");
             } else {
@@ -126,7 +130,7 @@ public abstract class PPlugin extends JavaPlugin {
     protected void afterInit() {
     }
 
-    protected <T extends BaseExpansion> void registerExpansion(final T expansions) {
+    public <T extends BaseExpansion> void registerExpansion(final T expansions) {
         this.expansions.add(expansions);
     }
 

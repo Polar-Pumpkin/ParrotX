@@ -13,10 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.autoload.annotations.PAutoloadGroup;
 import org.serverct.parrot.parrotx.data.autoload.loader.*;
-import org.serverct.parrot.parrotx.data.autoload.register.CommandHandlerRegister;
-import org.serverct.parrot.parrotx.data.autoload.register.ConfigurationRegister;
-import org.serverct.parrot.parrotx.data.autoload.register.DataSetRegister;
-import org.serverct.parrot.parrotx.data.autoload.register.ListenerRegister;
+import org.serverct.parrot.parrotx.data.autoload.register.*;
 import org.serverct.parrot.parrotx.utils.ItemUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
@@ -88,7 +85,8 @@ public abstract class Autoloader {
                 new CommandHandlerRegister(),
                 new ConfigurationRegister(),
                 new DataSetRegister(),
-                new ListenerRegister()
+                new ListenerRegister(),
+                new ExpansionRegister()
         );
     }
 
