@@ -46,6 +46,8 @@ public class ListUtil {
         if (Objects.isNull(list) || list.isEmpty()) {
             return result;
         }
+        result.addAll(list);
+
         if (StringUtils.isEmpty(keyword)) {
             return list;
         }
