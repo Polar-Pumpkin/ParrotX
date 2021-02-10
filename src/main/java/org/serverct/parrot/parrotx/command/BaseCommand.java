@@ -111,11 +111,9 @@ public abstract class BaseCommand implements PCommand {
                     .append(plugin.getCommandHandler().mainCmd)
                     .append(" ")
                     .append(name);
-            paramMap.values().forEach(param -> {
-                commandLine.append(" ");
-                if (param.optional) commandLine.append(optionalParam(param.name));
-                else commandLine.append(requiredParam(param.name));
-            });
+            paramMap.values().forEach(
+                    param -> commandLine.append(param.optional ? optionalParam(param.name) : requiredParam(param.name))
+            );
             add(commandLine.toString());
 
             paramMap.values().forEach(param -> {
