@@ -94,7 +94,7 @@ public class ItemUtil {
     }
 
     @NotNull
-    public static ItemStack build(final ConfigurationSection section) {
+    public static ItemStack build(@NotNull final ConfigurationSection section) {
         final ConfigurationSection itemSection = section.getConfigurationSection("ItemStack");
         if (itemSection == null) {
             return new ItemStack(Material.AIR);
@@ -103,7 +103,7 @@ public class ItemUtil {
     }
 
     @NotNull
-    public static ItemStack build(final ConfigurationSection section,
+    public static ItemStack build(@NotNull final ConfigurationSection section,
                                   @NotNull final Function<String, ItemStack> constructor) {
         final ConfigurationSection itemSection = section.getConfigurationSection("ItemStack");
         if (itemSection == null) {
@@ -163,7 +163,7 @@ public class ItemUtil {
     }
 
     @NotNull
-    public static String getName(final @NotNull PPlugin plugin, final @Nullable Material material) {
+    public static String getName(@NotNull final PPlugin plugin, @Nullable final Material material) {
         if (Objects.isNull(material)) {
             return "未知物品";
         }
@@ -204,5 +204,10 @@ public class ItemUtil {
         }
         item.setItemMeta(meta);
         return item;
+    }
+
+    @Contract("null -> true;!null -> false")
+    public boolean invalid(@Nullable final ItemStack item) {
+        return Objects.isNull(item) || item.getType() == Material.AIR;
     }
 }

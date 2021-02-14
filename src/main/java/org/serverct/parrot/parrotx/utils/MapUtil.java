@@ -1,22 +1,52 @@
 package org.serverct.parrot.parrotx.utils;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class MapUtil {
 
     @NotNull
-    public static <T> Map<T, Object> filter(@NotNull final Map<?, ?> map, @NotNull final Class<T> clazz) {
+    public static <T> Map<T, Object> filter(@Nullable final Map<?, ?> map, @NotNull final Class<T> clazz) {
         final Map<T, Object> result = new HashMap<>();
+        if (Objects.isNull(map)) {
+            return result;
+        }
         map.forEach((key, value) -> {
             if (clazz.isInstance(key)) {
                 result.put(clazz.cast(key), value);
             }
         });
         return result;
+    }
+
+    @NotNull
+    public static <K, V> Map<K, V> filter(@Nullable final Map<K, V> map, @Nullable Predicate<Map.Entry<K, V>> checker) {
+        final Map<K, V> result = new HashMap<>();
+        if (Objects.isNull(map)) {
+            return result;
+        }
+        if (Objects.isNull(checker)) {
+            return map;
+        }
+        for (final Map.Entry<K, V> entry : map.entrySet()) {
+            if (checker.test(entry)) {
+                mergeEntry(result, entry);
+            }
+        }
+        return result;
+    }
+
+    public static <K, V> void mergeEntry(@Nullable final Map<K, V> map, @Nullable final Map.Entry<K, V> entry) {
+        if (Objects.isNull(map) || Objects.isNull(entry)) {
+            return;
+        }
+        map.put(entry.getKey(), entry.getValue());
     }
 
     @NotNull
