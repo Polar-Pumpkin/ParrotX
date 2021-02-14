@@ -3,6 +3,7 @@ package org.serverct.parrot.parrotx;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
+import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -11,6 +12,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.api.ParrotXAPI;
 import org.serverct.parrot.parrotx.command.CommandHandler;
 import org.serverct.parrot.parrotx.config.PConfig;
@@ -21,16 +23,18 @@ import org.serverct.parrot.parrotx.hooks.BaseExpansion;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Consumer;
 
 public abstract class PPlugin extends JavaPlugin {
 
     public static final int PARROTX_ID = 9515;
-    public final String PARROTX_VERSION = "1.4.7-Alpha (Build 8)";
+    public final String PARROTX_VERSION = "1.4.7-Alpha (Build 9)";
+
     private final List<Listener> listeners = new ArrayList<>();
     private final List<BaseExpansion> expansions = new ArrayList<>();
+    private final Map<Integer, Consumer<Metrics>> pluginIds = new HashMap<>();
+
     public String localeKey = "Chinese";
     public PIndex index;
     protected PConfig pConfig;
@@ -68,14 +72,40 @@ public abstract class PPlugin extends JavaPlugin {
                 lang.log.info("已注册 PlaceholderAPI 扩展包.");
             }
 
-            if (getConfig().getBoolean("bStats", true) && !Bukkit.getPluginManager().isPluginEnabled("ParrotX")) {
-                final Metrics metrics = new Metrics(this, PARROTX_ID);
-                metrics.addCustomChart(new Metrics.SingleLineChart("plugins_using_parrotx", () -> 1));
-                if (!Bukkit.getPluginManager().isPluginEnabled("ParrotX")) {
-                    metrics.addCustomChart(new Metrics.SimplePie("integration_method", () -> "Compile"));
+            if (getConfig().getBoolean("bStats", true)) {
+                boolean bStats = false;
+                for (final Map.Entry<Integer, Consumer<Metrics>> entry : this.pluginIds.entrySet()) {
+                    try {
+                        final int pluginId = entry.getKey();
+                        final Consumer<Metrics> callback = entry.getValue();
+
+                        final Metrics targetMetrics = new Metrics(this, pluginId);
+                        bStats = true;
+                        if (Objects.nonNull(callback)) {
+                            callback.accept(targetMetrics);
+                        }
+                    } catch (Exception exception) {
+                        lang.log.error(I18n.LOAD, "自定义 bStats 数据统计", exception, getPackageName());
+                    }
                 }
-                lang.log.info("已启用 bStats 数据统计.");
-                lang.log.info("若您需要禁用此功能, 一般情况下可于配置文件 config.yml 中编辑或新增 \"bStats: false\" 关闭此功能.");
+
+                if (!Bukkit.getPluginManager().isPluginEnabled("ParrotX")) {
+                    try {
+                        final Metrics metrics = new Metrics(this, PARROTX_ID);
+                        metrics.addCustomChart(new Metrics.SingleLineChart("plugins_using_parrotx", () -> 1));
+                        metrics.addCustomChart(new Metrics.SimplePie("plugin_name", this::getName));
+                        metrics.addCustomChart(new Metrics.SimplePie("parrotx_version", () -> PARROTX_VERSION));
+                        metrics.addCustomChart(new Metrics.SimplePie("integration_method", () -> "Compile"));
+                    } catch (Exception exception) {
+                        lang.log.error(I18n.LOAD, "ParrotX bStats 数据统计", exception, getPackageName());
+                    }
+                    bStats = true;
+                }
+
+                if (bStats) {
+                    lang.log.info("已启用 bStats 数据统计.");
+                    lang.log.info("若您需要禁用此功能, 一般情况下可于配置文件 config.yml 中编辑或新增 \"bStats: false\" 关闭此功能.");
+                }
             } else {
                 lang.log.warn("bStats 数据统计已被禁用.");
             }
@@ -126,8 +156,12 @@ public abstract class PPlugin extends JavaPlugin {
     protected void afterInit() {
     }
 
-    protected <T extends BaseExpansion> void registerExpansion(final T expansions) {
+    public <T extends BaseExpansion> void registerExpansion(final T expansions) {
         this.expansions.add(expansions);
+    }
+
+    public void registerStats(final int pluginId, @Nullable final Consumer<Metrics> callback) {
+        this.pluginIds.put(pluginId, callback);
     }
 
     public void registerCommand(@NonNull CommandHandler handler) {
@@ -152,7 +186,16 @@ public abstract class PPlugin extends JavaPlugin {
         preDisable();
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     public void preDisable() {
+        for (final BaseExpansion expansion : this.expansions) {
+            try {
+                expansion.unregister();
+            } catch (Exception exception) {
+                lang.log.error("注销 PlaceholderAPI 拓展包时遇到错误: {0}.", exception.getMessage());
+                PlaceholderAPIPlugin.getInstance().getLocalExpansionManager().unregister(expansion);
+            }
+        }
         getServer().getScheduler().cancelTasks(this);
         index.clearConfig();
     }

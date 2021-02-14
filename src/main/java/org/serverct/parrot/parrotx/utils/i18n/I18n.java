@@ -14,7 +14,6 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
@@ -193,7 +192,11 @@ public class I18n {
      * @return 上色后的文本。
      * @see ChatColor#translateAlternateColorCodes(char, String)
      */
-    public static String color(String text) {
+    @NotNull
+    public static String color(@Nullable final String text) {
+        if (StringUtils.isEmpty(text)) {
+            return "";
+        }
         return ChatColor.translateAlternateColorCodes('&', text);
     }
 
@@ -206,7 +209,14 @@ public class I18n {
      * @return 上色后的文本。
      * @see ChatColor#translateAlternateColorCodes(char, String)
      */
-    public static String color(String text, Object... args) {
+    @NotNull
+    public static String color(@Nullable final String text, @Nullable final Object... args) {
+        if (Objects.isNull(args) || args.length <= 0) {
+            return color(text);
+        }
+        if (StringUtils.isEmpty(text)) {
+            return "";
+        }
         return ChatColor.translateAlternateColorCodes('&', MessageFormat.format(text, args));
     }
 
@@ -216,6 +226,7 @@ public class I18n {
      * @param length 空格的长度。
      * @return 空格字符串。
      */
+    @NotNull
     public static String blank(int length) {
         final StringBuilder builder = new StringBuilder();
         for (int i = length; i > 0; i--) {
@@ -231,7 +242,11 @@ public class I18n {
      * @param alternateColorCode 替代颜色字符。
      * @return 使用替代字符表示颜色代码的文本。
      */
-    public static String deColor(String text, char alternateColorCode) {
+    @NotNull
+    public static String deColor(@Nullable final String text, char alternateColorCode) {
+        if (StringUtils.isEmpty(text)) {
+            return "";
+        }
         return text.replace("§", String.valueOf(alternateColorCode));
     }
 
@@ -242,11 +257,10 @@ public class I18n {
      * @param args     变量参数。
      * @return 替换变量后的字符串。
      */
-    @Contract("null,_ -> null;!null,_ -> !null")
-    @Nullable
+    @NotNull
     public static String format(@Nullable final String template, @Nullable final Object... args) {
-        if (Objects.isNull(template)) {
-            return null;
+        if (StringUtils.isEmpty(template)) {
+            return "";
         }
         if (Objects.isNull(args) || args.length <= 0) {
             return template;
