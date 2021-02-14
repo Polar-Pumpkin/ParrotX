@@ -18,7 +18,7 @@ public abstract class PGroup<T extends PMember> extends PData implements MemberM
     protected long foundTime;
 
     public PGroup(File file, PID id, String typeName) {
-        super(file, id, typeName);
+        super(id, file, typeName);
     }
 
     @Override

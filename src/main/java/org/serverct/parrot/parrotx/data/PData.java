@@ -24,7 +24,7 @@ public abstract class PData implements UniqueData, FileSaved {
     @Setter
     private boolean readOnly = false;
 
-    public PData(File file, PID id, String typeName) {
+    public PData(PID id, File file, String typeName) {
         this.plugin = id.getPlugin();
         this.lang = this.plugin.getLang();
         this.file = file;
@@ -35,6 +35,9 @@ public abstract class PData implements UniqueData, FileSaved {
 
     @Override
     public void save() {
+        if (readOnly) {
+            return;
+        }
         try {
             Autoloader.execute(plugin, this.data, this, false);
             this.data.save(this.file);

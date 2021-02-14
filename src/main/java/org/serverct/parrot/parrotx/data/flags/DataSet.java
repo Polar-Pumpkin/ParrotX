@@ -16,22 +16,26 @@ public interface DataSet<T> {
     Set<PID> getIds();
 
     @Nullable
-    default T get(final String id) {
+    default T get(@NotNull final String id) {
         return get(buildId(id));
     }
 
     @Nullable
-    T get(final PID id);
+    T get(@NotNull final PID id);
 
-    boolean has(final PID id);
+    default boolean has(@NotNull final String id) {
+        return has(buildId(id));
+    }
 
-    void put(final T data);
+    boolean has(@NotNull final PID id);
 
-    void reload(final PID id);
+    void put(@Nullable final T data);
 
-    void delete(final PID id);
+    void reload(@NotNull final PID id);
 
-    void save(final PID id);
+    void delete(@NotNull final PID id);
+
+    void save(@NotNull final PID id);
 
     void reloadAll();
 
@@ -39,7 +43,9 @@ public interface DataSet<T> {
 
     void saveAll();
 
-    PID buildId(final String id);
+    @NotNull
+    PID buildId(@NotNull final String id);
 
-    String objectName(final PID id);
+    @NotNull
+    String objectName(@NotNull final PID id);
 }

@@ -39,6 +39,9 @@ public abstract class PStruct implements UniqueData {
 
     @Override
     public void save() {
+        if (readOnly) {
+            return;
+        }
         Autoloader.execute(plugin, section, this, false);
     }
 
