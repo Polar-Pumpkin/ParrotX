@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 
 @SuppressWarnings({"unused"})
 public class BasicUtil {
@@ -137,7 +138,11 @@ public class BasicUtil {
     }
 
     @Contract("_, null, _, _, _ -> true; _, !null, _, _, _ -> false")
-    public static boolean isNull(PPlugin plugin, Object object, String action, String name, String message) {
+    public static boolean isNull(@NotNull final PPlugin plugin,
+                                 @Nullable final Object object,
+                                 @NotNull final String action,
+                                 @NotNull final String name,
+                                 @NotNull final String message) {
         if (Objects.isNull(object)) {
             plugin.getLang().log.error(action, name, message);
             return true;
@@ -145,7 +150,19 @@ public class BasicUtil {
         return false;
     }
 
-    public static boolean multiNull(Object... args) {
+    @Contract("null, _ -> true;!null, _ -> false")
+    public static boolean isNull(@Nullable final Object object,
+                                 @Nullable final Runnable ifNull) {
+        if (Objects.isNull(object)) {
+            if (Objects.nonNull(ifNull)) {
+                ifNull.run();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean multiNull(@Nullable final Object... args) {
         for (Object object : args) {
             if (Objects.isNull(object)) {
                 return true;
@@ -157,5 +174,14 @@ public class BasicUtil {
     @NotNull
     public static <T> T thisOrElse(@Nullable final T value, @NotNull final T other) {
         return Optional.ofNullable(value).orElse(other);
+    }
+
+    @Nullable
+    public static <T, R> R ifNonNull(@Nullable final T object,
+                                     @NotNull final Function<T, R> callback) {
+        if (Objects.isNull(object)) {
+            return null;
+        }
+        return callback.apply(object);
     }
 }
