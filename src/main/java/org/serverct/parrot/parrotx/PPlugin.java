@@ -3,8 +3,6 @@ package org.serverct.parrot.parrotx;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import me.clip.placeholderapi.PlaceholderAPIPlugin;
-import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
@@ -68,8 +66,8 @@ public abstract class PPlugin extends JavaPlugin {
             }
 
             if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") && !this.expansions.isEmpty()) {
-                this.expansions.forEach(PlaceholderExpansion::register);
-                lang.log.info("已注册 PlaceholderAPI 扩展包.");
+                this.expansions.forEach(BaseExpansion::reg);
+                lang.log.info("已注册 PlaceholderAPI 拓展包.");
             }
 
             if (getConfig().getBoolean("bStats", true)) {
@@ -186,16 +184,8 @@ public abstract class PPlugin extends JavaPlugin {
         preDisable();
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     public void preDisable() {
-        for (final BaseExpansion expansion : this.expansions) {
-            try {
-                expansion.unregister();
-            } catch (Exception exception) {
-                lang.log.error("注销 PlaceholderAPI 拓展包时遇到错误: {0}.", exception.getMessage());
-                PlaceholderAPIPlugin.getInstance().getLocalExpansionManager().unregister(expansion);
-            }
-        }
+        this.expansions.forEach(BaseExpansion::unreg);
         getServer().getScheduler().cancelTasks(this);
         index.clearConfig();
     }

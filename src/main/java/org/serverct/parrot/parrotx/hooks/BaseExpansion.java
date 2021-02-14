@@ -3,11 +3,13 @@ package org.serverct.parrot.parrotx.hooks;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import me.clip.placeholderapi.PlaceholderAPIPlugin;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,9 +17,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 
+@SuppressWarnings("UnstableApiUsage")
 public class BaseExpansion extends PlaceholderExpansion {
 
     protected final PPlugin plugin;
+    protected final I18n lang;
     @Getter
     private final Map<String, PlaceholderParam> paramMap = new HashMap<>();
     protected String identifier;
@@ -26,6 +30,7 @@ public class BaseExpansion extends PlaceholderExpansion {
 
     public BaseExpansion(final PPlugin plugin, String identifier, String author, String version) {
         this.plugin = plugin;
+        this.lang = this.plugin.getLang();
         this.identifier = identifier;
         this.author = author;
         this.version = version;
@@ -33,6 +38,7 @@ public class BaseExpansion extends PlaceholderExpansion {
 
     public BaseExpansion(final PPlugin plugin) {
         this.plugin = plugin;
+        this.lang = this.plugin.getLang();
         final PluginDescriptionFile desc = plugin.getDescription();
         this.identifier = plugin.getName().toLowerCase();
         this.author = Arrays.toString(desc.getAuthors().toArray());
@@ -77,6 +83,19 @@ public class BaseExpansion extends PlaceholderExpansion {
 
     protected void addParam(final PlaceholderParam... params) {
         Arrays.stream(params).forEach(param -> this.paramMap.put(param.getName().toLowerCase(), param));
+    }
+
+    public void reg() {
+        super.register();
+    }
+
+    public void unreg() {
+        try {
+            super.unregister();
+        } catch (Exception exception) {
+            lang.log.error("注销 PlaceholderAPI 拓展包时遇到错误: {0}.", exception.getMessage());
+            PlaceholderAPIPlugin.getInstance().getLocalExpansionManager().unregister(this);
+        }
     }
 
     @Data
