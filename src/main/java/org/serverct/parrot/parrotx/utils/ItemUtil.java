@@ -207,7 +207,7 @@ public class ItemUtil {
     }
 
     @Contract("null -> true;!null -> false")
-    public boolean invalid(@Nullable final ItemStack item) {
+    public static boolean invalid(@Nullable final ItemStack item) {
         return Objects.isNull(item) || item.getType() == Material.AIR;
     }
 }

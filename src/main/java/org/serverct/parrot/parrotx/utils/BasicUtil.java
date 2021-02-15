@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 @SuppressWarnings({"unused"})
@@ -183,5 +184,16 @@ public class BasicUtil {
             return null;
         }
         return callback.apply(object);
+    }
+
+    public <T> void ifNonNull(@Nullable final T object,
+                              @Nullable final Consumer<T> callback) {
+        if (Objects.isNull(object)) {
+            return;
+        }
+        if (Objects.isNull(callback)) {
+            return;
+        }
+        callback.accept(object);
     }
 }
