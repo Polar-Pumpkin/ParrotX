@@ -178,7 +178,7 @@ public class BasicUtil {
     }
 
     @Nullable
-    public static <T, R> R ifNonNull(@Nullable final T object,
+    public static <T, R> R canReturn(@Nullable final T object,
                                      @NotNull final Function<T, R> callback) {
         if (Objects.isNull(object)) {
             return null;
@@ -186,8 +186,8 @@ public class BasicUtil {
         return callback.apply(object);
     }
 
-    public <T> void ifNonNull(@Nullable final T object,
-                              @Nullable final Consumer<T> callback) {
+    public static <T> void canDo(@Nullable final T object,
+                                 @Nullable final Consumer<T> callback) {
         if (Objects.isNull(object)) {
             return;
         }
