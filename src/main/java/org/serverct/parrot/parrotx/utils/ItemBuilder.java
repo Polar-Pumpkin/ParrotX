@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 public class ItemBuilder {
 
@@ -84,6 +85,11 @@ public class ItemBuilder {
         }
         this.flags.add(flag);
         return this;
+    }
+
+    @NotNull
+    public Supplier<ItemStack> supplier() {
+        return this::build;
     }
 
     @NotNull
