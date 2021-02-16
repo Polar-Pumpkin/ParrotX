@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -122,21 +123,34 @@ public class CommandHandler implements TabExecutor {
 
         final String authorList = description.getAuthors().toString();
         if (authorList.length() > 2) {
-            final String authors = authorList.substring(1);
+            final String authors = authorList.substring(1, authorList.length() - 1);
             result.add(I18n.color("&7作者: &f{0}", authors));
         }
         result.add("");
 
-        final String prefix = "/" + mainCmd;
+        final Command command = Bukkit.getPluginCommand(this.mainCmd);
+        final List<String> aliases = new ArrayList<>();
+        if (Objects.nonNull(command)) {
+            aliases.addAll(command.getAliases());
+        }
+
+        String mainCommand = this.mainCmd;
+        for (final String alias : aliases) {
+            if (alias.length() < mainCommand.length()) {
+                mainCommand = alias;
+            }
+        }
+
+        final String prefix = "/" + mainCommand;
         boolean first = true;
         for (Map.Entry<String, PCommand> entry : commands.entrySet()) {
-            final String command = entry.getKey();
+            final String subcommand = entry.getKey();
             final PCommand executor = entry.getValue();
 
             if (first) {
-                result.add(I18n.color("&f{0} {1}", prefix, command));
+                result.add(I18n.color("&f{0} {1}", prefix, subcommand));
             } else {
-                result.add(I18n.color("{0}&7- &f{1}", I18n.blank(prefix.length() - 1), command));
+                result.add(I18n.color("{0}&7- &f{1}", I18n.blank(prefix.length() - 2), subcommand));
             }
             result.add(I18n.color("{0} &7{1}", I18n.blank(prefix.length()), executor.getDescription()));
             first = false;
@@ -145,6 +159,10 @@ public class CommandHandler implements TabExecutor {
         if (commands.containsKey("help")) {
             result.add("");
             result.add(I18n.color("&6▶ &7使用 &f/{0} help &7指令查看更多信息.", mainCmd));
+        }
+
+        if (!aliases.isEmpty()) {
+            result.add(I18n.color("&a▶ &7可用主命令缩写: &f" + aliases));
         }
         return result;
     }

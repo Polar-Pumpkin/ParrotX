@@ -3,6 +3,7 @@ package org.serverct.parrot.parrotx.data.inventory;
 import lombok.Getter;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -87,8 +88,19 @@ public abstract class PInventory<T> extends AutoRefreshInventory {
         }
     }
 
+    public void onShiftMove(final InventoryClickEvent event) {
+        event.setCancelled(true);
+    }
+
     @Override
     public void execute(InventoryClickEvent event) {
+        final InventoryAction action = event.getAction();
+        if (action == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+            ParrotX.debug("尝试发射物品到 Inventory 中.");
+            onShiftMove(event);
+            return;
+        }
+
         if (!check(this, event)) {
             ParrotX.debug("被点击位置非该 Gui.");
             return;

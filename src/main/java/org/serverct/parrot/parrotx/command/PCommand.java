@@ -24,11 +24,11 @@ public interface PCommand extends CommandExecutor {
     boolean execute(CommandSender sender, String[] args);
 
     default String optionalParam(String param) {
-        return I18n.color("&7[&c" + param + "&7] ");
+        return I18n.color(" &7[&f" + param + "&7]");
     }
 
     default String requiredParam(String param) {
-        return I18n.color("&7<&c" + param + "&7> ");
+        return I18n.color(" &7<&f" + param + "&7>");
     }
 
     @Override

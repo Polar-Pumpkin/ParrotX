@@ -103,11 +103,11 @@ public abstract class BaseCommand implements PCommand {
     @Override
     public String[] getHelp() {
         return new ArrayList<String>() {{
-            add("&9&l" + plugin.getName() + " &7指令帮助 ᚏᚎᚍᚔᚓᚒᚑᚐ");
+            add("&9&l" + plugin.getName() + " &f指令帮助 &7ᚏᚎᚍᚔᚓᚒᚑᚐ");
             add(requiredParam("必填参数") + " " + optionalParam("选填参数"));
             add("");
 
-            StringBuilder commandLine = new StringBuilder("  &9▶ &d/")
+            StringBuilder commandLine = new StringBuilder("  &9▶ &f/")
                     .append(plugin.getCommandHandler().mainCmd)
                     .append(" ")
                     .append(name);
@@ -126,7 +126,7 @@ public abstract class BaseCommand implements PCommand {
 
             add(" ");
             add("    &7&o" + getDescription());
-            add("    &7所需权限: &c" + (getPermission() == null ? "无" : getPermission()));
+            add("    &7所需权限: &f&o" + (getPermission() == null ? "无" : getPermission()));
         }}.toArray(new String[0]);
     }
 
