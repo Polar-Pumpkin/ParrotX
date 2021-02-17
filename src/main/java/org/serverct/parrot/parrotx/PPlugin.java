@@ -212,6 +212,18 @@ public abstract class PPlugin extends JavaPlugin {
         return new File(getDataFolder(), path);
     }
 
+    public File getFileWithResource(final String path) {
+        final File file = getFile(path);
+        if (!file.exists()) {
+            saveResource(path, false);
+            lang.log.warn("未找到 &c{0}&f, 已自动生成.", path);
+            if (!file.exists()) {
+                lang.log.warn("未找到内置默认文件: &c{0}&f.", path);
+            }
+        }
+        return file;
+    }
+
     public String getPackageName() {
         return getClass().getPackage().getName();
     }
