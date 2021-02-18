@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
 import org.serverct.parrot.parrotx.data.inventory.PInventory;
+import org.serverct.parrot.parrotx.utils.ItemUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.*;
@@ -86,6 +87,18 @@ public class InventoryFreeArea implements InventoryElement {
             result.add(iterator.next().clone());
         }
         return result;
+    }
+
+    public boolean addPlaced(final int slot, @Nullable final ItemStack item, final boolean force) {
+        if (ItemUtil.invalid(item)) {
+            return false;
+        }
+        if (force) {
+            this.placedMap.put(slot, item);
+            return true;
+        } else {
+            return Objects.isNull(this.placedMap.putIfAbsent(slot, item));
+        }
     }
 
     public void clear() {

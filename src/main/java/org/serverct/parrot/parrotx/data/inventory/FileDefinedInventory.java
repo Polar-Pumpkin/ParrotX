@@ -75,4 +75,8 @@ public class FileDefinedInventory extends BaseInventory implements FileSaved {
     public BaseElement get(final String key, final int priority, final Predicate<Player> condition) {
         return BaseElement.of(plugin, items.getConfigurationSection(key), priority, condition);
     }
+
+    public BaseElement get(final String key, final int priority) {
+        return get(key, priority, user -> true);
+    }
 }
