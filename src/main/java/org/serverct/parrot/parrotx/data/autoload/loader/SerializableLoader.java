@@ -20,16 +20,16 @@ public class SerializableLoader implements DataLoader<ConfigurationSerializable>
     @Override
     public ConfigurationSerializable load(@NotNull String path, @NotNull ConfigurationSection section,
                                           @NotNull List<Class<?>> classChain) {
-        if (classChain.size() < 2) {
+        if (classChain.isEmpty()) {
             Autoloader.log(
                     "加载 Serializable 数据时未提供泛型类型, 路径: {0}, 数据节: {1}, 类型链: {2}",
                     path, section.getName(), classChain
             );
             return null;
         }
-        final Class<?> type = classChain.get(1);
+        final Class<?> type = classChain.get(0);
         if (!ConfigurationSerializable.class.isAssignableFrom(type)) {
-            Autoloader.log("加载 Serializable 数据时需求类型未实现序列化接口: {0}", classChain.get(1));
+            Autoloader.log("加载 Serializable 数据时需求类型未实现序列化接口: {0}", classChain.get(0));
             return null;
         }
         final Class<? extends ConfigurationSerializable> serializableClass = (Class<?
