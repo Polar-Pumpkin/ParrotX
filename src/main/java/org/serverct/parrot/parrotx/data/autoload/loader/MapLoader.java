@@ -89,11 +89,7 @@ public class MapLoader implements DataLoader<Map> {
             return;
         }
 
-        ConfigurationSection mapSection = to.getConfigurationSection(path);
-        if (Objects.isNull(mapSection)) {
-            mapSection = to.createSection(path);
-        }
-
+        ConfigurationSection mapSection = to.createSection(path);
         final Map<Object, Object> map = (Map<Object, Object>) value;
         for (Map.Entry<Object, Object> entry : map.entrySet()) {
             mapSection.set(String.valueOf(entry.getKey()), entry.getValue());
