@@ -179,7 +179,11 @@ public class AutoloadSetting {
                     classes.add(Class.forName(argument.getTypeName()));
                 }
             } else {
-                classes.add(Class.forName(type.getTypeName()));
+                final String classpath = type.getTypeName();
+                final String[] args = classpath.split("[.]");
+                if (args.length > 1) {
+                    classes.add(Class.forName(classpath));
+                }
             }
         } catch (ClassNotFoundException error) {
             lang.log.error(I18n.AUTOLOAD, "探索类型链", error, plugin.getPackageName());
