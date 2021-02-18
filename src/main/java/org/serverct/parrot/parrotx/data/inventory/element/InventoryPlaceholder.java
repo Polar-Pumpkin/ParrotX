@@ -146,6 +146,8 @@ public class InventoryPlaceholder implements InventoryElement {
                     event.setCancelled(true);
                     break;
                 }
+
+                place(event);
                 this.placedMap.remove(event.getSlot());
                 break;
             default:
