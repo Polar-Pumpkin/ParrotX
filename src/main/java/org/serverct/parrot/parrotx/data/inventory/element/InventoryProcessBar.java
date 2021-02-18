@@ -5,32 +5,26 @@ import lombok.Data;
 import org.bukkit.inventory.ItemStack;
 import org.serverct.parrot.parrotx.data.inventory.InventoryElement;
 import org.serverct.parrot.parrotx.data.inventory.PInventory;
+import org.serverct.parrot.parrotx.utils.BasicUtil;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Supplier;
 
-public @Data
-class InventoryProcessBar implements InventoryElement {
+@Data
+public class InventoryProcessBar implements InventoryElement {
     private final BaseElement base;
     private final Supplier<ItemStack> processItem;
-    private final int current;
-    private final int total;
+    private final Supplier<Double> rate;
     private final Map<Integer, ItemStack> barMap = new HashMap<>();
 
     @Builder
-    public InventoryProcessBar(BaseElement base, Supplier<ItemStack> processItem, int current, int total) {
+    public InventoryProcessBar(BaseElement base, Supplier<ItemStack> processItem, Supplier<Double> rate) {
         this.base = base;
         this.processItem = processItem;
-        this.current = current;
-        this.total = total;
-    }
-
-    public double getRate() {
-        return BigDecimal.valueOf(Math.min(1.0D, current / ((double) total))).setScale(2, RoundingMode.HALF_DOWN).doubleValue();
+        this.rate = rate;
     }
 
     @Override
@@ -40,10 +34,11 @@ class InventoryProcessBar implements InventoryElement {
 
     @Override
     public BaseElement preload(PInventory<?> inv) {
-        if (this.total > 0) {
+        if (Objects.nonNull(this.rate)) {
+            final double rate = this.rate.get();
             this.barMap.clear();
             final List<Integer> slots = getPositions();
-            for (int amount = 0; amount < BigDecimal.valueOf(slots.size() * getRate()).intValue(); amount++) {
+            for (int amount = 0; amount < BasicUtil.roundToInt(slots.size() * rate); amount++) {
                 this.barMap.put(slots.get(amount), processItem.get());
             }
         }
