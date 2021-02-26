@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -97,35 +98,35 @@ public class I18n {
     }
 
     /**
-     * 快速向玩家发送信息。
+     * 快速向玩家/控制台发送信息。
      *
-     * @param user    目标玩家
+     * @param sender  目标玩家
      * @param message 消息内容
      */
-    public static void send(Player user, String message, Object... args) {
+    public static void send(CommandSender sender, String message, Object... args) {
         if (StringUtils.isEmpty(message)) {
             return;
         }
-        if (user != null) {
-            user.sendMessage(MessageFormat.format(color(message), args));
+        if (sender != null) {
+            sender.sendMessage(MessageFormat.format(color(message), args));
         }
     }
 
     /**
-     * 异步向玩家发送信息。
+     * 同步向玩家/控制台发送信息。
      *
-     * @param user    目标玩家
+     * @param sender  目标玩家
      * @param message 消息内容
      */
-    public static void sendAsync(@NotNull PPlugin plugin, Player user, String message, Object... args) {
+    public static void sendAsync(@NotNull PPlugin plugin, CommandSender sender, String message, Object... args) {
         if (StringUtils.isEmpty(message)) {
             return;
         }
-        if (user != null) {
+        if (sender != null) {
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    send(user, message, args);
+                    send(sender, message, args);
                 }
             }.runTask(plugin);
         }
