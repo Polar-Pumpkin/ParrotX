@@ -92,6 +92,9 @@ public abstract class BaseCommand implements PCommand {
 
     @Override
     public String getPermission() {
+        if (Objects.isNull(perm)) {
+            return null;
+        }
         if (perm.startsWith(".")) {
             return plugin.getName() + perm;
         }
