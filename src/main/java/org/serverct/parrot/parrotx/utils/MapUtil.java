@@ -58,28 +58,6 @@ public class MapUtil {
     }
 
     @NotNull
-    public static <K, V> Map<K, V> sort(@Nullable final Map<K, V> map,
-                                        @Nullable final Comparator<Map.Entry<K, V>> comparator,
-                                        final boolean reverse) {
-        final Map<K, V> result = new LinkedHashMap<>();
-        if (Objects.isNull(map)) {
-            return result;
-        }
-        if (Objects.isNull(comparator)) {
-            return map;
-        }
-
-        final List<Map.Entry<K, V>> snapshot = new ArrayList<>(map.entrySet());
-        snapshot.sort(comparator);
-        if (reverse) {
-            Collections.reverse(snapshot);
-        }
-
-        snapshot.forEach(entry -> mergeEntry(result, entry));
-        return result;
-    }
-
-    @NotNull
     public static <K2, K1, V> Map<K2, V> transformKey(@NotNull final Map<K1, V> map,
                                                       @NotNull final Function<K1, K2> constructor) {
         final Map<K2, V> result = new HashMap<>();
@@ -102,6 +80,50 @@ public class MapUtil {
         final Map<K2, V2> result = new HashMap<>();
         map.forEach((key, value) -> result.put(keyConverter.apply(key), valueConverter.apply(value)));
         return result;
+    }
+
+    @NotNull
+    public static <K, V> Map<K, V> sort(@Nullable final Map<K, V> map,
+                                        @Nullable final Comparator<Map.Entry<K, V>> comparator,
+                                        final boolean reverse) {
+        final Map<K, V> result = new LinkedHashMap<>();
+        if (Objects.isNull(map)) {
+            return result;
+        }
+        if (Objects.isNull(comparator)) {
+            return map;
+        }
+
+        final List<Map.Entry<K, V>> snapshot = new ArrayList<>(map.entrySet());
+        snapshot.sort(comparator);
+        if (reverse) {
+            Collections.reverse(snapshot);
+        }
+
+        snapshot.forEach(entry -> mergeEntry(result, entry));
+        return result;
+    }
+
+    @NotNull
+    public static <K extends Comparable<K>, V> Map<K, V> sortByKey(@Nullable final Map<K, V> map) {
+        return sortByKey(map, false);
+    }
+
+    @NotNull
+    public static <K extends Comparable<K>, V> Map<K, V> sortByKey(@Nullable final Map<K, V> map,
+                                                                   final boolean reverse) {
+        return sort(map, Map.Entry.comparingByKey(), reverse);
+    }
+
+    @NotNull
+    public static <K, V extends Comparable<V>> Map<K, V> sortByValue(@Nullable final Map<K, V> map) {
+        return sortByValue(map, false);
+    }
+
+    @NotNull
+    public static <K, V extends Comparable<V>> Map<K, V> sortByValue(@Nullable final Map<K, V> map,
+                                                                     final boolean reverse) {
+        return sort(map, Map.Entry.comparingByValue(), reverse);
     }
 
 }

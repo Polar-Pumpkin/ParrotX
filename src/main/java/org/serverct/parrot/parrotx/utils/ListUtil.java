@@ -6,10 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -88,6 +85,34 @@ public class ListUtil {
         }
         final Random random = new Random();
         return list.get(random.nextInt(list.size()));
+    }
+
+    @NotNull
+    public static <E extends Comparable<E>> List<E> sort(@Nullable final Collection<E> collections,
+                                                         @Nullable final Comparator<E> comparator,
+                                                         final boolean reverse) {
+        final List<E> result = new ArrayList<>();
+        if (Objects.isNull(collections) || collections.isEmpty()) {
+            return result;
+        }
+
+        if (Objects.isNull(comparator)) {
+            result.addAll(collections);
+            return result;
+        }
+
+        result.addAll(collections.stream().sorted(comparator).collect(Collectors.toList()));
+
+        if (reverse) {
+            Collections.reverse(result);
+        }
+        return result;
+    }
+
+    @NotNull
+    public static <E extends Comparable<E>> List<E> sort(@Nullable final Collection<E> collections,
+                                                         @Nullable final Comparator<E> comparator) {
+        return sort(collections, comparator, false);
     }
 
 }
