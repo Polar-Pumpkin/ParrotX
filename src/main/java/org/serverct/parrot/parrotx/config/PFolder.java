@@ -1,6 +1,7 @@
 package org.serverct.parrot.parrotx.config;
 
 import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PData;
 import org.serverct.parrot.parrotx.data.PID;
@@ -10,7 +11,7 @@ import org.serverct.parrot.parrotx.utils.i18n.I18n;
 import java.io.File;
 import java.util.Objects;
 
-public abstract class PFolder<T extends PData> extends PDataSet<T> {
+public abstract class PFolder<E extends PData> extends PDataSet<E> {
 
     protected String dataKey;
 
@@ -50,7 +51,7 @@ public abstract class PFolder<T extends PData> extends PDataSet<T> {
         }
         if (files != null && files.length != 0) {
             for (File dataFile : files) {
-                final T value = loadFromDataFile(dataFile);
+                final E value = loadFromDataFile(dataFile);
                 if (Objects.isNull(value)) {
                     lang.log.error(I18n.LOAD, name(), "加载数据失败: " + dataFile.getName());
                     continue;
@@ -63,9 +64,9 @@ public abstract class PFolder<T extends PData> extends PDataSet<T> {
         }
     }
 
-    public abstract T loadFromDataFile(final File dataFile);
+    public abstract E loadFromDataFile(final File dataFile);
 
-    public PID buildId(String id) {
+    public @NotNull PID buildId(@NotNull String id) {
         return new PID(plugin, dataKey.toLowerCase(), id);
     }
 }

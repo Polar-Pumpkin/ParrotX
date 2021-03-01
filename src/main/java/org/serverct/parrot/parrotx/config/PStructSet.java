@@ -5,6 +5,7 @@ import lombok.NonNull;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PID;
 import org.serverct.parrot.parrotx.data.PStruct;
@@ -14,7 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 
-public abstract class PStructSet<T extends PStruct> extends PDataSet<T> {
+public abstract class PStructSet<E extends PStruct> extends PDataSet<E> {
 
     @Getter
     protected FileConfiguration config;
@@ -61,7 +62,7 @@ public abstract class PStructSet<T extends PStruct> extends PDataSet<T> {
                 lang.log.error(I18n.LOAD, name(), "存在非数据节: " + key);
                 continue;
             }
-            final T value = loadFromDataSection(section);
+            final E value = loadFromDataSection(section);
             if (Objects.isNull(value)) {
                 lang.log.error(I18n.LOAD, name(), "加载数据失败: " + key);
                 continue;
@@ -109,9 +110,9 @@ public abstract class PStructSet<T extends PStruct> extends PDataSet<T> {
         }
     }
 
-    public abstract T loadFromDataSection(final ConfigurationSection section);
+    public abstract E loadFromDataSection(final ConfigurationSection section);
 
-    public PID buildId(String id) {
+    public @NotNull PID buildId(@NotNull String id) {
         return new PID(plugin, rootName.toLowerCase(), id);
     }
 }

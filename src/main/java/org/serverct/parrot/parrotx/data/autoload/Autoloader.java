@@ -80,8 +80,10 @@ public abstract class Autoloader {
 
         try {
             ConfigurationSection.class.getMethod("getLocation", String.class);
-            new SimpleLoader<>(Location.class, ConfigurationSection::getLocation);
-        } catch (NoSuchMethodException ignored) {
+            registerLoader(new SimpleLoader<>(Location.class, ConfigurationSection::getLocation));
+        } catch (NoSuchMethodException exception) {
+            registerLoader(new SimpleLoader<>(Location.class, ((section, path) -> section.getSerializable(path,
+                    Location.class))));
         }
 
         registerRegister(

@@ -5,23 +5,33 @@ import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.data.PID;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 
-public interface DataSet<T> {
+public interface DataSet<E> extends Iterable<E> {
 
     @NotNull
-    Collection<T> getAll();
+    Collection<E> getAll();
+
+    @NotNull
+    @Override
+    default Iterator<E> iterator() {
+        return getAll().iterator();
+    }
 
     @NotNull
     Set<PID> getIds();
 
+    @NotNull
+    Set<String> getStringIds();
+
     @Nullable
-    default T get(@NotNull final String id) {
+    default E get(@NotNull final String id) {
         return get(buildId(id));
     }
 
     @Nullable
-    T get(@NotNull final PID id);
+    E get(@NotNull final PID id);
 
     default boolean has(@NotNull final String id) {
         return has(buildId(id));
@@ -29,7 +39,7 @@ public interface DataSet<T> {
 
     boolean has(@NotNull final PID id);
 
-    void put(@Nullable final T data);
+    void put(@Nullable final E data);
 
     void reload(@NotNull final PID id);
 

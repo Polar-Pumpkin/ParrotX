@@ -1,11 +1,10 @@
 package org.serverct.parrot.parrotx.utils;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -49,18 +48,49 @@ public class MapUtil {
         map.put(entry.getKey(), entry.getValue());
     }
 
+    @Contract("null -> null")
+    @Nullable
+    public static <K, V> Map.Entry<K, V> random(@Nullable final Map<K, V> map) {
+        if (Objects.isNull(map) || map.isEmpty()) {
+            return null;
+        }
+        return ListUtil.random(new ArrayList<>(map.entrySet()));
+    }
+
     @NotNull
-    public static <T, K, V> Map<T, V> transformKey(@NotNull final Map<K, V> map,
-                                                   @NotNull final Function<K, T> constructor) {
-        final Map<T, V> result = new HashMap<>();
+    public static <K, V> Map<K, V> sort(@Nullable final Map<K, V> map,
+                                        @Nullable final Comparator<Map.Entry<K, V>> comparator,
+                                        final boolean reverse) {
+        final Map<K, V> result = new LinkedHashMap<>();
+        if (Objects.isNull(map)) {
+            return result;
+        }
+        if (Objects.isNull(comparator)) {
+            return map;
+        }
+
+        final List<Map.Entry<K, V>> snapshot = new ArrayList<>(map.entrySet());
+        snapshot.sort(comparator);
+        if (reverse) {
+            Collections.reverse(snapshot);
+        }
+
+        snapshot.forEach(entry -> mergeEntry(result, entry));
+        return result;
+    }
+
+    @NotNull
+    public static <K2, K1, V> Map<K2, V> transformKey(@NotNull final Map<K1, V> map,
+                                                      @NotNull final Function<K1, K2> constructor) {
+        final Map<K2, V> result = new HashMap<>();
         map.forEach((key, value) -> result.put(constructor.apply(key), value));
         return result;
     }
 
     @NotNull
-    public static <T, K, V> Map<K, T> transformValue(@NotNull final Map<K, V> map,
-                                                     @NotNull final Function<V, T> constructor) {
-        final Map<K, T> result = new HashMap<>();
+    public static <V2, K, V1> Map<K, V2> transformValue(@NotNull final Map<K, V1> map,
+                                                        @NotNull final Function<V1, V2> constructor) {
+        final Map<K, V2> result = new HashMap<>();
         map.forEach((key, value) -> result.put(key, constructor.apply(value)));
         return result;
     }

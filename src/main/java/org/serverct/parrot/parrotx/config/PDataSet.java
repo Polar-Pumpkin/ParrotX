@@ -13,12 +13,13 @@ import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings({"unused"})
-public abstract class PDataSet<T extends UniqueData> implements PConfiguration, FileSaved, DataSet<T> {
+public abstract class PDataSet<E extends UniqueData> implements PConfiguration, FileSaved, DataSet<E> {
 
     @Getter
-    protected final Map<PID, T> dataMap = new HashMap<>();
+    protected final Map<PID, E> dataMap = new HashMap<>();
     protected final PPlugin plugin;
     protected final I18n lang;
     private final String name;
@@ -91,7 +92,7 @@ public abstract class PDataSet<T extends UniqueData> implements PConfiguration, 
     }
 
     @Override
-    public void put(@Nullable final T data) {
+    public void put(@Nullable final E data) {
         if (Objects.isNull(data)) {
             return;
         }
@@ -101,7 +102,7 @@ public abstract class PDataSet<T extends UniqueData> implements PConfiguration, 
 
     @Nullable
     @Override
-    public T get(@NotNull final PID id) {
+    public E get(@NotNull final PID id) {
         return this.dataMap.get(id);
     }
 
@@ -112,7 +113,7 @@ public abstract class PDataSet<T extends UniqueData> implements PConfiguration, 
 
     @NotNull
     @Override
-    public Collection<T> getAll() {
+    public Collection<E> getAll() {
         return this.dataMap.values();
     }
 
@@ -120,6 +121,12 @@ public abstract class PDataSet<T extends UniqueData> implements PConfiguration, 
     @Override
     public Set<PID> getIds() {
         return this.dataMap.keySet();
+    }
+
+    @NotNull
+    @Override
+    public Set<String> getStringIds() {
+        return getIds().stream().map(PID::getId).collect(Collectors.toSet());
     }
 
     @Override
