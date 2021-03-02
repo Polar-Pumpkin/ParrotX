@@ -185,9 +185,8 @@ public abstract class PPlugin extends JavaPlugin {
     }
 
     public void preDisable() {
-        try {
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             this.expansions.forEach(BaseExpansion::unreg);
-        } catch (NoClassDefFoundError ignored) {
         }
         getServer().getScheduler().cancelTasks(this);
         index.clearConfig();
