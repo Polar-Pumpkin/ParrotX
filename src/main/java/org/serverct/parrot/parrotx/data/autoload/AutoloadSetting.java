@@ -37,10 +37,48 @@ public class AutoloadSetting {
 
     protected void buildIndex() {
         try {
-            final List<Class<?>> extendChain = chainSuper(model, new ArrayList<>());
+            int counter = 0;
 
-            for (Class<?> clazz : extendChain) {
-                index(clazz);
+            final PAutoloadGroups multiAnnotation = model.getAnnotation(PAutoloadGroups.class);
+            if (Objects.isNull(multiAnnotation)) {
+                final PAutoloadGroup annotation = model.getAnnotation(PAutoloadGroup.class);
+                if (Objects.isNull(annotation)) {
+                    lang.log.debug("该类对象无需自动导入.");
+                    return;
+                }
+                newGroup(annotation);
+            } else {
+                for (PAutoloadGroup group : multiAnnotation.value()) {
+                    newGroup(group);
+                }
+            }
+            lang.log.debug("&f从 &c{0}.class &f中自动导入了 &c{1} &f个自动加载项目组.", model.getSimpleName(), this.groups.size());
+
+            for (Field field : model.getDeclaredFields()) {
+                final PAutoload annotation = field.getAnnotation(PAutoload.class);
+
+                if (Objects.isNull(annotation)) {
+                    continue;
+                }
+
+                final List<Class<?>> classChain = chain(field.getGenericType(), new ArrayList<>());
+
+                if (ConfigurationSerializable.class.isAssignableFrom(field.getType())) {
+                    classChain.add(field.getType());
+                }
+
+                newItem(AutoloadItem.builder()
+                        .group(annotation.group())
+                        .path(annotation.value().replace("{FIELD}", field.getName()))
+                        .field(field.getName())
+                        .type(field.getType())
+                        .classChain(classChain)
+                        .build());
+                counter++;
+            }
+
+            if (counter > 0) {
+                lang.log.debug("&f从 &c{0}.class &f中自动导入了 &c{1} &f个自动加载项目.", model.getSimpleName(), counter);
             }
 
             print();
@@ -51,52 +89,6 @@ public class AutoloadSetting {
                     e,
                     plugin.getPackageName()
             );
-        }
-    }
-
-    protected void index(@NotNull final Class<?> model) {
-        int counter = 0;
-
-        final PAutoloadGroups multiAnnotation = model.getAnnotation(PAutoloadGroups.class);
-        if (Objects.isNull(multiAnnotation)) {
-            final PAutoloadGroup annotation = model.getAnnotation(PAutoloadGroup.class);
-            if (Objects.isNull(annotation)) {
-                lang.log.debug("该类对象无需自动导入.");
-                return;
-            }
-            newGroup(annotation);
-        } else {
-            for (PAutoloadGroup group : multiAnnotation.value()) {
-                newGroup(group);
-            }
-        }
-        lang.log.debug("&f从 &c{0}.class &f中自动导入了 &c{1} &f个自动加载项目组.", model.getSimpleName(), this.groups.size());
-
-        for (Field field : model.getDeclaredFields()) {
-            final PAutoload annotation = field.getAnnotation(PAutoload.class);
-
-            if (Objects.isNull(annotation)) {
-                continue;
-            }
-
-            final List<Class<?>> classChain = chain(field.getGenericType(), new ArrayList<>());
-
-            if (ConfigurationSerializable.class.isAssignableFrom(field.getType())) {
-                classChain.add(field.getType());
-            }
-
-            newItem(AutoloadItem.builder()
-                    .group(annotation.group())
-                    .path(annotation.value().replace("{FIELD}", field.getName()))
-                    .field(field.getName())
-                    .type(field.getType())
-                    .classChain(classChain)
-                    .build());
-            counter++;
-        }
-
-        if (counter > 0) {
-            lang.log.debug("&f从 &c{0}.class &f中自动导入了 &c{1} &f个自动加载项目.", model.getSimpleName(), counter);
         }
     }
 
@@ -196,29 +188,6 @@ public class AutoloadSetting {
             }
         } catch (ClassNotFoundException error) {
             lang.log.error(I18n.AUTOLOAD, "探索类型链", error, plugin.getPackageName());
-        }
-        return classes;
-    }
-
-    private List<Class<?>> chainSuper(@NotNull final Class<?> start, @NotNull final List<Class<?>> classes) {
-        final String packageName = plugin.getPackageName();
-
-        try {
-            classes.add(start);
-
-            final Type type = start.getGenericSuperclass();
-            final String classpath = type.getTypeName();
-            if (!classpath.contains(packageName)) {
-                return classes;
-            }
-
-            final String[] args = classpath.split("[.]");
-            if (args.length > 1) {
-                final Class<?> clazz = Class.forName(classpath);
-                return chainSuper(clazz, classes);
-            }
-        } catch (ClassNotFoundException error) {
-            lang.log.error(I18n.AUTOLOAD, "探索继承链", error, packageName);
         }
         return classes;
     }

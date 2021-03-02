@@ -21,6 +21,7 @@ import org.serverct.parrot.parrotx.utils.ItemUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -128,70 +129,69 @@ public abstract class Autoloader {
         final String prefix = load ? I18n.AUTOLOAD : I18n.AUTOSAVE;
         final Class<?> clazz = to.getClass();
         final String className = clazz.getSimpleName() + ".class";
-        AutoloadSetting setting = MODEL_MAP.get(clazz);
-        if (Objects.isNull(setting)) {
-            setting = new AutoloadSetting(plugin, clazz);
-            MODEL_MAP.put(clazz, setting);
-        }
 
         try {
-            for (Map.Entry<String, Collection<AutoloadItem>> entry :
-                    setting.getItems().asMap().entrySet()) {
-                final String groupName = entry.getKey();
-                final Collection<AutoloadItem> items = entry.getValue();
+            for (Class<?> model : chainSuper(plugin, clazz, new ArrayList<>())) {
+                final AutoloadSetting setting = getSetting(plugin, clazz);
 
-                for (AutoloadItem item : items) {
-                    try {
-                        final PAutoloadGroup group = setting.getGroup(groupName);
-                        if (Objects.isNull(group)) {
-                            lang.log.error(prefix, className, "未声明项目组: " + groupName);
-                            continue;
-                        }
+                for (Map.Entry<String, Collection<AutoloadItem>> entry :
+                        setting.getItems().asMap().entrySet()) {
+                    final String groupName = entry.getKey();
+                    final Collection<AutoloadItem> items = entry.getValue();
 
-                        final StringBuilder pathBuilder = new StringBuilder();
-                        String extraPath = group.value();
-                        if (!"default".equalsIgnoreCase(groupName)) {
-                            if (!group.ignoreDefaultPath()) {
-                                final String defaultPath = setting.getExtraPath("default");
-                                pathBuilder.append(StringUtils.isEmpty(defaultPath) ? "" : defaultPath + ".");
-                            }
-                            extraPath = extraPath.replace("{GROUP}", groupName);
-                        } else {
-                            extraPath = extraPath.replace("{GROUP}", "");
-                        }
-                        pathBuilder.append(StringUtils.isEmpty(extraPath) ? "" : extraPath + ".");
-
-                        pathBuilder.append(item.getPath());
-
-                        final String path = pathBuilder.toString();
-                        DataLoader<?> loader = getLoader(item.getType());
-                        if (Objects.isNull(loader)) {
-                            if (ConfigurationSerializable.class.isAssignableFrom(item.getType())) {
-                                loader = getLoader(ConfigurationSerializable.class);
-                            }
-                            if (Enum.class.isAssignableFrom(item.getType())) {
-                                loader = getLoader(Enum.class);
-                            }
-
-                            if (Objects.isNull(loader)) {
-                                lang.log.error(prefix, className,
-                                        "未注册该数据类型的加载器: " + item.getType().getSimpleName() + ".class");
+                    for (AutoloadItem item : items) {
+                        try {
+                            final PAutoloadGroup group = setting.getGroup(groupName);
+                            if (Objects.isNull(group)) {
+                                lang.log.error(prefix, className, "未声明项目组: " + groupName);
                                 continue;
                             }
-                        }
 
-                        final Field field = clazz.getDeclaredField(item.getField());
-                        field.setAccessible(true);
+                            final StringBuilder pathBuilder = new StringBuilder();
+                            String extraPath = group.value();
+                            if (!"default".equalsIgnoreCase(groupName)) {
+                                if (!group.ignoreDefaultPath()) {
+                                    final String defaultPath = setting.getExtraPath("default");
+                                    pathBuilder.append(StringUtils.isEmpty(defaultPath) ? "" : defaultPath + ".");
+                                }
+                                extraPath = extraPath.replace("{GROUP}", groupName);
+                            } else {
+                                extraPath = extraPath.replace("{GROUP}", "");
+                            }
+                            pathBuilder.append(StringUtils.isEmpty(extraPath) ? "" : extraPath + ".");
 
-                        if (load) {
-                            field.set(to, loader.load(path, from, item.getClassChain()));
-                        } else {
-                            loader.save(path, from, field.get(to), item.getClassChain());
+                            pathBuilder.append(item.getPath());
+
+                            final String path = pathBuilder.toString();
+                            DataLoader<?> loader = getLoader(item.getType());
+                            if (Objects.isNull(loader)) {
+                                if (ConfigurationSerializable.class.isAssignableFrom(item.getType())) {
+                                    loader = getLoader(ConfigurationSerializable.class);
+                                }
+                                if (Enum.class.isAssignableFrom(item.getType())) {
+                                    loader = getLoader(Enum.class);
+                                }
+
+                                if (Objects.isNull(loader)) {
+                                    lang.log.error(prefix, className,
+                                            "未注册该数据类型的加载器: " + item.getType().getSimpleName() + ".class");
+                                    continue;
+                                }
+                            }
+
+                            final Field field = model.getDeclaredField(item.getField());
+                            field.setAccessible(true);
+
+                            if (load) {
+                                field.set(to, loader.load(path, from, item.getClassChain()));
+                            } else {
+                                loader.save(path, from, field.get(to), item.getClassChain());
+                            }
+                        } catch (NoSuchFieldException e) {
+                            lang.log.error(prefix, className, "目标字段未找到: " + item.getField());
+                        } catch (IllegalAccessException e) {
+                            lang.log.error(prefix, className, "赋值时遇到异常(非法访问)");
                         }
-                    } catch (NoSuchFieldException e) {
-                        lang.log.error(prefix, className, "目标字段未找到: " + item.getField());
-                    } catch (IllegalAccessException e) {
-                        lang.log.error(prefix, className, "赋值时遇到异常(非法访问)");
                     }
                 }
             }
@@ -202,6 +202,41 @@ public abstract class Autoloader {
 
     public static void log(@NotNull final String message, final Object... args) {
         Bukkit.getConsoleSender().sendMessage(I18n.color("&bParrotX &aAutoloader 2 &f>> &r" + MessageFormat.format(message, args)));
+    }
+
+    @NotNull
+    public static AutoloadSetting getSetting(@NotNull final PPlugin plugin, @NotNull final Class<?> clazz) {
+        AutoloadSetting setting = MODEL_MAP.get(clazz);
+        if (Objects.isNull(setting)) {
+            setting = new AutoloadSetting(plugin, clazz);
+            MODEL_MAP.put(clazz, setting);
+        }
+        return setting;
+    }
+
+    @NotNull
+    private static List<Class<?>> chainSuper(@NotNull final PPlugin plugin,
+                                             @NotNull final Class<?> start, @NotNull final List<Class<?>> classes) {
+        final String packageName = plugin.getPackageName();
+
+        try {
+            classes.add(start);
+
+            final Type type = start.getGenericSuperclass();
+            final String classpath = type.getTypeName();
+            if (!classpath.contains(packageName)) {
+                return classes;
+            }
+
+            final String[] args = classpath.split("[.]");
+            if (args.length > 1) {
+                final Class<?> clazz = Class.forName(classpath);
+                return chainSuper(plugin, clazz, classes);
+            }
+        } catch (ClassNotFoundException error) {
+            plugin.getLang().log.error(I18n.AUTOLOAD, "探索继承链", error, packageName);
+        }
+        return classes;
     }
 
 }
