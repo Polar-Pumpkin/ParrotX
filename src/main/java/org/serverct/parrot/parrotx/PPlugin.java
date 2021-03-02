@@ -185,7 +185,10 @@ public abstract class PPlugin extends JavaPlugin {
     }
 
     public void preDisable() {
-        this.expansions.forEach(BaseExpansion::unreg);
+        try {
+            this.expansions.forEach(BaseExpansion::unreg);
+        } catch (NoClassDefFoundError ignored) {
+        }
         getServer().getScheduler().cancelTasks(this);
         index.clearConfig();
     }
