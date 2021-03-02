@@ -132,7 +132,7 @@ public abstract class Autoloader {
 
         try {
             for (Class<?> model : chainSuper(plugin, clazz, new ArrayList<>())) {
-                final AutoloadSetting setting = getSetting(plugin, clazz);
+                final AutoloadSetting setting = getSetting(plugin, model);
 
                 for (Map.Entry<String, Collection<AutoloadItem>> entry :
                         setting.getItems().asMap().entrySet()) {
