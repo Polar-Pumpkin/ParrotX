@@ -4,13 +4,16 @@ import lombok.Getter;
 import lombok.NonNull;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.utils.JsonChatUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
@@ -44,14 +47,16 @@ public class CommandHandler implements TabExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
+                             String[] args) {
         if (args.length == 0) {
             PCommand defCommand = commands.get((Objects.isNull(defaultCmd) ? "help" : defaultCmd));
             if (defCommand == null) {
                 // plugin.lang.getHelp(plugin.localeKey).forEach(sender::sendMessage);
-                formatHelp().forEach(sender::sendMessage);
+                formatHelp(sender).forEach(sender::sendMessage);
             } else {
-                boolean hasPerm = (defCommand.getPermission() == null || defCommand.getPermission().equals("")) || sender.hasPermission(defCommand.getPermission());
+                boolean hasPerm =
+                        (defCommand.getPermission() == null || defCommand.getPermission().equals("")) || sender.hasPermission(defCommand.getPermission());
                 if (hasPerm) {
                     return defCommand.execute(sender, args);
                 }
@@ -59,7 +64,8 @@ public class CommandHandler implements TabExecutor {
                 String msg = plugin.getLang().data.warn("您没有权限这么做.");
                 if (sender instanceof Player) {
                     TextComponent text = JsonChatUtil.getFromLegacy(msg);
-                    text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color("&7所需权限 ▶ &c" + defCommand.getPermission()))));
+                    text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                            TextComponent.fromLegacyText(I18n.color("&7所需权限 ▶ &c" + defCommand.getPermission()))));
                     ((Player) sender).spigot().sendMessage(text);
                 } else sender.sendMessage(msg);
             }
@@ -73,7 +79,8 @@ public class CommandHandler implements TabExecutor {
             return true;
         }
 
-        boolean hasPerm = (pCommand.getPermission() == null || pCommand.getPermission().equals("")) || sender.hasPermission(pCommand.getPermission());
+        boolean hasPerm =
+                (pCommand.getPermission() == null || pCommand.getPermission().equals("")) || sender.hasPermission(pCommand.getPermission());
         if (hasPerm) {
             String[] newArg = new String[args.length - 1];
             if (args.length >= 2) {
@@ -85,7 +92,8 @@ public class CommandHandler implements TabExecutor {
         String msg = plugin.getLang().data.warn("您没有权限这么做.");
         if (sender instanceof Player) {
             TextComponent text = JsonChatUtil.getFromLegacy(msg);
-            text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color("&7所需权限 ▶ &c" + pCommand.getPermission()))));
+            text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color(
+                    "&7所需权限 ▶ &c" + pCommand.getPermission()))));
             ((Player) sender).spigot().sendMessage(text);
         } else sender.sendMessage(msg);
 
@@ -93,7 +101,8 @@ public class CommandHandler implements TabExecutor {
     }
 
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label,
+                                      String[] args) {
         String[] subCommands = commands.keySet().toArray(new String[0]);
         if (args.length == 0) {
             return new ArrayList<>(Arrays.asList(subCommands));
@@ -116,6 +125,10 @@ public class CommandHandler implements TabExecutor {
     }
 
     public List<String> formatHelp() {
+        return formatHelp(null);
+    }
+
+    public List<String> formatHelp(@Nullable final Permissible sender) {
         final List<String> result = new ArrayList<>();
         final PluginDescriptionFile description = plugin.getDescription();
 
@@ -143,7 +156,25 @@ public class CommandHandler implements TabExecutor {
 
         final String prefix = "/" + mainCommand;
         boolean first = true;
-        for (Map.Entry<String, PCommand> entry : commands.entrySet()) {
+
+        final List<Map.Entry<String, PCommand>> commands = new ArrayList<>();
+
+        if (Objects.nonNull(sender)) {
+            final List<Map.Entry<String, PCommand>> hasPerm = this.commands.entrySet().stream()
+                    .filter(entry -> {
+                        final String perm = entry.getValue().getPermission();
+                        if (StringUtils.isEmpty(perm)) {
+                            return true;
+                        }
+                        return sender.hasPermission(perm);
+                    })
+                    .collect(Collectors.toList());
+            commands.addAll(hasPerm);
+        } else {
+            commands.addAll(this.commands.entrySet());
+        }
+
+        for (Map.Entry<String, PCommand> entry : commands) {
             final String subcommand = entry.getKey();
             final PCommand executor = entry.getValue();
 
@@ -156,7 +187,7 @@ public class CommandHandler implements TabExecutor {
             first = false;
         }
 
-        if (commands.containsKey("help")) {
+        if (this.commands.containsKey("help")) {
             result.add("");
             result.add(I18n.color("&6▶ &7使用 &f/{0} help &7指令查看更多信息.", mainCmd));
         }

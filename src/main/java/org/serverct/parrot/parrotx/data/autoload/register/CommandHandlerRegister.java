@@ -22,4 +22,9 @@ public class CommandHandlerRegister implements AutoRegister {
     public void register(PPlugin plugin, Class<?> clazz, Object instance) {
         plugin.registerCommand((CommandHandler) instance);
     }
+
+    @Override
+    public int getPriority() {
+        return 3;
+    }
 }

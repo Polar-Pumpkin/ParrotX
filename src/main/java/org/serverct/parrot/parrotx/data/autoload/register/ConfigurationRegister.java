@@ -22,4 +22,9 @@ public class ConfigurationRegister implements AutoRegister {
     public void register(PPlugin plugin, Class<?> clazz, Object instance) {
         plugin.index.registerConfiguration((PConfiguration) instance);
     }
+
+    @Override
+    public int getPriority() {
+        return 0;
+    }
 }

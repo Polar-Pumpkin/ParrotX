@@ -60,6 +60,7 @@ public class I18n {
     public static final String REFRESH = "刷新";
     public static final String CLEAR = "清空";
     public static final String AUTOLOAD = "自动加载";
+    public static final String AUTOREGISTER = "自动注册";
     public static final String AUTOSAVE = "自动保存";
     public static final String INDEX = "构建索引";
     protected static final String Tool_Prefix = "&7[&b&lEP's &aLocale Tool&7] ";

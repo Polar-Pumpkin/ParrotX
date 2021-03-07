@@ -22,4 +22,9 @@ public class ListenerRegister implements AutoRegister {
     public void register(PPlugin plugin, Class<?> clazz, Object instance) {
         plugin.registerListener((Listener) instance);
     }
+
+    @Override
+    public int getPriority() {
+        return 2;
+    }
 }

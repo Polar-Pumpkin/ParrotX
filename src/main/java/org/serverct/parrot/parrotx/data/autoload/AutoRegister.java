@@ -12,4 +12,6 @@ public interface AutoRegister {
 
     void register(final PPlugin plugin, final Class<?> clazz, final Object instance);
 
+    int getPriority();
+
 }

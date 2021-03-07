@@ -117,6 +117,10 @@ public abstract class Autoloader {
         return REGISTER_MAP.entrySet();
     }
 
+    public static Collection<AutoRegister> getRegisters() {
+        return REGISTER_MAP.values();
+    }
+
     @SuppressWarnings("unchecked")
     @Nullable
     public static <T> DataLoader<T> getLoader(@NotNull final Class<T> clazz) {

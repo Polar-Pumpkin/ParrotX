@@ -8,11 +8,13 @@ import org.serverct.parrot.parrotx.data.autoload.AutoRegister;
 import org.serverct.parrot.parrotx.data.autoload.Autoloader;
 import org.serverct.parrot.parrotx.data.autoload.annotations.PAutoload;
 import org.serverct.parrot.parrotx.utils.ClassUtil;
+import org.serverct.parrot.parrotx.utils.MapUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 public class PIndex {
@@ -47,24 +49,48 @@ public class PIndex {
     }
 
     protected void init() {
+        Map<Integer, Class<?>> prioritizedClasses = new HashMap<>();
+
         for (Class<?> clazz : classes) {
+            final PAutoload annotation = clazz.getAnnotation(PAutoload.class);
+            if (Objects.isNull(annotation)) {
+                continue;
+            }
+
+            int priority = 999;
+            final List<AutoRegister> shouldRegister = Autoloader.getRegisters().stream()
+                    .filter(register -> register.shouldRegister(clazz))
+                    .collect(Collectors.toList());
+            for (final AutoRegister register : shouldRegister) {
+                priority = Math.min(priority, register.getPriority());
+            }
+            prioritizedClasses.put(priority, clazz);
+        }
+
+        prioritizedClasses = MapUtil.sortByKey(prioritizedClasses);
+        for (final Map.Entry<Integer, Class<?>> entry : prioritizedClasses.entrySet()) {
+            final int priority = entry.getKey();
+            final Class<?> clazz = entry.getValue();
+
+            final String className = clazz.getSimpleName();
+            lang.log.debug("&9- &r尝试自动注册 &a{0}.class&r, 优先级 &a{1}&r.", className, priority);
+
             try {
-                final PAutoload annotation = clazz.getAnnotation(PAutoload.class);
-                if (Objects.isNull(annotation)) {
-                    continue;
-                }
                 final Object instance = clazz.getConstructor().newInstance();
 
-                for (Map.Entry<Class<?>, AutoRegister> entry : Autoloader.getRegisterEntries()) {
-                    final AutoRegister register = entry.getValue();
-                    if (register.shouldRegister(clazz)) {
-                        register.register(plugin, clazz, instance);
-                    }
-                }
+                Autoloader.getRegisters().stream()
+                        .filter(register -> register.shouldRegister(clazz))
+                        .forEach(register -> {
+                            register.register(plugin, clazz, instance);
+
+                            final String registerName = register.getClass().getSimpleName();
+                            lang.log.debug("&7| &r使用注册器 &a{0} &r自动注册 &a{1}.class&r.", registerName, className);
+                        });
             } catch (NoSuchMethodException exception) {
-                lang.log.error(I18n.REGISTER, clazz.getName(), exception, plugin.getPackageName());
+                lang.log.error(I18n.AUTOREGISTER, clazz.getName(), "自动注册项目需要一个无参构造器.");
             } catch (Exception exception) {
-                lang.log.debug("自动加载({0})遇到错误: {1}", clazz.getName(), exception.getMessage());
+                lang.log.error(I18n.AUTOREGISTER, clazz.getName(), exception, plugin.getPackageName());
+                exception.printStackTrace();
             }
         }
     }

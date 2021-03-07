@@ -23,4 +23,9 @@ public class DataSetRegister implements AutoRegister {
     public void register(PPlugin plugin, Class<?> clazz, Object instance) {
         plugin.index.registerDataSet((Class<? extends PDataSet<?>>) clazz);
     }
+
+    @Override
+    public int getPriority() {
+        return 1;
+    }
 }
