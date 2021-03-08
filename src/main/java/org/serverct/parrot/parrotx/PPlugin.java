@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
+import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -27,7 +29,7 @@ import java.util.function.Consumer;
 public abstract class PPlugin extends JavaPlugin {
 
     public static final int PARROTX_ID = 9515;
-    public final String PARROTX_VERSION = "1.4.7-Alpha (Build 11)";
+    public final String PARROTX_VERSION = "1.4.7-Alpha (Build 12)";
 
     private final List<Listener> listeners = new ArrayList<>();
     private final List<BaseExpansion> expansions = new ArrayList<>();
@@ -91,10 +93,10 @@ public abstract class PPlugin extends JavaPlugin {
                 if (!Bukkit.getPluginManager().isPluginEnabled("ParrotX")) {
                     try {
                         final Metrics metrics = new Metrics(this, PARROTX_ID);
-                        metrics.addCustomChart(new Metrics.SingleLineChart("plugins_using_parrotx", () -> 1));
-                        metrics.addCustomChart(new Metrics.SimplePie("plugin_name", this::getName));
-                        metrics.addCustomChart(new Metrics.SimplePie("parrotx_version", () -> PARROTX_VERSION));
-                        metrics.addCustomChart(new Metrics.SimplePie("integration_method", () -> "Compile"));
+                        metrics.addCustomChart(new SingleLineChart("plugins_using_parrotx", () -> 1));
+                        metrics.addCustomChart(new SimplePie("plugin_name", this::getName));
+                        metrics.addCustomChart(new SimplePie("parrotx_version", () -> PARROTX_VERSION));
+                        metrics.addCustomChart(new SimplePie("integration_method", () -> "Compile"));
                     } catch (Exception exception) {
                         lang.log.error(I18n.LOAD, "ParrotX bStats 数据统计", exception, getPackageName());
                     }

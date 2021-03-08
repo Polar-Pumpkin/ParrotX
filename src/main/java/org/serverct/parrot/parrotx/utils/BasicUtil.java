@@ -49,7 +49,7 @@ public class BasicUtil {
 
     public static double calculate(final String expression, final Map<String, Double> variable) {
         try {
-            final Scope scope = Scope.create();
+            final Scope scope = new Scope();
             variable.forEach((symbol, value) -> {
                 final Variable var = scope.getVariable(symbol);
                 var.setValue(value);
