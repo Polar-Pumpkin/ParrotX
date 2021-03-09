@@ -27,6 +27,7 @@ public class BaseExpansion extends PlaceholderExpansion {
     protected String identifier;
     protected String author;
     protected String version;
+    private Runnable unreg;
 
     public BaseExpansion(final PPlugin plugin, String identifier, String author, String version) {
         this.plugin = plugin;
@@ -34,6 +35,15 @@ public class BaseExpansion extends PlaceholderExpansion {
         this.identifier = identifier;
         this.author = author;
         this.version = version;
+
+        unreg = () -> {
+            try {
+                super.unregister();
+            } catch (Throwable exception) {
+                lang.log.error("注销 PlaceholderAPI 拓展包时遇到错误: {0}.", exception.getMessage());
+                PlaceholderAPIPlugin.getInstance().getLocalExpansionManager().unregister(this);
+            }
+        };
     }
 
     public BaseExpansion(final PPlugin plugin) {
@@ -43,6 +53,15 @@ public class BaseExpansion extends PlaceholderExpansion {
         this.identifier = plugin.getName().toLowerCase();
         this.author = Arrays.toString(desc.getAuthors().toArray());
         this.version = desc.getVersion();
+
+        unreg = () -> {
+            try {
+                super.unregister();
+            } catch (Throwable exception) {
+                lang.log.error("注销 PlaceholderAPI 拓展包时遇到错误: {0}.", exception.getMessage());
+                PlaceholderAPIPlugin.getInstance().getLocalExpansionManager().unregister(this);
+            }
+        };
     }
 
     @Override
@@ -90,12 +109,13 @@ public class BaseExpansion extends PlaceholderExpansion {
     }
 
     public void unreg() {
-        try {
-            super.unregister();
-        } catch (Throwable exception) {
-            lang.log.error("注销 PlaceholderAPI 拓展包时遇到错误: {0}.", exception.getMessage());
-            PlaceholderAPIPlugin.getInstance().getLocalExpansionManager().unregister(this);
+        if (Objects.nonNull(this.unreg)) {
+            this.unreg.run();
         }
+    }
+
+    public void setUnreg(Runnable unreg) {
+        this.unreg = unreg;
     }
 
     @Data
