@@ -92,7 +92,7 @@ public class BaseExpansion extends PlaceholderExpansion {
     public void unreg() {
         try {
             super.unregister();
-        } catch (Exception exception) {
+        } catch (Throwable exception) {
             lang.log.error("注销 PlaceholderAPI 拓展包时遇到错误: {0}.", exception.getMessage());
             PlaceholderAPIPlugin.getInstance().getLocalExpansionManager().unregister(this);
         }
