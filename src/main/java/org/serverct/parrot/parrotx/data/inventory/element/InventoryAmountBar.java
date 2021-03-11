@@ -17,13 +17,16 @@ public class InventoryAmountBar implements InventoryElement {
     private final BaseElement base;
     private final Supplier<ItemStack> processItem;
     private final Supplier<Integer> amount;
+    private final boolean ignoreLimit;
     private final Map<Integer, ItemStack> barMap = new HashMap<>();
 
     @Builder
-    public InventoryAmountBar(BaseElement base, Supplier<ItemStack> processItem, Supplier<Integer> amount) {
+    public InventoryAmountBar(BaseElement base, Supplier<ItemStack> processItem, Supplier<Integer> amount,
+                              boolean ignoreLimit) {
         this.base = base;
         this.processItem = processItem;
         this.amount = amount;
+        this.ignoreLimit = ignoreLimit;
     }
 
     @Override
@@ -34,11 +37,12 @@ public class InventoryAmountBar implements InventoryElement {
     @Override
     public BaseElement preload(PInventory<?> inv) {
         if (Objects.nonNull(this.amount) && Objects.nonNull(this.processItem)) {
+            this.barMap.clear();
             int left = this.amount.get();
 
             final ItemStack item = this.processItem.get();
             final Material material = item.getType();
-            final int max = material.getMaxStackSize();
+            final int max = ignoreLimit ? 99 : material.getMaxStackSize();
 
             for (final int position : getPositions()) {
                 if (left <= 0) {
