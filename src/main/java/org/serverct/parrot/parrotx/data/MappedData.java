@@ -5,10 +5,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.jetbrains.annotations.NotNull;
 import org.serverct.parrot.parrotx.utils.MapUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author 洋洋
@@ -103,8 +100,10 @@ public class MappedData extends HashMap<String, Object> implements Configuration
     public <E> List<E> getList(String key, Class<?> c) {
         List<?> list = (List<?>) get(key);
         List<E> eList = new ArrayList<E>();
-        for (Object o : list) {
-            eList.add((E) c.cast(o));
+        if (Objects.nonNull(list)) {
+            for (Object o : list) {
+                eList.add((E) c.cast(o));
+            }
         }
         return eList;
     }
