@@ -4,16 +4,21 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.api.ParrotXAPI;
+import org.serverct.parrot.parrotx.config.PDataSet;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @SuppressWarnings({"unused"})
 public abstract class BaseCommand implements PCommand {
@@ -188,10 +193,10 @@ public abstract class BaseCommand implements PCommand {
         }
     }
 
-    protected @Data
+    @Data
     @AllArgsConstructor
     @Builder
-    static class CommandParam {
+    protected static class CommandParam {
         private String name;
         private boolean optional;
         private String description;
@@ -201,5 +206,37 @@ public abstract class BaseCommand implements PCommand {
         private Supplier<String[]> suggest;
         private Function<String[], ?> converter;
         private boolean continuous;
+
+        public static CommandParam player(final int position,
+                                          @Nullable final String description, @Nullable final String validateMessage) {
+            return CommandParam.builder()
+                    .name("玩家 ID")
+                    .description(description)
+                    .position(position)
+                    .suggest(() -> Bukkit.getOnlinePlayers().stream()
+                            .map(Player::getName)
+                            .collect(Collectors.toList())
+                            .toArray(new String[0]))
+                    .validate(input -> Objects.nonNull(Bukkit.getPlayerExact(input)))
+                    .validateMessage(validateMessage)
+                    .converter(args -> Bukkit.getPlayerExact(args[position]))
+                    .build();
+        }
+
+        public static CommandParam data(final int position, final boolean has,
+                                        @NotNull final Class<? extends PDataSet<?>> clazz, @NotNull final String name,
+                                        @Nullable final String description, @Nullable final String validateMessage) {
+            final PDataSet<?> dataSet = ParrotXAPI.getConfigManager(clazz);
+
+            return CommandParam.builder()
+                    .name(name)
+                    .description(description)
+                    .position(position)
+                    .suggest(() -> dataSet.getStringIds().toArray(new String[0]))
+                    .validate(input -> has == dataSet.has(input))
+                    .validateMessage(validateMessage)
+                    .converter(args -> dataSet.get(args[position]))
+                    .build();
+        }
     }
 }
