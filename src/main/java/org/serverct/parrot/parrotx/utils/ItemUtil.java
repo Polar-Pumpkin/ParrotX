@@ -89,6 +89,7 @@ public class ItemUtil {
             result.setItemMeta(meta);
         } catch (final Exception exception) {
             ParrotX.log("构建 ItemStack 时遇到错误: {0}.", exception.getMessage());
+            exception.printStackTrace();
         }
         return result;
     }
@@ -135,7 +136,15 @@ public class ItemUtil {
             return;
         }
         final ConfigurationSection itemSection = section.createSection("ItemStack");
-        itemSection.set("Material", item.getType().name());
+
+        final Material material = item.getType();
+        final String materialName = material.name();
+        if (Objects.isNull(EnumUtil.valueOf(Material.class, materialName))) {
+            //noinspection deprecation
+            itemSection.set("Material", material.getId());
+        } else {
+            itemSection.set("Material", item.getType().name());
+        }
 
         final ItemMeta meta = item.getItemMeta();
         if (Objects.isNull(meta)) {
