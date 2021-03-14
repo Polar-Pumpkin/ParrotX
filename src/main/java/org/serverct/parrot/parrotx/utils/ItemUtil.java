@@ -2,6 +2,7 @@ package org.serverct.parrot.parrotx.utils;
 
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -186,6 +187,19 @@ public class ItemUtil {
         return name;
     }
 
+    @NotNull
+    public static String getName(@NotNull final PPlugin plugin, @Nullable final ItemStack item) {
+        if (Objects.isNull(item)) {
+            return "无效物品";
+        }
+
+        final ItemMeta meta = item.getItemMeta();
+        final String display = BasicUtil.canReturn(meta, ItemMeta::getDisplayName);
+        if (StringUtils.isEmpty(display)) {
+            return getName(plugin, item.getType());
+        }
+        return display;
+    }
 
     @Contract("null, _, _ -> null;!null, _, _ -> !null")
     @Nullable

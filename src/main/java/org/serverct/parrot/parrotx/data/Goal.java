@@ -96,7 +96,7 @@ public class Goal implements Timestamp, Unique {
 
     public Map<Material, Integer> contribute(Inventory inventory) {
         Map<Material, Integer> result = new HashMap<>();
-        InventoryUtil.inventoryFilter(inventory, item -> item != null && item.getType() != Material.AIR).forEach(
+        InventoryUtil.filter(inventory, item -> item != null && item.getType() != Material.AIR).forEach(
                 (slot, item) -> {
                     Material material = item.getType();
                     int contributed = result.getOrDefault(material, 0);
