@@ -142,7 +142,7 @@ public class ItemUtil {
         final String materialName = material.name();
         if (Objects.isNull(EnumUtil.valueOf(Material.class, materialName))) {
             //noinspection deprecation
-            itemSection.set("Material", material.getId());
+            itemSection.set("Material", material.getId() + ":" + item.getDurability());
         } else {
             itemSection.set("Material", item.getType().name());
         }
