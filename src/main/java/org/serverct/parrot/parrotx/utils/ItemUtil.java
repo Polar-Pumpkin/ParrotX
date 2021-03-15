@@ -10,6 +10,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +45,19 @@ public class ItemUtil {
             }
             if (Objects.isNull(meta)) {
                 return result;
+            }
+
+            final int damage = data.getInt("Durability", -1);
+            if (damage != -1) {
+                if (XMaterial.isNewVersion()) {
+                    if (meta instanceof Damageable) {
+                        final Damageable damageable = (Damageable) meta;
+                        damageable.setDamage(damage);
+                    }
+                } else {
+                    //noinspection deprecation
+                    result.setDurability((short) damage);
+                }
             }
 
             final String display = data.getString("Display");
@@ -101,7 +115,7 @@ public class ItemUtil {
         if (itemSection == null) {
             return new ItemStack(Material.AIR);
         }
-        return build(itemSection.getValues(false), ItemUtil::getByXMaterial);
+        return build(itemSection.getValues(false), ItemUtil::compatibleGet);
     }
 
     @NotNull
@@ -115,7 +129,12 @@ public class ItemUtil {
     }
 
     @NotNull
-    public static ItemStack getByXMaterial(final String material) {
+    public static ItemStack compatibleGet(final String material) {
+        final Material vanilla = EnumUtil.getMaterial(material.toUpperCase());
+        if (Objects.nonNull(vanilla)) {
+            return new ItemStack(vanilla);
+        }
+
         final Optional<XMaterial> xMaterial = XMaterial.matchXMaterial(material);
         if (!xMaterial.isPresent()) {
             return new ItemStack(Material.AIR);
@@ -142,7 +161,7 @@ public class ItemUtil {
         final String materialName = material.name();
         if (Objects.isNull(EnumUtil.valueOf(Material.class, materialName))) {
             //noinspection deprecation
-            itemSection.set("Material", material.getId() + ":" + item.getDurability());
+            itemSection.set("Material", material.getId());
         } else {
             itemSection.set("Material", item.getType().name());
         }
@@ -150,6 +169,16 @@ public class ItemUtil {
         final ItemMeta meta = item.getItemMeta();
         if (Objects.isNull(meta)) {
             return;
+        }
+
+        if (XMaterial.isNewVersion()) {
+            if (meta instanceof Damageable) {
+                final Damageable damage = (Damageable) meta;
+                itemSection.set("Durability", damage.getDamage());
+            }
+        } else {
+            //noinspection deprecation
+            itemSection.set("Durability", item.getDurability());
         }
 
         if (meta.hasDisplayName()) {
