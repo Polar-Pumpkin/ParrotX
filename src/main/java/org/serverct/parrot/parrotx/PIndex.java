@@ -51,12 +51,10 @@ public class PIndex {
     protected void init() {
         Map<Integer, Class<?>> prioritizedClasses = new HashMap<>();
 
-        for (Class<?> clazz : classes) {
-            final PAutoload annotation = clazz.getAnnotation(PAutoload.class);
-            if (Objects.isNull(annotation)) {
-                continue;
-            }
-
+        final List<Class<?>> automated = this.classes.stream()
+                .filter(clazz -> Objects.nonNull(clazz.getAnnotation(PAutoload.class)))
+                .collect(Collectors.toList());
+        for (Class<?> clazz : automated) {
             int priority = 999;
             final List<AutoRegister> shouldRegister = Autoloader.getRegisters().stream()
                     .filter(register -> register.shouldRegister(clazz))
@@ -65,9 +63,15 @@ public class PIndex {
                 priority = Math.min(priority, register.getPriority());
             }
             prioritizedClasses.put(priority, clazz);
+            lang.log.debug("&r添加自动注册项目: &a{0} &r(&a{1}&r)", clazz.getSimpleName(), priority);
         }
 
         prioritizedClasses = MapUtil.sortByKey(prioritizedClasses);
+        lang.log.debug("&r自动注册项目列表: ");
+        prioritizedClasses.forEach(
+                (priority, clazz) -> lang.log.debug("&r优先级 &a{0}&r: &a{1}", priority, clazz.getSimpleName()));
+        lang.log.debug("");
+
         for (final Map.Entry<Integer, Class<?>> entry : prioritizedClasses.entrySet()) {
             final int priority = entry.getKey();
             final Class<?> clazz = entry.getValue();
