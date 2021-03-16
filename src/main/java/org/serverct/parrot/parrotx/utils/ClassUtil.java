@@ -107,7 +107,7 @@ public class ClassUtil {
                                             //添加到classes
                                             final Class<?> clazz = Class.forName(packageName + '.' + className);
                                             classes.add(clazz);
-                                            plugin.getLang().log.debug("找到类: &a{0}&7.", clazz.getName());
+//                                            plugin.getLang().log.debug("找到类: &a{0}&7.", clazz.getName());
                                         } catch (ClassNotFoundException e) {
                                             plugin.getLang().log.debug("未找到类: &c{0}&7.", I18n.format("{0}.{1}",
                                                     packageName, className));
