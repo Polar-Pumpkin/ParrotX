@@ -39,6 +39,9 @@ public class ItemUtil {
                 return result;
             }
 
+            final int amount = data.getInt("Amount", 1);
+            result.setAmount(amount);
+
             ItemMeta meta = result.getItemMeta();
             if (Objects.isNull(meta)) {
                 meta = Bukkit.getItemFactory().getItemMeta(result.getType());
@@ -164,6 +167,11 @@ public class ItemUtil {
             itemSection.set("Material", material.getId());
         } else {
             itemSection.set("Material", item.getType().name());
+        }
+
+        final int amount = item.getAmount();
+        if (amount > 1) {
+            itemSection.set("Amount", amount);
         }
 
         final ItemMeta meta = item.getItemMeta();
