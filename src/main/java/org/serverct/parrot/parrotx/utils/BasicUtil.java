@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.ParrotX;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 import parsii.eval.Expression;
 import parsii.eval.Parser;
 import parsii.eval.Scope;
@@ -15,6 +16,7 @@ import parsii.eval.Variable;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -24,6 +26,8 @@ import java.util.function.Function;
 
 @SuppressWarnings({"unused"})
 public class BasicUtil {
+
+    private static final DecimalFormat PERCENT_FORMAT = new DecimalFormat("0.0%");
 
     public static double roundToDouble(final double number) {
         return BigDecimal.valueOf(number).setScale(2, RoundingMode.HALF_DOWN).doubleValue();
@@ -35,6 +39,11 @@ public class BasicUtil {
 
     public static long roundToLong(final double number) {
         return BigDecimal.valueOf(number).setScale(2, RoundingMode.HALF_DOWN).longValueExact();
+    }
+
+    public static String roundToPercent(final double number) {
+        final String prefix = number < 0.2D ? "&c" : number < 0.8D ? "&e" : number < 1.0D ? "&a" : "&6";
+        return I18n.color(prefix + PERCENT_FORMAT.format(number));
     }
 
     public static void potion(Player target, PotionEffectType type, int level, int duration) {
