@@ -42,7 +42,7 @@ public class BasicUtil {
     }
 
     public static String roundToPercent(final double number) {
-        final String prefix = number < 0.2D ? "&c" : number < 0.8D ? "&e" : number < 1.0D ? "&a" : "&6";
+        final String prefix = number <= 0.2D ? "&c" : number < 0.8D ? "&e" : number < 1.0D ? "&a" : "&6";
         return I18n.color(prefix + PERCENT_FORMAT.format(number));
     }
 
