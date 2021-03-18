@@ -238,5 +238,51 @@ public abstract class BaseCommand implements PCommand {
                     .converter(args -> dataSet.get(args[position]))
                     .build();
         }
+
+        public static CommandParam aDouble(final int position, @NotNull final String name,
+                                           @Nullable final String description, @Nullable final String validateMessage,
+                                           @Nullable final Predicate<Double> check) {
+            return CommandParam.builder()
+                    .name(name)
+                    .description(description)
+                    .position(position)
+                    .validate(input -> {
+                        try {
+                            final double value = Double.parseDouble(input);
+                            if (Objects.nonNull(check)) {
+                                return check.test(value);
+                            }
+                            return true;
+                        } catch (NumberFormatException exception) {
+                            return false;
+                        }
+                    })
+                    .validateMessage(validateMessage)
+                    .converter(args -> Double.parseDouble(args[position]))
+                    .build();
+        }
+
+        public static CommandParam aInt(final int position, @NotNull final String name,
+                                        @Nullable final String description, @Nullable final String validateMessage,
+                                        @Nullable final Predicate<Integer> check) {
+            return CommandParam.builder()
+                    .name(name)
+                    .description(description)
+                    .position(position)
+                    .validate(input -> {
+                        try {
+                            final int value = Integer.parseInt(input);
+                            if (Objects.nonNull(check)) {
+                                return check.test(value);
+                            }
+                            return true;
+                        } catch (NumberFormatException exception) {
+                            return false;
+                        }
+                    })
+                    .validateMessage(validateMessage)
+                    .converter(args -> Integer.parseInt(args[position]))
+                    .build();
+        }
     }
 }
