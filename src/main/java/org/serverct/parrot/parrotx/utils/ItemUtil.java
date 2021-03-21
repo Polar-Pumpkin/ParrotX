@@ -92,15 +92,17 @@ public class ItemUtil {
                 }
             }
 
-            if (data.containsKey("ItemFlags")) {
-                final List<String> flags = data.getList("ItemFlags", String.class);
-                for (final String name : flags) {
-                    final ItemFlag flag = EnumUtil.valueOf(ItemFlag.class, name.toUpperCase());
-                    if (flag == null) {
-                        ParrotX.log("构建 ItemStack 时读取到未知 ItemFlag: {0}.", name);
-                        continue;
+            if (XMaterial.isOneEight()) {
+                if (data.containsKey("ItemFlags")) {
+                    final List<String> flags = data.getList("ItemFlags", String.class);
+                    for (final String name : flags) {
+                        final ItemFlag flag = EnumUtil.valueOf(ItemFlag.class, name.toUpperCase());
+                        if (flag == null) {
+                            ParrotX.log("构建 ItemStack 时读取到未知 ItemFlag: {0}.", name);
+                            continue;
+                        }
+                        meta.addItemFlags(flag);
                     }
-                    meta.addItemFlags(flag);
                 }
             }
 
