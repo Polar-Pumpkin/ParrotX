@@ -92,7 +92,7 @@ public class ItemUtil {
                 }
             }
 
-            if (XMaterial.isOneEight()) {
+            if (!XMaterial.supports(7)) {
                 if (data.containsKey("ItemFlags")) {
                     final List<String> flags = data.getList("ItemFlags", String.class);
                     for (final String name : flags) {
