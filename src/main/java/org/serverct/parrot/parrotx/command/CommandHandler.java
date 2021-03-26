@@ -1,5 +1,6 @@
 package org.serverct.parrot.parrotx.command;
 
+import com.cryptomorin.xseries.XMaterial;
 import lombok.Getter;
 import lombok.NonNull;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -90,7 +91,7 @@ public class CommandHandler implements TabExecutor {
         }
 
         String msg = plugin.getLang().data.warn("您没有权限这么做.");
-        if (sender instanceof Player) {
+        if (sender instanceof Player && XMaterial.supports(8)) {
             TextComponent text = JsonChatUtil.getFromLegacy(msg);
             text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(I18n.color(
                     "&7所需权限 ▶ &c" + pCommand.getPermission()))));

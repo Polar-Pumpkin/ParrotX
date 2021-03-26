@@ -29,7 +29,7 @@ public class HelpCommand extends BaseCommand {
 
         if (args.length <= 0) {
             // plugin.lang.getHelp(plugin.localeKey).forEach(sender::sendMessage);
-            handler.formatHelp().forEach(sender::sendMessage);
+            handler.formatHelp(sender).forEach(sender::sendMessage);
         } else {
             if (subCommands.containsKey(args[0]))
                 for (String help : subCommands.get(args[0]).getHelp()) sender.sendMessage(I18n.color(help));
