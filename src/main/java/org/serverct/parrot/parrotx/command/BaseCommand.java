@@ -36,6 +36,7 @@ public abstract class BaseCommand implements PCommand {
     private String perm = null;
     private boolean mustPlayer = false;
     private Predicate<String[]> customValidate = null;
+    private Function<String[], String> customValidateMessage = null;
 
     public BaseCommand(@NotNull final PPlugin plugin, final String name, final int length) {
         this.plugin = plugin;
@@ -50,31 +51,43 @@ public abstract class BaseCommand implements PCommand {
         this.sender = sender;
         this.user = sender instanceof Player ? (Player) sender : null;
 
-        if (mustPlayer) {
-            if (Objects.isNull(user)) {
-                sender.sendMessage(warn("&7该命令仅玩家可执行."));
-                return true;
-            }
-        }
-
-        if (args.length < leastArgLength) {
-            Arrays.asList(getHelp()).forEach(text -> sender.sendMessage(I18n.color(text)));
+        if (this.mustPlayer && Objects.isNull(user)) {
+            lang.sender.warnMessage(sender, "该命令仅玩家可执行.");
             return true;
         }
 
-        for (CommandParam param : this.paramMap.values()) {
-            if (!param.optional) {
-                if (param.position >= args.length) {
-                    return true;
-                }
+        if (args.length < this.leastArgLength) {
+            for (final String help : getHelp()) {
+                I18n.send(sender, help);
             }
-            if (param.validate != null && param.position < args.length && !param.validate.test(args[param.position])) {
-                sender.sendMessage(I18n.color(param.validateMessage));
-                return true;
-            }
+            return true;
         }
 
-        if (customValidate != null && !customValidate.test(args)) {
+        for (final CommandParam param : this.paramMap.values()) {
+            if (!param.optional && param.position >= args.length) {
+                lang.sender.warn(sender, "参数异常, 存在未指定的必填参数, 请检查命令拼写.");
+                return true;
+            }
+
+            if (Objects.isNull(param.validate) || param.position >= args.length || param.validate.test(args[param.position])) {
+                continue;
+            }
+
+            final String message;
+            if (Objects.nonNull(param.advancedValidateMessage)) {
+                message = param.advancedValidateMessage.apply(args);
+            } else {
+                message = param.validateMessage;
+            }
+
+            I18n.send(sender, message);
+            return true;
+        }
+
+        if (Objects.nonNull(this.customValidate) && !this.customValidate.test(args)) {
+            if (Objects.nonNull(this.customValidateMessage)) {
+                I18n.send(sender, this.customValidateMessage.apply(args));
+            }
             return true;
         }
 
@@ -141,8 +154,12 @@ public abstract class BaseCommand implements PCommand {
         }}.toArray(new String[0]);
     }
 
-    protected void validate(Predicate<String[]> validate) {
+    protected void validate(final Predicate<String[]> validate) {
         this.customValidate = validate;
+    }
+
+    protected void validateMessage(final Function<String[], String> message) {
+        this.customValidateMessage = message;
     }
 
     protected void mustPlayer(final boolean setting) {
@@ -165,20 +182,40 @@ public abstract class BaseCommand implements PCommand {
         return lang.data.info(text, args);
     }
 
+    protected Function<String[], String> advancedInfo(final String text, final Object... args) {
+        return strings -> info(text, args);
+    }
+
     protected String warn(final String text, final Object... args) {
         return lang.data.warn(text, args);
+    }
+
+    protected Function<String[], String> advancedWarn(final String text, final Object... args) {
+        return strings -> warn(text, args);
     }
 
     protected String error(final String text, final Object... args) {
         return lang.data.error(text, args);
     }
 
-    protected Object convert(final int index, final String[] args) {
-        final CommandParam param = this.paramMap.get(index);
-        if (param == null || (!param.continuous && param.converter == null)) {
+    protected Function<String[], String> advancedError(final String text, final Object... args) {
+        return strings -> error(text, args);
+    }
+
+    @Nullable
+    protected <T> T convert(final int index, final String[] args, final Class<T> clazz) {
+        if (index >= args.length) {
+            lang.log.error(I18n.GET, "子命令参数/" + this.name, "参数不足: ({0}) {1}", index, args);
             return null;
         }
-        if (param.continuous) {
+
+        final CommandParam param = this.paramMap.get(index);
+        if (param == null || (!param.continuous && param.converter == null)) {
+            lang.log.error(I18n.GET, "子命令参数/" + this.name, "命令参数为 null 或未指定转换器: {0}", index);
+            return null;
+        }
+
+        if (param.continuous && String.class.equals(clazz)) {
             final StringBuilder builder = new StringBuilder();
             final ListIterator<String> iterator = Arrays.asList(args).listIterator(index);
             while (iterator.hasNext()) {
@@ -187,10 +224,17 @@ public abstract class BaseCommand implements PCommand {
                     builder.append(" ");
                 }
             }
-            return builder.toString();
-        } else {
-            return param.converter.apply(args);
+            return clazz.cast(builder.toString());
         }
+
+        final Object value = param.converter.apply(args);
+        if (!clazz.isInstance(value)) {
+            lang.log.error(I18n.GET, "子命令参数/" + this.name, "转换命令参数时类型不一致: From {0} -> To {1}",
+                    value.getClass().getSimpleName(), clazz.getSimpleName());
+            return null;
+        }
+
+        return clazz.cast(value);
     }
 
     @Data
@@ -202,13 +246,14 @@ public abstract class BaseCommand implements PCommand {
         private String description;
         private Predicate<String> validate;
         private String validateMessage;
+        private Function<String[], String> advancedValidateMessage;
         private int position;
         private Supplier<String[]> suggest;
         private Function<String[], ?> converter;
         private boolean continuous;
 
-        public static CommandParam player(final int position,
-                                          @Nullable final String description, @Nullable final String validateMessage) {
+        public static CommandParam player(final int position, @Nullable final String description,
+                                          @Nullable final Function<String[], String> validateMessage) {
             return CommandParam.builder()
                     .name("玩家 ID")
                     .description(description)
@@ -218,14 +263,15 @@ public abstract class BaseCommand implements PCommand {
                             .collect(Collectors.toList())
                             .toArray(new String[0]))
                     .validate(input -> Objects.nonNull(Bukkit.getPlayerExact(input)))
-                    .validateMessage(validateMessage)
+                    .advancedValidateMessage(validateMessage)
                     .converter(args -> Bukkit.getPlayerExact(args[position]))
                     .build();
         }
 
-        public static CommandParam data(final int position, final boolean has,
-                                        @NotNull final Class<? extends PDataSet<?>> clazz, @NotNull final String name,
-                                        @Nullable final String description, @Nullable final String validateMessage) {
+        public static CommandParam data(final int position, @NotNull final String name,
+                                        @Nullable final String description, final boolean has,
+                                        @NotNull final Class<? extends PDataSet<?>> clazz,
+                                        @Nullable final Function<String[], String> validateMessage) {
             final PDataSet<?> dataSet = ParrotXAPI.getConfigManager(clazz);
 
             return CommandParam.builder()
@@ -234,13 +280,14 @@ public abstract class BaseCommand implements PCommand {
                     .position(position)
                     .suggest(() -> dataSet.getStringIds().toArray(new String[0]))
                     .validate(input -> has == dataSet.has(input))
-                    .validateMessage(validateMessage)
+                    .advancedValidateMessage(validateMessage)
                     .converter(args -> dataSet.get(args[position]))
                     .build();
         }
 
         public static CommandParam aDouble(final int position, @NotNull final String name,
-                                           @Nullable final String description, @Nullable final String validateMessage,
+                                           @Nullable final String description,
+                                           @Nullable final Function<String[], String> validateMessage,
                                            @Nullable final Predicate<Double> check) {
             return CommandParam.builder()
                     .name(name)
@@ -257,7 +304,7 @@ public abstract class BaseCommand implements PCommand {
                             return false;
                         }
                     })
-                    .validateMessage(validateMessage)
+                    .advancedValidateMessage(validateMessage)
                     .converter(args -> Double.parseDouble(args[position]))
                     .build();
         }

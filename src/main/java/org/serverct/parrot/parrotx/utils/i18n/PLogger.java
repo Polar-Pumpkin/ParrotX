@@ -120,7 +120,8 @@ public class PLogger {
      * @param object 操作对象。
      */
     public void action(String action, String object, Object... args) {
-        log(MessageFormat.format("&7尝试{0} &c{1}&7.", action, MessageFormat.format(object, args)), I18n.Type.DEBUG, false);
+        log(MessageFormat.format("&7尝试{0} &c{1}&7.", action, MessageFormat.format(object, args)), I18n.Type.DEBUG,
+                false);
     }
 
     /**
@@ -178,9 +179,10 @@ public class PLogger {
      * @param action    动作名称。
      * @param object    操作对象。
      * @param exception 错误内容。
+     * @param args      消息变量。
      */
-    public void error(String action, String object, String exception) {
-        log(lang.data.error("&7{0} &c{1} &7时遇到错误(&c{2}&7).", action, object, exception));
+    public void error(String action, String object, String exception, Object... args) {
+        log(lang.data.error("&7{0} &c{1} &7时遇到错误(&c{2}&7).", action, object, I18n.format(exception, args)));
     }
 
     /**

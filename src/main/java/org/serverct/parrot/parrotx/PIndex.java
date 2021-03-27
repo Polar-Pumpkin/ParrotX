@@ -81,8 +81,7 @@ public class PIndex {
                         .filter(register -> register.shouldRegister(clazz))
                         .forEach(register -> {
                             register.register(plugin, clazz, instance);
-
-                            final String registerName = register.getClass().getSimpleName();
+//                            final String registerName = register.getClass().getSimpleName();
 //                            lang.log.debug("&7| &r使用注册器 &a{0} &r自动注册 &a{1}.class&r.", registerName, className);
                         });
             } catch (NoSuchMethodException exception) {
