@@ -112,7 +112,13 @@ public abstract class PStructSet<E extends PStruct> extends PDataSet<E> {
 
     public abstract E loadFromDataSection(final ConfigurationSection section);
 
-    public @NotNull PID buildId(@NotNull String id) {
+    @NotNull
+    public PID buildId(@NotNull final String id) {
         return new PID(plugin, rootName.toLowerCase(), id);
+    }
+
+    @NotNull
+    public PID buildId(@NotNull final ConfigurationSection section) {
+        return buildId(section.getName());
     }
 }

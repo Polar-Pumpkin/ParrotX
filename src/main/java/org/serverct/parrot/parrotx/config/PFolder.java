@@ -66,7 +66,13 @@ public abstract class PFolder<E extends PData> extends PDataSet<E> {
 
     public abstract E loadFromDataFile(final File dataFile);
 
-    public @NotNull PID buildId(@NotNull String id) {
+    @NotNull
+    public PID buildId(@NotNull final String id) {
         return new PID(plugin, dataKey.toLowerCase(), id);
+    }
+
+    @NotNull
+    public PID buildId(@NotNull final File file) {
+        return buildId(FileUtil.getNoExFilename(file));
     }
 }
