@@ -20,6 +20,7 @@ import org.serverct.parrot.parrotx.ParrotX;
 import org.serverct.parrot.parrotx.data.MappedData;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
+import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.function.Function;
 
@@ -131,8 +132,22 @@ public class ItemUtil {
         return build(itemSection.getValues(false), constructor);
     }
 
+    @SuppressWarnings("JavaReflectionMemberAccess")
     @NotNull
     public static ItemStack compatibleGet(final String material) {
+        if (StringUtils.isNumeric(material)) {
+            try {
+                final int id = Integer.parseInt(material);
+                final Constructor<ItemStack> constructor = ItemStack.class.getConstructor(int.class);
+                return constructor.newInstance(id);
+            } catch (NoSuchMethodException exception) {
+                ParrotX.log("尝试构建数字 Material 的物品, 但是获取数字 ID 构造器失败: &c{0}&r.", material);
+            } catch (Throwable error) {
+                ParrotX.log("尝试兼容性获取物品失败: &c{0}&r.", material);
+                error.printStackTrace();
+            }
+        }
+
         final Material vanilla = EnumUtil.getMaterial(material.toUpperCase());
         if (Objects.nonNull(vanilla)) {
             return new ItemStack(vanilla);
