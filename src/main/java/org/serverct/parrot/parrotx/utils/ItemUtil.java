@@ -207,20 +207,25 @@ public class ItemUtil {
         if (meta.hasDisplayName()) {
             itemSection.set("Display", meta.getDisplayName());
         }
+
         if (meta.hasLore()) {
             final List<String> lore = new ArrayList<>(Optional.ofNullable(meta.getLore()).orElse(new ArrayList<>()));
             lore.replaceAll(content -> I18n.deColor(content, '&'));
             itemSection.set("Lore", lore);
         }
+
         if (meta.hasEnchants()) {
             final ConfigurationSection enchantSection = itemSection.createSection("Enchants");
             meta.getEnchants().forEach((enchant, lvl) -> enchantSection.set(enchant.getKey().getKey(), lvl));
         }
-        Set<ItemFlag> flags = meta.getItemFlags();
-        if (!flags.isEmpty()) {
-            final List<String> flagList = new ArrayList<>();
-            flags.forEach(flag -> flagList.add(flag.name()));
-            itemSection.set("ItemFlags", flagList);
+
+        if (XMaterial.supports(8)) {
+            Set<ItemFlag> flags = meta.getItemFlags();
+            if (!flags.isEmpty()) {
+                final List<String> flagList = new ArrayList<>();
+                flags.forEach(flag -> flagList.add(flag.name()));
+                itemSection.set("ItemFlags", flagList);
+            }
         }
     }
 
