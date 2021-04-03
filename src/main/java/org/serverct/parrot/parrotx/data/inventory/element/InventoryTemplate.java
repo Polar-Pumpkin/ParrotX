@@ -12,16 +12,34 @@ import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 @SuppressWarnings({"unused", "unchecked"})
 @Data
 public class InventoryTemplate<T> implements InventoryElement {
 
     private final InventoryElement base;
-    private final List<T> contents;
+    private final Collection<T> contents;
+    private final Supplier<Collection<T>> advancedContents;
     private final BiFunction<ItemStack, T, ItemStack> applyTemple;
     private final Map<Integer, Map<Integer, T>> contentMap = new HashMap<>();
     private int currentPage;
+
+    public InventoryTemplate(InventoryElement base, Collection<T> contents,
+                             BiFunction<ItemStack, T, ItemStack> applyTemple) {
+        this.base = base;
+        this.contents = contents;
+        this.advancedContents = null;
+        this.applyTemple = applyTemple;
+    }
+
+    public InventoryTemplate(InventoryElement base, Supplier<Collection<T>> advancedContents, BiFunction<ItemStack, T
+            , ItemStack> applyTemple) {
+        this.base = base;
+        this.contents = null;
+        this.advancedContents = advancedContents;
+        this.applyTemple = applyTemple;
+    }
 
     public static <T> InventoryTemplate<T> get(final PInventory<?> inv, final String name) {
         return (InventoryTemplate<T>) inv.getElement(name);
@@ -99,8 +117,10 @@ public class InventoryTemplate<T> implements InventoryElement {
     @Override
     public BaseElement preload(PInventory<?> inv) {
         final I18n lang = inv.getPlugin().getLang();
+        final Collection<T> actualContents = Objects.nonNull(this.advancedContents) ? this.advancedContents.get() :
+                (Objects.nonNull(this.contents) ? this.contents : new ArrayList<>());
         lang.log.debug("预加载 InventoryTemplate: {0}", getBase().getName());
-        lang.log.debug("数据集: {0}", contents);
+        lang.log.debug("数据集: {0}", actualContents);
 
         this.contentMap.clear();
 
@@ -108,7 +128,7 @@ public class InventoryTemplate<T> implements InventoryElement {
         Map<Integer, T> contents = new HashMap<>();
         int page = 1;
 
-        for (T content : this.contents) {
+        for (T content : actualContents) {
             if (!slotIterator.hasNext()) {
                 this.contentMap.put(page, contents);
                 contents = new HashMap<>();
@@ -144,7 +164,8 @@ public class InventoryTemplate<T> implements InventoryElement {
     public @NoArgsConstructor
     static class InventoryTemplateBuilder<T> {
         private InventoryElement base;
-        private List<T> contents;
+        private Collection<T> contents;
+        private Supplier<Collection<T>> advancedContents;
         private BiFunction<ItemStack, T, ItemStack> applyTemple;
 
         public InventoryTemplateBuilder<T> base(final InventoryElement base) {
@@ -157,12 +178,20 @@ public class InventoryTemplate<T> implements InventoryElement {
             return this;
         }
 
+        public InventoryTemplateBuilder<T> contents(final Supplier<Collection<T>> contents) {
+            this.advancedContents = contents;
+            return this;
+        }
+
         public InventoryTemplateBuilder<T> applyTemple(final BiFunction<ItemStack, T, ItemStack> applyTemple) {
             this.applyTemple = applyTemple;
             return this;
         }
 
         public InventoryTemplate<T> build() {
+            if (Objects.nonNull(this.advancedContents)) {
+                return new InventoryTemplate<T>(base, advancedContents, applyTemple);
+            }
             return new InventoryTemplate<>(base, contents, applyTemple);
         }
     }
