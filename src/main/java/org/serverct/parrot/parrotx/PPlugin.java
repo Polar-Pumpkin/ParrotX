@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 public abstract class PPlugin extends JavaPlugin {
 
     public static final int PARROTX_ID = 9515;
-    public final String PARROTX_VERSION = "1.4.7-Alpha (Build 19)";
+    public final String PARROTX_VERSION = "1.4.7-Alpha (Build 20)";
 
     private final List<Listener> listeners = new ArrayList<>();
     private final List<BaseExpansion> expansions = new ArrayList<>();
@@ -105,7 +105,10 @@ public abstract class PPlugin extends JavaPlugin {
 
                 if (bStats) {
                     lang.log.info("已启用 bStats 数据统计.");
-                    lang.log.info("若您需要禁用此功能, 一般情况下可于配置文件 config.yml 中编辑或新增 \"bStats: false\" 关闭此功能.");
+                    if (Objects.nonNull(this.pConfig)) {
+                        lang.log.info("若您需要禁用此功能, 一般情况下可于配置文件 {0}.yml 中编辑或新增 \"bStats: false\" 关闭此功能.",
+                                pConfig.getFilename());
+                    }
                 }
             } else {
                 lang.log.warn("bStats 数据统计已被禁用.");
