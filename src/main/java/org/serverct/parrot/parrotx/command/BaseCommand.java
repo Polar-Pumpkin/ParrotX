@@ -65,7 +65,7 @@ public abstract class BaseCommand implements PCommand {
 
         for (final CommandParam param : this.paramMap.values()) {
             if (!param.optional && param.position >= args.length) {
-                lang.sender.warn(sender, "参数异常, 存在未指定的必填参数, 请检查命令拼写.");
+                lang.sender.warnMessage(sender, "参数异常, 存在未指定的必填参数, 请检查命令拼写.");
                 return true;
             }
 
