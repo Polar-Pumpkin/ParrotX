@@ -26,12 +26,14 @@ public class CommandHandler implements TabExecutor {
 
     public final String mainCmd;
     protected final PPlugin plugin;
+    protected final I18n lang;
     @Getter
     protected final Map<String, PCommand> commands = new HashMap<>();
     protected String defaultCmd = null;
 
     public CommandHandler(@NonNull PPlugin plugin, String mainCmd) {
         this.plugin = plugin;
+        this.lang = this.plugin.getLang();
         this.mainCmd = mainCmd;
     }
 
@@ -43,13 +45,13 @@ public class CommandHandler implements TabExecutor {
         if (!commands.containsKey(cmd)) {
             commands.put(cmd, executor);
         } else {
-            plugin.getLang().log.error(I18n.REGISTER, "子命令", "重复子命令注册: " + cmd);
+            lang.log.error(I18n.REGISTER, "子命令", "重复子命令注册: " + cmd);
         }
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label,
-                             String[] args) {
+    public boolean onCommand(@NotNull final CommandSender sender, @NotNull final Command command,
+                             @NotNull final String label, @Nullable final String[] args) {
         if (args.length == 0) {
             PCommand defCommand = commands.get((Objects.isNull(defaultCmd) ? "help" : defaultCmd));
             if (defCommand == null) {
@@ -75,13 +77,18 @@ public class CommandHandler implements TabExecutor {
 
         PCommand pCommand = commands.get(args[0].toLowerCase());
         if (pCommand == null) {
-            sender.sendMessage(plugin.getLang().data.warn("未知命令, 请检查您的命令拼写是否正确."));
-            plugin.getLang().log.error(I18n.EXECUTE, "子命令/" + args[0], sender.getName() + " 尝试执行未注册子命令");
+            final String similar = getMostSimilarCommand(args[0].toLowerCase());
+            if (StringUtils.isEmpty(similar)) {
+                lang.sender.warnMessage(sender, "未知命令, 请检查您的命令拼写是否正确.");
+            } else {
+                lang.sender.warnMessage(sender, "未知命令, 您想执行的命令是不是: &d{0}&r.", similar);
+            }
+            lang.log.error(I18n.EXECUTE, "子命令/" + args[0], sender.getName() + " 尝试执行未注册子命令");
             return true;
         }
 
-        boolean hasPerm =
-                (pCommand.getPermission() == null || pCommand.getPermission().equals("")) || sender.hasPermission(pCommand.getPermission());
+        boolean hasPerm = (pCommand.getPermission() == null || pCommand.getPermission().equals(""))
+                || sender.hasPermission(pCommand.getPermission());
         if (hasPerm) {
             String[] newArg = new String[args.length - 1];
             if (args.length >= 2) {
@@ -101,18 +108,17 @@ public class CommandHandler implements TabExecutor {
         return true;
     }
 
+    @NotNull
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label,
-                                      String[] args) {
+    public List<String> onTabComplete(@NotNull final CommandSender sender, @NotNull final Command cmd,
+                                      @NotNull final String label, @Nullable final String[] args) {
         String[] subCommands = commands.keySet().toArray(new String[0]);
         if (args.length == 0) {
             return new ArrayList<>(Arrays.asList(subCommands));
         } else {
             PCommand command = commands.get(args[0]);
             if (args.length == 1) {
-                if (Objects.nonNull(command))
-                    return Arrays.asList(command.getParams(0));
-                else return query(subCommands, args[0]);
+                return new ArrayList<>();
             } else {
                 if (Objects.nonNull(command))
                     return query(command.getParams(args.length - 2), args[args.length - 1]);
@@ -121,14 +127,17 @@ public class CommandHandler implements TabExecutor {
         }
     }
 
+    @NotNull
     private List<String> query(String[] params, String input) {
         return Arrays.stream(params).filter(s -> s.startsWith(input)).collect(Collectors.toList());
     }
 
+    @NotNull
     public List<String> formatHelp() {
         return formatHelp(null);
     }
 
+    @NotNull
     public List<String> formatHelp(@Nullable final Permissible sender) {
         final List<String> result = new ArrayList<>();
         final PluginDescriptionFile description = plugin.getDescription();
@@ -201,5 +210,79 @@ public class CommandHandler implements TabExecutor {
 
     public void register(final BaseCommand command) {
         addCommand(command.getName().toLowerCase(), command);
+    }
+
+    private int compare(@NotNull final String str, @NotNull final String target) {
+        int[][] d;
+        int n = str.length();
+        int m = target.length();
+        int i;
+        int j;
+        char ch1;
+        char ch2;
+        int temp;
+
+        if (n == 0) {
+            return m;
+        }
+
+        if (m == 0) {
+            return n;
+        }
+
+        d = new int[n + 1][m + 1];
+
+        for (i = 0; i <= n; i++) {
+            d[i][0] = i;
+        }
+
+        for (j = 0; j <= m; j++) {
+            d[0][j] = j;
+        }
+
+        for (i = 1; i <= n; i++) {
+            ch1 = str.charAt(i - 1);
+            for (j = 1; j <= m; j++) {
+                ch2 = target.charAt(j - 1);
+                if (ch1 == ch2 || ch1 == ch2 + 32 || ch1 + 32 == ch2) {
+                    temp = 0;
+                } else {
+                    temp = 1;
+                }
+                d[i][j] = Math.min(
+                        Math.min(d[i - 1][j] + 1,
+                                d[i][j - 1] + 1),
+                        d[i - 1][j - 1] + temp);
+            }
+        }
+
+        return d[n][m];
+    }
+
+    /**
+     * 获取两个字符串的相似度.
+     *
+     * @param str    第一个字符串.
+     * @param target 第二个字符串.
+     * @return 相似度.
+     * @link https://www.cnblogs.com/yangyang2018/p/10496744.html
+     */
+    private float getSimilarityRatio(@NotNull final String str, @NotNull final String target) {
+        int max = Math.max(str.length(), target.length());
+        return 1 - (float) compare(str, target) / max;
+    }
+
+    @Nullable
+    private String getMostSimilarCommand(@NotNull final String command) {
+        String result = null;
+        float similarity = 0f;
+        for (final String subCommand : this.commands.keySet()) {
+            float t = getSimilarityRatio(command, subCommand);
+            if (t > similarity) {
+                similarity = t;
+                result = subCommand;
+            }
+        }
+        return result;
     }
 }
