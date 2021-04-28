@@ -30,11 +30,16 @@ public class CommandHandler implements TabExecutor {
     @Getter
     protected final Map<String, PCommand> commands = new HashMap<>();
     protected String defaultCmd = null;
+    private boolean authorized = true;
 
     public CommandHandler(@NonNull PPlugin plugin, String mainCmd) {
         this.plugin = plugin;
         this.lang = this.plugin.getLang();
         this.mainCmd = mainCmd;
+    }
+
+    protected void authorize(boolean authorize) {
+        this.authorized = authorize;
     }
 
     protected void defaultCommand(String cmd) {
@@ -144,10 +149,13 @@ public class CommandHandler implements TabExecutor {
 
         result.add(I18n.color("&9&l{0} &fv{1}", description.getName(), description.getVersion()));
 
-        final String authorList = description.getAuthors().toString();
-        if (authorList.length() > 2) {
-            final String authors = authorList.substring(1, authorList.length() - 1);
-            result.add(I18n.color("&7作者: &f{0}", authors));
+        if (authorized) {
+            final String authorList = description.getAuthors().toString();
+            if (authorList.length() > 2) {
+                final String authors = authorList.substring(1, authorList.length() - 1);
+                result.add(I18n.color("&7作者: &f{0}", authors));
+            }
+
         }
         result.add("");
 
