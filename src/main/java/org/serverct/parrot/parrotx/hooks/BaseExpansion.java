@@ -46,9 +46,29 @@ public class BaseExpansion extends PlaceholderExpansion {
         };
     }
 
+    public BaseExpansion(final PPlugin plugin, String identifier) {
+        this.plugin = plugin;
+        this.lang = this.plugin.getLang();
+        this.identifier = identifier;
+
+        final PluginDescriptionFile desc = plugin.getDescription();
+        this.author = Arrays.toString(desc.getAuthors().toArray());
+        this.version = desc.getVersion();
+
+        unreg = () -> {
+            try {
+                super.unregister();
+            } catch (Throwable exception) {
+                lang.log.error("注销 PlaceholderAPI 拓展包时遇到错误: {0}.", exception.getMessage());
+                PlaceholderAPIPlugin.getInstance().getLocalExpansionManager().unregister(this);
+            }
+        };
+    }
+
     public BaseExpansion(final PPlugin plugin) {
         this.plugin = plugin;
         this.lang = this.plugin.getLang();
+
         final PluginDescriptionFile desc = plugin.getDescription();
         this.identifier = plugin.getName().toLowerCase();
         this.author = Arrays.toString(desc.getAuthors().toArray());
