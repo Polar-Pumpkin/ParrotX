@@ -157,7 +157,7 @@ public class AutoloadSetting {
 
                 final String field = MessageFormat.format("&7|  &f- 字段 &c{0} &f(&9{1}&f) &a<- &e{2}",
                         item.getField(),
-                        item.getType().getSimpleName() + ".class - " + paramType.toString(),
+                        item.getType().getSimpleName() + ".class - " + paramType,
                         item.getPath()
                 );
                 info.add(field);
@@ -177,7 +177,11 @@ public class AutoloadSetting {
                     if (argument instanceof ParameterizedType) {
                         return chain(argument, classes);
                     }
-                    classes.add(Class.forName(argument.getTypeName()));
+                    final String name = argument.getTypeName();
+                    if (name.equals("?")) {
+                        continue;
+                    }
+                    classes.add(Class.forName(name));
                 }
             } else {
                 final String classpath = type.getTypeName();
