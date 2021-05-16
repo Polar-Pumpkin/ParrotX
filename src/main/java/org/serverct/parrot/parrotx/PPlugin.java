@@ -20,6 +20,7 @@ import org.serverct.parrot.parrotx.data.PConfiguration;
 import org.serverct.parrot.parrotx.data.UniqueData;
 import org.serverct.parrot.parrotx.data.flags.DataSet;
 import org.serverct.parrot.parrotx.hooks.BaseExpansion;
+import org.serverct.parrot.parrotx.utils.BasicUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
@@ -138,7 +139,7 @@ public abstract class PPlugin extends JavaPlugin {
 
         if (Objects.nonNull(pConfig)) {
             pConfig.init();
-            localeKey = pConfig.getConfig().getString("Language");
+            localeKey = BasicUtil.thisOrElse(pConfig.getConfig().getString("Language"), localeKey);
         }
 
         index.initConfig();
