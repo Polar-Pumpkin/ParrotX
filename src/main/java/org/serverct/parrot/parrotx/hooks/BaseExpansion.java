@@ -89,7 +89,11 @@ public class BaseExpansion extends PlaceholderExpansion {
         final String[] source = params.split("[_]");
         final String key = source[0].toLowerCase();
         if (!this.paramMap.containsKey(key)) {
-            return "";
+            final PlaceholderParam defParam = this.paramMap.get("default");
+            if (Objects.isNull(defParam)) {
+                return "";
+            }
+            return defParam.getParse().apply(player, source);
         }
 
         final PlaceholderParam param = this.paramMap.get(key);
