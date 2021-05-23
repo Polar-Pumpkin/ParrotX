@@ -64,14 +64,11 @@ public abstract class PPlugin extends JavaPlugin {
 
             afterInit();
 
+            afterEnable();
+
             if (!this.listeners.isEmpty()) {
                 this.listeners.forEach(listener -> Bukkit.getPluginManager().registerEvents(listener, this));
                 lang.log.info("已注册监听器.");
-            }
-
-            if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") && !this.expansions.isEmpty()) {
-                this.expansions.forEach(BaseExpansion::reg);
-                lang.log.info("已注册 PlaceholderAPI 拓展包.");
             }
 
             if (getConfig().getBoolean("bStats", true)) {
@@ -196,6 +193,13 @@ public abstract class PPlugin extends JavaPlugin {
         }
         getServer().getScheduler().cancelTasks(this);
         index.clearConfig();
+    }
+
+    public void afterEnable() {
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI") && !this.expansions.isEmpty()) {
+            this.expansions.forEach(BaseExpansion::reg);
+            lang.log.info("已注册 PlaceholderAPI 拓展包.");
+        }
     }
 
     public <T extends PConfiguration> T getManager(final Class<T> clazz) {
