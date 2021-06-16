@@ -6,6 +6,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PID;
 import org.serverct.parrot.parrotx.data.PStruct;
@@ -17,10 +18,10 @@ import java.util.Objects;
 
 public abstract class PStructSet<E extends PStruct> extends PDataSet<E> {
 
-    @Getter
-    protected FileConfiguration config;
     protected final String rootName;
     private final String filename;
+    @Getter
+    protected FileConfiguration config;
     protected ConfigurationSection root;
 
     public PStructSet(@NonNull PPlugin plugin, String filename, String typename, String root) {
@@ -51,24 +52,21 @@ public abstract class PStructSet<E extends PStruct> extends PDataSet<E> {
 
     @Override
     public void load(@NonNull File file) {
+        clearCache();
+
         config = YamlConfiguration.loadConfiguration(file);
         root = config.getConfigurationSection(this.rootName);
         if (Objects.isNull(root)) {
             root = config.createSection(this.rootName);
         }
-        for (String key : root.getKeys(false)) {
-            final ConfigurationSection section = root.getConfigurationSection(key);
-            if (Objects.isNull(section)) {
-                lang.log.error(I18n.LOAD, name(), "存在非数据节: " + key);
-                continue;
-            }
-            final E value = loadFromDataSection(section);
-            if (Objects.isNull(value)) {
-                lang.log.error(I18n.LOAD, name(), "加载数据失败: " + key);
-                continue;
-            }
-            put(value);
+        if (isLazyLoad()) {
+            lang.log.info("已为 &c{0} &r启用懒加载.", name());
+            return;
         }
+
+        root.getKeys(false).stream()
+                .map(this::buildId)
+                .forEach(this::load);
 
         if (dataMap.isEmpty()) {
             lang.log.warn("&c" + name() + " &7中没有数据可供加载.");
@@ -110,7 +108,27 @@ public abstract class PStructSet<E extends PStruct> extends PDataSet<E> {
         }
     }
 
-    public abstract E loadFromDataSection(final ConfigurationSection section);
+    @Nullable
+    public abstract E loadFromDataSection(@NotNull final ConfigurationSection section);
+
+    @Nullable
+    @Override
+    public E load(@NotNull PID id) {
+        final String key = id.getId();
+        final ConfigurationSection section = root.getConfigurationSection(key);
+        if (Objects.isNull(section)) {
+            lang.log.error(I18n.LOAD, name(), "存在非数据节: " + key);
+            return null;
+        }
+
+        final E value = loadFromDataSection(section);
+        if (Objects.isNull(value)) {
+            lang.log.error(I18n.LOAD, name(), "加载数据失败: " + key);
+            return null;
+        }
+        put(value);
+        return value;
+    }
 
     @NotNull
     public PID buildId(@NotNull final String id) {

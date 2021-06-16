@@ -11,6 +11,7 @@ import org.serverct.parrot.parrotx.utils.ClassUtil;
 import org.serverct.parrot.parrotx.utils.MapUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -84,8 +85,30 @@ public class PIndex {
 //                            final String registerName = register.getClass().getSimpleName();
 //                            lang.log.debug("&7| &r使用注册器 &a{0} &r自动注册 &a{1}.class&r.", registerName, className);
                         });
+
+                for (final Field field : clazz.getFields()) {
+                    if (Objects.isNull(field.getAnnotation(PAutoload.class))) {
+                        continue;
+                    }
+
+                    field.setAccessible(true);
+                    final Class<?> fieldClazz = field.getType();
+
+                    if (PPlugin.class.isAssignableFrom(fieldClazz)) {
+                        field.set(instance, plugin);
+                    } else if (I18n.class.isAssignableFrom(fieldClazz)) {
+                        field.set(instance, lang);
+                    } else if (PConfiguration.class.isAssignableFrom(fieldClazz)) {
+                        final PConfiguration config = this.configs.get(fieldClazz);
+                        lang.log.error(I18n.AUTOLOAD, clazz.getName(), "自动赋值 {0} 时无法获取到有效实例",
+                                fieldClazz.getSimpleName());
+                        field.set(instance, config);
+                    }
+                }
             } catch (NoSuchMethodException exception) {
                 lang.log.error(I18n.AUTOREGISTER, clazz.getName(), "自动注册项目需要一个无参构造器.");
+            } catch (IllegalAccessException exception) {
+                lang.log.error(I18n.AUTOLOAD, clazz.getName(), "自动赋值字段时出现问题: {0}", exception.getMessage());
             } catch (Exception exception) {
                 lang.log.error(I18n.AUTOREGISTER, clazz.getName(), exception, plugin.getPackageName());
                 exception.printStackTrace();

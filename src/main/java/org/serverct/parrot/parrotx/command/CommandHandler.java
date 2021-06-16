@@ -123,6 +123,9 @@ public class CommandHandler implements TabExecutor {
         } else {
             PCommand command = commands.get(args[0]);
             if (args.length == 1) {
+                if (Objects.isNull(command)) {
+                    return query(subCommands, args[0]);
+                }
                 return new ArrayList<>();
             } else {
                 if (Objects.nonNull(command))
@@ -218,6 +221,7 @@ public class CommandHandler implements TabExecutor {
 
     public void register(final BaseCommand command) {
         addCommand(command.getName().toLowerCase(), command);
+        command.setHandler(this);
     }
 
     private int compare(@NotNull final String str, @NotNull final String target) {

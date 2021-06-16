@@ -1,6 +1,7 @@
 package org.serverct.parrot.parrotx.config;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
@@ -23,8 +24,15 @@ public abstract class PDataSet<E extends UniqueData> implements PConfiguration, 
     protected final PPlugin plugin;
     protected final I18n lang;
     private final String name;
+    @Getter
+    @Setter
     protected File file;
+    @Getter
+    @Setter
     private boolean readonly = false;
+    @Getter
+    @Setter
+    private boolean lazyLoad = true;
 
     public PDataSet(@NotNull final PPlugin plugin, @NotNull final File file, @NotNull final String name) {
         this.plugin = plugin;
@@ -33,13 +41,11 @@ public abstract class PDataSet<E extends UniqueData> implements PConfiguration, 
         this.name = name;
     }
 
-    @Override
-    public boolean isReadOnly() {
-        return this.readonly;
-    }
+    @Nullable
+    public abstract E load(@NotNull final PID id);
 
-    public void readOnly(final boolean readonly) {
-        this.readonly = readonly;
+    public void clearCache() {
+        this.dataMap.clear();
     }
 
     @NotNull
@@ -54,17 +60,6 @@ public abstract class PDataSet<E extends UniqueData> implements PConfiguration, 
         return this.file.getName();
     }
 
-    @NotNull
-    @Override
-    public File getFile() {
-        return this.file;
-    }
-
-    @Override
-    public void setFile(@NotNull final File file) {
-        this.file = file;
-    }
-
     @Override
     public void reload() {
         save();
@@ -74,9 +69,6 @@ public abstract class PDataSet<E extends UniqueData> implements PConfiguration, 
 
     @Override
     public void save() {
-        if (readonly) {
-            return;
-        }
         saveAll();
         lang.log.action(I18n.SAVE, name());
     }
@@ -96,18 +88,25 @@ public abstract class PDataSet<E extends UniqueData> implements PConfiguration, 
         if (Objects.isNull(data)) {
             return;
         }
-        lang.log.debug("已加载数据: " + data.getID().getId());
+        lang.log.info("加载数据: &a{0}&r.", data.getID().getId());
         this.dataMap.put(data.getID(), data);
     }
 
     @Nullable
     @Override
     public E get(@NotNull final PID id) {
-        return this.dataMap.get(id);
+        final E value = this.dataMap.get(id);
+        if (this.lazyLoad && Objects.isNull(value)) {
+            return load(id);
+        }
+        return value;
     }
 
     @Override
     public boolean has(@NotNull final PID id) {
+        if (this.lazyLoad && !this.dataMap.containsKey(id)) {
+            load(id);
+        }
         return this.dataMap.containsKey(id);
     }
 

@@ -1,9 +1,6 @@
 package org.serverct.parrot.parrotx.command;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -37,13 +34,14 @@ public abstract class BaseCommand implements PCommand {
     private boolean mustPlayer = false;
     private Predicate<String[]> customValidate = null;
     private Function<String[], String> customValidateMessage = null;
+    @Setter
+    protected CommandHandler handler;
 
     public BaseCommand(@NotNull final PPlugin plugin, final String name, final int length) {
         this.plugin = plugin;
         this.lang = this.plugin.getLang();
         this.name = name;
         this.leastArgLength = length;
-        // plugin.getCmdHandler().register(this);
     }
 
     @Override
@@ -131,8 +129,12 @@ public abstract class BaseCommand implements PCommand {
             add(requiredParam("必填参数") + " " + optionalParam("选填参数"));
             add("");
 
+            if (Objects.isNull(BaseCommand.this.handler)) {
+                lang.log.error("监测到子命令 &c" + name + " &r的命令执行器为 null, 可能会出现 &cNullPointerException&r, 请检查子命令注册方式.");
+            }
+
             StringBuilder commandLine = new StringBuilder("  &9▶ &f/")
-                    .append(plugin.getCommandHandler().mainCmd)
+                    .append(BaseCommand.this.handler.mainCmd)
                     .append(" ")
                     .append(name);
             paramMap.values().forEach(
@@ -205,7 +207,7 @@ public abstract class BaseCommand implements PCommand {
     @Nullable
     protected <T> T convert(final int index, final String[] args, final Class<T> clazz) {
         if (index >= args.length) {
-            lang.log.error(I18n.GET, "子命令参数/" + this.name, "参数不足: ({0}) {1}", index, args);
+            lang.log.error(I18n.GET, "子命令参数/" + this.name, "参数不足: ({0}) {1}", index, Arrays.toString(args));
             return null;
         }
 
@@ -241,6 +243,7 @@ public abstract class BaseCommand implements PCommand {
     @AllArgsConstructor
     @Builder
     protected static class CommandParam {
+
         private String name;
         private boolean optional;
         private String description;
@@ -286,50 +289,55 @@ public abstract class BaseCommand implements PCommand {
         }
 
         public static CommandParam aDouble(final int position, @NotNull final String name,
-                                           @Nullable final String description,
+                                           @Nullable final String description, final boolean optional,
                                            @Nullable final Function<String[], String> validateMessage,
                                            @Nullable final Predicate<Double> check) {
-            return CommandParam.builder()
-                    .name(name)
-                    .description(description)
-                    .position(position)
-                    .validate(input -> {
-                        try {
-                            final double value = Double.parseDouble(input);
-                            if (Objects.nonNull(check)) {
-                                return check.test(value);
-                            }
-                            return true;
-                        } catch (NumberFormatException exception) {
-                            return false;
-                        }
-                    })
-                    .advancedValidateMessage(validateMessage)
-                    .converter(args -> Double.parseDouble(args[position]))
-                    .build();
+            return plainContext(position, name, description, optional, validateMessage, Double::parseDouble, check);
         }
 
         public static CommandParam aInt(final int position, @NotNull final String name,
-                                        @Nullable final String description, @Nullable final String validateMessage,
+                                        @Nullable final String description, final boolean optional,
+                                        @Nullable final Function<String[], String> validateMessage,
                                         @Nullable final Predicate<Integer> check) {
+            return plainContext(position, name, description, optional, validateMessage, Integer::parseInt, check);
+        }
+
+        public static CommandParam aString(final int position, @NotNull final String name,
+                                           @Nullable final String description, final boolean optional,
+                                           @Nullable final Function<String[], String> validateMessage,
+                                           @Nullable final Predicate<String> check) {
+            return plainContext(position, name, description, optional, validateMessage, input -> input, check);
+        }
+
+        public static <T> CommandParam plainContext(final int position, @NotNull final String name,
+                                                    @Nullable final String description, final boolean optional,
+                                                    @Nullable final Function<String[], String> validateMessage,
+                                                    @NotNull final Function<String, T> caster,
+                                                    @Nullable final Predicate<T> check) {
             return CommandParam.builder()
                     .name(name)
                     .description(description)
                     .position(position)
-                    .validate(input -> {
-                        try {
-                            final int value = Integer.parseInt(input);
-                            if (Objects.nonNull(check)) {
-                                return check.test(value);
-                            }
-                            return true;
-                        } catch (NumberFormatException exception) {
-                            return false;
-                        }
-                    })
-                    .validateMessage(validateMessage)
-                    .converter(args -> Integer.parseInt(args[position]))
+                    .optional(optional)
+                    .validate(validator(caster, check))
+                    .advancedValidateMessage(validateMessage)
+                    .converter(args -> caster.apply(args[position]))
                     .build();
+        }
+
+        public static <T> Predicate<String> validator(@NotNull final Function<String, T> caster,
+                                                      @Nullable final Predicate<T> check) {
+            return input -> {
+                try {
+                    final T value = caster.apply(input);
+                    if (Objects.nonNull(check)) {
+                        return check.test(value);
+                    }
+                    return true;
+                } catch (Throwable exception) {
+                    return false;
+                }
+            };
         }
     }
 }

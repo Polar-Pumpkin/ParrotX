@@ -4,12 +4,14 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.DrilldownPie;
 import org.bstats.charts.SimplePie;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +32,7 @@ import java.util.function.Consumer;
 public abstract class PPlugin extends JavaPlugin {
 
     public static final int PARROTX_ID = 9515;
-    public final String PARROTX_VERSION = "1.4.7-Alpha (Build 21)";
+    public final String PARROTX_VERSION = "1.4.8-Alpha (Build 1)";
 
     private final List<Listener> listeners = new ArrayList<>();
     private final List<BaseExpansion> expansions = new ArrayList<>();
@@ -42,8 +44,6 @@ public abstract class PPlugin extends JavaPlugin {
     @Getter
     protected I18n lang;
 
-    @Getter
-    private CommandHandler commandHandler;
     @Setter
     private String versionLog = "本插件基于 ParrotX {0}, 感谢使用.";
     @Setter
@@ -82,26 +82,40 @@ public abstract class PPlugin extends JavaPlugin {
                         final Consumer<Metrics> callback = entry.getValue();
 
                         final Metrics targetMetrics = new Metrics(this, pluginId);
-                        bStats = true;
                         if (Objects.nonNull(callback)) {
                             callback.accept(targetMetrics);
                         }
+                        bStats = true;
                     } catch (Exception exception) {
                         lang.log.error(I18n.LOAD, "自定义 bStats 数据统计", exception, getPackageName());
                     }
                 }
 
-                if (!Bukkit.getPluginManager().isPluginEnabled("ParrotX")) {
-                    try {
-                        final Metrics metrics = new Metrics(this, PARROTX_ID);
-                        metrics.addCustomChart(new SingleLineChart("plugins_using_parrotx", () -> 1));
-                        metrics.addCustomChart(new SimplePie("plugin_name", this::getName));
-                        metrics.addCustomChart(new SimplePie("parrotx_version", () -> PARROTX_VERSION));
-                        metrics.addCustomChart(new SimplePie("integration_method", () -> "Compile"));
-                    } catch (Exception exception) {
-                        lang.log.error(I18n.LOAD, "ParrotX bStats 数据统计", exception, getPackageName());
-                    }
+                try {
+                    final Metrics metrics = new Metrics(this, PARROTX_ID);
+                    metrics.addCustomChart(new SingleLineChart("plugins_using_parrotx", () -> 1));
+                    metrics.addCustomChart(new SimplePie("plugin_name", this::getName));
+                    metrics.addCustomChart(new SimplePie("parrotx_version", () -> PARROTX_VERSION));
+                    metrics.addCustomChart(new SimplePie("integration_method",
+                            () -> Bukkit.getPluginManager().isPluginEnabled("ParrotX") ? "Depend" : "Compile"));
+                    metrics.addCustomChart(new DrilldownPie("plugin-used_parrotx_version", () -> {
+                        final Map<String, Map<String, Integer>> parrots = new HashMap<>();
+                        final Map<String, Integer> plugins = new HashMap<>();
+                        final PluginDescriptionFile desc = getDescription();
+                        plugins.put(I18n.format("{0}({1})", desc.getName(), desc.getVersion()), 1);
+                        parrots.put(PARROTX_VERSION, plugins);
+                        return parrots;
+                    }));
+                    metrics.addCustomChart(new DrilldownPie("plugin_version", () -> {
+                        final Map<String, Map<String, Integer>> plugins = new HashMap<>();
+                        final Map<String, Integer> versions = new HashMap<>();
+                        versions.put(getDescription().getVersion(), 1);
+                        plugins.put(getName(), versions);
+                        return plugins;
+                    }));
                     bStats = true;
+                } catch (Exception exception) {
+                    lang.log.error(I18n.LOAD, "ParrotX bStats 数据统计", exception, getPackageName());
                 }
 
                 if (bStats) {
@@ -171,7 +185,6 @@ public abstract class PPlugin extends JavaPlugin {
     public void registerCommand(@NonNull CommandHandler handler) {
         PluginCommand command = Bukkit.getPluginCommand(handler.mainCmd);
         if (command != null) {
-            this.commandHandler = handler;
             command.setExecutor(handler);
             command.setTabCompleter(handler);
         } else {
@@ -187,13 +200,13 @@ public abstract class PPlugin extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         index.saveConfig();
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            this.expansions.forEach(BaseExpansion::unreg);
+        }
         preDisable();
     }
 
     public void preDisable() {
-        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            this.expansions.forEach(BaseExpansion::unreg);
-        }
         getServer().getScheduler().cancelTasks(this);
         index.clearConfig();
     }

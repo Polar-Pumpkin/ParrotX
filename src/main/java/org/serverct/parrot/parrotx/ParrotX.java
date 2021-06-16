@@ -2,8 +2,6 @@ package org.serverct.parrot.parrotx;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.bstats.bukkit.Metrics;
-import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
@@ -20,8 +18,8 @@ public final class ParrotX extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        final Metrics metrics = new Metrics(this, PLUGIN_ID);
-        metrics.addCustomChart(new SimplePie("integration_method", () -> "Depend"));
+//        final Metrics metrics = new Metrics(this, PLUGIN_ID);
+//        metrics.addCustomChart(new SimplePie("integration_method", () -> "Depend"));
 
         final org.serverct.parrot.parrotx.utils.Metrics cStats = new org.serverct.parrot.parrotx.utils.Metrics(this);
     }
