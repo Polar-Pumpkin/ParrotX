@@ -21,8 +21,9 @@ public abstract class PStruct implements UniqueData {
     @Getter
     protected final Map<String, Object> dataMap = new HashMap<>();
     private final String typeName;
+    @Getter
     @Setter
-    protected boolean readOnly = false;
+    protected boolean readonly = false;
 
     public PStruct(PID id, ConfigurationSection section, String typeName) {
         this.id = id;
@@ -39,7 +40,7 @@ public abstract class PStruct implements UniqueData {
 
     @Override
     public void save() {
-        if (readOnly) {
+        if (readonly) {
             return;
         }
         Autoloader.execute(plugin, section, this, false);
@@ -56,11 +57,6 @@ public abstract class PStruct implements UniqueData {
 
     @Override
     public void saveDefault() {
-    }
-
-    @Override
-    public boolean isReadOnly() {
-        return this.readOnly;
     }
 
     @Nullable

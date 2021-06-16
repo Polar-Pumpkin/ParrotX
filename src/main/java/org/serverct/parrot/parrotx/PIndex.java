@@ -39,7 +39,7 @@ public class PIndex {
 
     protected void saveConfig() {
         this.configs.values().forEach(config -> {
-            if (!config.isReadOnly()) {
+            if (!config.isReadonly()) {
                 config.save();
             }
         });

@@ -2,6 +2,7 @@ package org.serverct.parrot.parrotx.config;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.serverct.parrot.parrotx.PPlugin;
@@ -20,11 +21,14 @@ public abstract class PConfig implements PConfiguration, FileSaved {
     private final String filename;
     private final String typeName;
     @Getter
+    @Setter
     protected File file;
     @Getter
     protected FileConfiguration config;
     protected PPlugin plugin;
     protected I18n lang;
+    @Getter
+    @Setter
     private boolean readonly = false;
 
     public PConfig(@NonNull PPlugin plugin, String filename, String typename) {
@@ -34,15 +38,6 @@ public abstract class PConfig implements PConfiguration, FileSaved {
         this.config = YamlConfiguration.loadConfiguration(this.file);
         this.filename = FileUtil.getNoExFilename(this.file);
         this.typeName = typename;
-    }
-
-    @Override
-    public boolean isReadOnly() {
-        return this.readonly;
-    }
-
-    public void readOnly(final boolean readonly) {
-        this.readonly = readonly;
     }
 
     @Override
@@ -72,11 +67,6 @@ public abstract class PConfig implements PConfiguration, FileSaved {
         } catch (Throwable e) {
             lang.log.error(I18n.LOAD, name(), e, plugin.getPackageName());
         }
-    }
-
-    @Override
-    public void setFile(@NonNull File file) {
-        this.file = file;
     }
 
     @Override
