@@ -59,7 +59,11 @@ public class ListUtil {
         final String prefix = template.substring(0, template.indexOf(keyword));
 
         if (Objects.isNull(contents) || contents.isEmpty()) {
-            result.set(index, prefix + BasicUtil.thisOrElse(nonContent, "无"));
+            if (StringUtils.isEmpty(nonContent)) {
+                list.remove(index);
+            } else {
+                result.set(index, prefix + nonContent);
+            }
         } else {
             int current = index;
             for (String content : contents) {

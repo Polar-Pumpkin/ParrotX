@@ -22,17 +22,20 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public @Data
+@Data
 @Builder
-class BaseElement implements InventoryElement {
+public class BaseElement implements InventoryElement {
+
     private final int priority;
     private final String name;
     private final Supplier<ItemStack> item;
     private final String xPos;
     private final String yPos;
+    private final List<Integer> specPos;
     private final Predicate<Player> condition;
 
-    public static BaseElement of(final PPlugin plugin, @Nullable final ConfigurationSection section, final int priority, final Predicate<Player> condition) {
+    public static BaseElement of(final PPlugin plugin, @Nullable final ConfigurationSection section,
+                                 final int priority, final Predicate<Player> condition) {
         if (BasicUtil.isNull(plugin, section, I18n.LOAD, "某 Gui 元素", "传入 Section 对象为 null")) {
             return null;
         }
@@ -78,7 +81,10 @@ class BaseElement implements InventoryElement {
     @Override
     public List<Integer> getPositions() {
         if (Objects.isNull(xPos) || Objects.isNull(yPos)) {
-            return new ArrayList<>();
+            if (Objects.isNull(this.specPos)) {
+                return new ArrayList<>();
+            }
+            return this.specPos;
         }
         return Position.get(xPos, yPos);
     }

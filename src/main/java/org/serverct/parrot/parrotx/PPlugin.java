@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 public abstract class PPlugin extends JavaPlugin {
 
     public static final int PARROTX_ID = 9515;
-    public final String PARROTX_VERSION = "1.4.8-Alpha (Build 2)";
+    public final String PARROTX_VERSION = "1.4.8-Alpha (Build 3)";
 
     private final List<Listener> listeners = new ArrayList<>();
     private final List<BaseExpansion> expansions = new ArrayList<>();

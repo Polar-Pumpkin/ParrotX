@@ -290,4 +290,25 @@ public class ItemUtil {
     public static boolean invalid(@Nullable final ItemStack item) {
         return Objects.isNull(item) || item.getType() == Material.AIR;
     }
+
+    @NotNull
+    public static List<String> getLore(@Nullable final ItemStack item) {
+        final List<String> result = new ArrayList<>();
+        if (Objects.isNull(item)) {
+            return result;
+        }
+
+        final ItemMeta meta = item.getItemMeta();
+        if (Objects.isNull(meta)) {
+            return result;
+        }
+
+        final List<String> lore = meta.getLore();
+        if (Objects.isNull(lore)) {
+            return result;
+        }
+
+        result.addAll(lore);
+        return result;
+    }
 }
