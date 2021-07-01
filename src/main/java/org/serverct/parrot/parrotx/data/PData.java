@@ -39,9 +39,6 @@ public abstract class PData implements UniqueData, FileSaved {
 
     @Override
     public void save() {
-        if (readonly) {
-            return;
-        }
         try {
             Autoloader.execute(plugin, this.data, this, false);
             this.data.save(this.file);
