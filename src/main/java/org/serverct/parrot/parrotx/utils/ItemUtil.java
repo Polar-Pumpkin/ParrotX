@@ -2,6 +2,8 @@ package org.serverct.parrot.parrotx.utils;
 
 import com.cryptomorin.xseries.XEnchantment;
 import com.cryptomorin.xseries.XMaterial;
+import de.tr7zw.nbtapi.NBTContainer;
+import de.tr7zw.nbtapi.NBTItem;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -38,6 +40,15 @@ public class ItemUtil {
             if (Objects.isNull(result)) {
                 result = new ItemStack(Material.AIR);
                 return result;
+            }
+
+            if (data.containsKey("NBT")) {
+                final String nbtString = data.getString("NBT");
+                if (StringUtils.isNotEmpty(nbtString)) {
+                    final NBTItem nbt = new NBTItem(result);
+                    final NBTContainer tag = new NBTContainer(nbtString);
+                    nbt.mergeCompound(tag);
+                }
             }
 
             final int amount = data.getInt("Amount", 1);
@@ -165,28 +176,28 @@ public class ItemUtil {
         return item;
     }
 
-    public static void save(@Nullable final ConfigurationSection section, @Nullable final ItemStack item) {
-        if (Objects.isNull(section)) {
+    public static void save(@Nullable final ConfigurationSection rootSection, @Nullable final ItemStack item) {
+        if (Objects.isNull(rootSection)) {
             return;
         }
         if (Objects.isNull(item)) {
-            section.set("ItemStack", null);
+            rootSection.set("ItemStack", null);
             return;
         }
-        final ConfigurationSection itemSection = section.createSection("ItemStack");
+        final ConfigurationSection section = rootSection.createSection("ItemStack");
 
         final Material material = item.getType();
         final String materialName = material.name();
         if (Objects.isNull(EnumUtil.valueOf(Material.class, materialName))) {
             //noinspection deprecation
-            itemSection.set("Material", material.getId());
+            section.set("Material", material.getId());
         } else {
-            itemSection.set("Material", item.getType().name());
+            section.set("Material", item.getType().name());
         }
 
         final int amount = item.getAmount();
         if (amount > 1) {
-            itemSection.set("Amount", amount);
+            section.set("Amount", amount);
         }
 
         final ItemMeta meta = item.getItemMeta();
@@ -197,25 +208,25 @@ public class ItemUtil {
         if (XMaterial.isNewVersion()) {
             if (meta instanceof Damageable) {
                 final Damageable damage = (Damageable) meta;
-                itemSection.set("Durability", damage.getDamage());
+                section.set("Durability", damage.getDamage());
             }
         } else {
             //noinspection deprecation
-            itemSection.set("Durability", item.getDurability());
+            section.set("Durability", item.getDurability());
         }
 
         if (meta.hasDisplayName()) {
-            itemSection.set("Display", meta.getDisplayName());
+            section.set("Display", meta.getDisplayName());
         }
 
         if (meta.hasLore()) {
             final List<String> lore = new ArrayList<>(Optional.ofNullable(meta.getLore()).orElse(new ArrayList<>()));
             lore.replaceAll(content -> I18n.deColor(content, '&'));
-            itemSection.set("Lore", lore);
+            section.set("Lore", lore);
         }
 
         if (meta.hasEnchants()) {
-            final ConfigurationSection enchantSection = itemSection.createSection("Enchants");
+            final ConfigurationSection enchantSection = section.createSection("Enchants");
             meta.getEnchants().forEach((enchant, lvl) -> enchantSection.set(enchant.getKey().getKey(), lvl));
         }
 
@@ -224,9 +235,12 @@ public class ItemUtil {
             if (!flags.isEmpty()) {
                 final List<String> flagList = new ArrayList<>();
                 flags.forEach(flag -> flagList.add(flag.name()));
-                itemSection.set("ItemFlags", flagList);
+                section.set("ItemFlags", flagList);
             }
         }
+
+        final NBTItem nbt = new NBTItem(item);
+        section.set("NBT", nbt.toString());
     }
 
     @NotNull
