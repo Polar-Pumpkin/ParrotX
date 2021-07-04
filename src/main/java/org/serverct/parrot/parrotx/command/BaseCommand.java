@@ -275,16 +275,14 @@ public abstract class BaseCommand implements PCommand {
                                         @Nullable final String description, final boolean has,
                                         @NotNull final Class<? extends PDataSet<?>> clazz,
                                         @Nullable final Function<String[], String> validateMessage) {
-            final PDataSet<?> dataSet = ParrotXAPI.getConfigManager(clazz);
-
             return CommandParam.builder()
                     .name(name)
                     .description(description)
                     .position(position)
-                    .suggest(() -> dataSet.getStringIds().toArray(new String[0]))
-                    .validate(input -> has == dataSet.has(input))
+                    .suggest(() -> ParrotXAPI.getConfigManager(clazz).getStringIds().toArray(new String[0]))
+                    .validate(input -> has == ParrotXAPI.getConfigManager(clazz).has(input))
                     .advancedValidateMessage(validateMessage)
-                    .converter(args -> dataSet.get(args[position]))
+                    .converter(args -> ParrotXAPI.getConfigManager(clazz).get(args[position]))
                     .build();
         }
 
