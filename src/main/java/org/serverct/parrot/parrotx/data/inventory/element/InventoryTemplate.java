@@ -23,22 +23,27 @@ public class InventoryTemplate<T> implements InventoryElement {
     private final Supplier<Collection<T>> advancedContents;
     private final BiFunction<ItemStack, T, ItemStack> applyTemple;
     private final Map<Integer, Map<Integer, T>> contentMap = new HashMap<>();
+    private final boolean permitNullContent;
     private int currentPage;
 
     public InventoryTemplate(InventoryElement base, Collection<T> contents,
+                             boolean permitNullContent,
                              BiFunction<ItemStack, T, ItemStack> applyTemple) {
         this.base = base;
         this.contents = contents;
         this.advancedContents = null;
         this.applyTemple = applyTemple;
+        this.permitNullContent = permitNullContent;
     }
 
-    public InventoryTemplate(InventoryElement base, Supplier<Collection<T>> advancedContents, BiFunction<ItemStack, T
-            , ItemStack> applyTemple) {
+    public InventoryTemplate(InventoryElement base, Supplier<Collection<T>> advancedContents,
+                             boolean permitNullContent,
+                             BiFunction<ItemStack, T, ItemStack> applyTemple) {
         this.base = base;
         this.contents = null;
         this.advancedContents = advancedContents;
         this.applyTemple = applyTemple;
+        this.permitNullContent = permitNullContent;
     }
 
     public static <T> InventoryTemplate<T> get(final PInventory<?> inv, final String name) {
@@ -50,7 +55,7 @@ public class InventoryTemplate<T> implements InventoryElement {
     }
 
     public ItemStack apply(final T data) {
-        if (Objects.isNull(data)) {
+        if (!this.permitNullContent && Objects.isNull(data)) {
             return new ItemStack(Material.AIR);
         }
         final ItemStack item = getBase().getItem().get().clone();
@@ -168,6 +173,7 @@ public class InventoryTemplate<T> implements InventoryElement {
         private Collection<T> contents;
         private Supplier<Collection<T>> advancedContents;
         private BiFunction<ItemStack, T, ItemStack> applyTemple;
+        private boolean permitNullContent;
 
         public InventoryTemplateBuilder<T> base(final InventoryElement base) {
             this.base = base;
@@ -189,11 +195,16 @@ public class InventoryTemplate<T> implements InventoryElement {
             return this;
         }
 
+        public InventoryTemplateBuilder<T> permitNullContent(final boolean permitNullContent) {
+            this.permitNullContent = permitNullContent;
+            return this;
+        }
+
         public InventoryTemplate<T> build() {
             if (Objects.nonNull(this.advancedContents)) {
-                return new InventoryTemplate<T>(base, advancedContents, applyTemple);
+                return new InventoryTemplate<>(base, advancedContents, permitNullContent, applyTemple);
             }
-            return new InventoryTemplate<>(base, contents, applyTemple);
+            return new InventoryTemplate<>(base, contents, permitNullContent, applyTemple);
         }
     }
 }
