@@ -10,14 +10,14 @@ import org.serverct.parrot.parrotx.data.inventory.PInventory;
 import org.serverct.parrot.parrotx.utils.ItemUtil;
 
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 @Data
 @Builder
 public class InventoryItemButton implements InventoryElement {
 
     private final BaseElement base;
-    private final Consumer<ItemStack> onClick;
+    private final BiConsumer<InventoryClickEvent, ItemStack> onClick;
 
     @Override
     public boolean isClickable() {
@@ -44,6 +44,6 @@ public class InventoryItemButton implements InventoryElement {
         }
 
         final ItemStack item = event.getCursor();
-        this.onClick.accept(item);
+        this.onClick.accept(event, item);
     }
 }

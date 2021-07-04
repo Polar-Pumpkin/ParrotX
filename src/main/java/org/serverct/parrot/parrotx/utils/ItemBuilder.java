@@ -12,8 +12,11 @@ import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.*;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+@SuppressWarnings({"UnusedReturnValue", "unused"})
 public class ItemBuilder {
 
     private String display;
@@ -64,6 +67,22 @@ public class ItemBuilder {
     }
 
     @NotNull
+    public ItemBuilder elseLore(@NotNull final BooleanSupplier condition,
+                                @NotNull final List<String> lores, @NotNull final List<String> elseLores) {
+        return elseDo(condition, builder -> builder.lore(lores), builder -> builder.lore(elseLores));
+    }
+
+    @NotNull
+    public ItemBuilder orLore(@NotNull final BooleanSupplier condition, @NotNull final List<String> lores) {
+        return orDo(condition, builder -> builder.lore(lores));
+    }
+
+    @NotNull
+    public ItemBuilder orLore(@NotNull final BooleanSupplier condition, @NotNull final String... lores) {
+        return orDo(condition, builder -> builder.lore(lores));
+    }
+
+    @NotNull
     public ItemBuilder enchant(@Nullable final Enchantment enchant, final int level) {
         if (Objects.isNull(enchant)) {
             return this;
@@ -84,6 +103,26 @@ public class ItemBuilder {
             this.flags = new ArrayList<>();
         }
         this.flags.add(flag);
+        return this;
+    }
+
+    @NotNull
+    public ItemBuilder orDo(@NotNull final BooleanSupplier condition, @Nullable final Consumer<ItemBuilder> todo) {
+        if (condition.getAsBoolean()) {
+            BasicUtil.canDo(todo, action -> action.accept(this));
+        }
+        return this;
+    }
+
+    @NotNull
+    public ItemBuilder elseDo(@NotNull final BooleanSupplier condition,
+                              @Nullable final Consumer<ItemBuilder> todo,
+                              @Nullable final Consumer<ItemBuilder> elseDo) {
+        if (condition.getAsBoolean()) {
+            BasicUtil.canDo(todo, action -> action.accept(this));
+        } else {
+            BasicUtil.canDo(elseDo, action -> action.accept(this));
+        }
         return this;
     }
 
