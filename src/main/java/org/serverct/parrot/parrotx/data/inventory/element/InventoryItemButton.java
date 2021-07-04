@@ -2,6 +2,8 @@ package org.serverct.parrot.parrotx.data.inventory.element;
 
 import lombok.Builder;
 import lombok.Data;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -43,7 +45,18 @@ public class InventoryItemButton implements InventoryElement {
             return;
         }
 
-        final ItemStack item = event.getCursor();
-        this.onClick.accept(event, item);
+        final ItemStack cursor = event.getCursor();
+        if (Objects.isNull(cursor)) {
+            return;
+        }
+
+        final Player user = (Player) event.getWhoClicked();
+        final ItemStack item = cursor.clone();
+        Bukkit.getScheduler().runTask(holder.getPlugin(), () -> {
+            event.getView().setCursor(null);
+            user.getInventory().addItem(item);
+
+            this.onClick.accept(event, item);
+        });
     }
 }
