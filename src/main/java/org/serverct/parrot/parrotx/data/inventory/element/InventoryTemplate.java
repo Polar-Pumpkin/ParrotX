@@ -135,6 +135,7 @@ public class InventoryTemplate<T> implements InventoryElement {
                 slotIterator = getBase().getPositions().iterator();
                 page++;
             }
+            // FIXME 在 BaseElement 忘记写 x/yPos 的时候这里可能会报错.
             contents.put(slotIterator.next(), content);
         }
         contentMap.put(page, contents);

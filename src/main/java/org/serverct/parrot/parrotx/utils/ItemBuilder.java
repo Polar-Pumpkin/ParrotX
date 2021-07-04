@@ -68,13 +68,14 @@ public class ItemBuilder {
 
     @NotNull
     public ItemBuilder elseLore(@NotNull final BooleanSupplier condition,
-                                @NotNull final List<String> lores, @NotNull final List<String> elseLores) {
-        return elseDo(condition, builder -> builder.lore(lores), builder -> builder.lore(elseLores));
+                                @NotNull final Supplier<List<String>> lores,
+                                @NotNull final Supplier<List<String>> elseLores) {
+        return elseDo(condition, builder -> builder.lore(lores.get()), builder -> builder.lore(elseLores.get()));
     }
 
     @NotNull
-    public ItemBuilder orLore(@NotNull final BooleanSupplier condition, @NotNull final List<String> lores) {
-        return orDo(condition, builder -> builder.lore(lores));
+    public ItemBuilder orLore(@NotNull final BooleanSupplier condition, @NotNull final Supplier<List<String>> lores) {
+        return orDo(condition, builder -> builder.lore(lores.get()));
     }
 
     @NotNull
