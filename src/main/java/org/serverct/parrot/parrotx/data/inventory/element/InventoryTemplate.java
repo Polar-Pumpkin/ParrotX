@@ -55,7 +55,7 @@ public class InventoryTemplate<T> implements InventoryElement {
     }
 
     public ItemStack apply(final T data) {
-        if (!this.permitNullContent && Objects.isNull(data)) {
+        if (!permitNullContent && Objects.isNull(data)) {
             return new ItemStack(Material.AIR);
         }
         final ItemStack item = getBase().getItem().get().clone();
@@ -160,7 +160,8 @@ public class InventoryTemplate<T> implements InventoryElement {
     @Override
     public void click(final PInventory<?> holder, final InventoryClickEvent event) {
         final I18n lang = holder.getPlugin().getLang();
-        if (Objects.isNull(getContent(this.currentPage, event.getSlot()))) {
+        final T content = getContent(this.currentPage, event.getSlot());
+        if (!permitNullContent && Objects.isNull(content)) {
             event.setCancelled(true);
             return;
         }
