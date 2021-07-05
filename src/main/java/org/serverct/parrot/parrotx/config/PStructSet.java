@@ -130,6 +130,12 @@ public abstract class PStructSet<E extends PStruct> extends PDataSet<E> {
         return value;
     }
 
+    @Override
+    public void delete(@NotNull PID id) {
+        super.delete(id);
+        this.root.set(id.getId(), null);
+    }
+
     @NotNull
     public PID buildId(@NotNull final String id) {
         return new PID(plugin, rootName.toLowerCase(), id);

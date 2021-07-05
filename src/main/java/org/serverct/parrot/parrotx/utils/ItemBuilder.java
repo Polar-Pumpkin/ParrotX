@@ -19,16 +19,46 @@ import java.util.function.Supplier;
 @SuppressWarnings({"UnusedReturnValue", "unused"})
 public class ItemBuilder {
 
+    private final List<String> lore = new ArrayList<>();
+    private final Map<Enchantment, Integer> enchants = new HashMap<>();
+    private final List<ItemFlag> flags = new ArrayList<>();
     private String display;
     private XMaterial material;
     private int amount;
-    private List<String> lore;
-    private Map<Enchantment, Integer> enchants;
-    private List<ItemFlag> flags;
 
     @NotNull
     public static ItemBuilder start() {
         return new ItemBuilder();
+    }
+
+    @NotNull
+    public static ItemBuilder start(@NotNull final ItemStack item) {
+        return start().fromItem(item);
+    }
+
+    @NotNull
+    public ItemBuilder fromItem(@NotNull final ItemStack item) {
+        this.material = XMaterial.matchXMaterial(item);
+        this.amount = item.getAmount();
+
+        this.enchants.clear();
+        this.enchants.putAll(item.getEnchantments());
+
+        Optional.ofNullable(item.getItemMeta()).ifPresent(meta -> {
+            //noinspection ConstantConditions
+            Optional.ofNullable(meta.getDisplayName()).ifPresent(name -> this.display = name);
+
+            Optional.ofNullable(meta.getLore()).ifPresent(lore -> {
+                this.lore.clear();
+                this.lore.addAll(lore);
+            });
+
+            if (XMaterial.supports(8)) {
+                this.flags.clear();
+                this.flags.addAll(meta.getItemFlags());
+            }
+        });
+        return this;
     }
 
     @NotNull
@@ -50,12 +80,25 @@ public class ItemBuilder {
     }
 
     @NotNull
-    public ItemBuilder lore(@Nullable final List<String> lore) {
+    public ItemBuilder clearLore() {
+        this.lore.clear();
+        return this;
+    }
+
+    @NotNull
+    public ItemBuilder topLore(@Nullable final List<String> lore) {
         if (Objects.isNull(lore)) {
             return this;
         }
-        if (Objects.isNull(this.lore)) {
-            this.lore = new ArrayList<>();
+
+        this.lore.addAll(0, lore);
+        return this;
+    }
+
+    @NotNull
+    public ItemBuilder lore(@Nullable final List<String> lore) {
+        if (Objects.isNull(lore)) {
+            return this;
         }
         this.lore.addAll(lore);
         return this;
@@ -88,9 +131,6 @@ public class ItemBuilder {
         if (Objects.isNull(enchant)) {
             return this;
         }
-        if (Objects.isNull(this.enchants)) {
-            this.enchants = new HashMap<>();
-        }
         this.enchants.put(enchant, level);
         return this;
     }
@@ -99,9 +139,6 @@ public class ItemBuilder {
     public ItemBuilder flag(@Nullable final ItemFlag flag) {
         if (Objects.isNull(flag)) {
             return this;
-        }
-        if (Objects.isNull(this.flags)) {
-            this.flags = new ArrayList<>();
         }
         this.flags.add(flag);
         return this;
@@ -152,19 +189,15 @@ public class ItemBuilder {
             meta.setDisplayName(I18n.color(this.display));
         }
 
-        if (Objects.nonNull(this.lore)) {
-            final List<String> color = new ArrayList<>(this.lore);
-            color.replaceAll(I18n::color);
-            meta.setLore(color);
+        final List<String> color = new ArrayList<>(this.lore);
+        color.replaceAll(I18n::color);
+        meta.setLore(color);
+
+        for (final Map.Entry<Enchantment, Integer> entry : this.enchants.entrySet()) {
+            meta.addEnchant(entry.getKey(), entry.getValue(), true);
         }
 
-        if (Objects.nonNull(this.enchants)) {
-            for (final Map.Entry<Enchantment, Integer> entry : this.enchants.entrySet()) {
-                meta.addEnchant(entry.getKey(), entry.getValue(), true);
-            }
-        }
-
-        if (Objects.nonNull(this.flags)) {
+        if (XMaterial.supports(8)) {
             for (final ItemFlag flag : this.flags) {
                 meta.addItemFlags(flag);
             }

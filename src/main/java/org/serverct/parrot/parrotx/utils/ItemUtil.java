@@ -325,4 +325,25 @@ public class ItemUtil {
         result.addAll(lore);
         return result;
     }
+
+    @NotNull
+    public static List<ItemStack> copy(@NotNull final ItemStack item, int amount) {
+        final List<ItemStack> result = new ArrayList<>();
+
+        final int maxStackSize = item.getMaxStackSize();
+        if (amount <= maxStackSize) {
+            final ItemStack copy = item.clone();
+            copy.setAmount(amount);
+            result.add(copy);
+            return result;
+        }
+
+        while (amount > 0) {
+            final ItemStack copy = item.clone();
+            copy.setAmount(Math.min(amount, maxStackSize));
+            result.add(copy);
+            amount -= maxStackSize;
+        }
+        return result;
+    }
 }
