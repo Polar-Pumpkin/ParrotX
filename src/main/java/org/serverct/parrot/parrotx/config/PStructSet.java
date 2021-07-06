@@ -10,11 +10,15 @@ import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.data.PID;
 import org.serverct.parrot.parrotx.data.PStruct;
+import org.serverct.parrot.parrotx.utils.BasicUtil;
 import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public abstract class PStructSet<E extends PStruct> extends PDataSet<E> {
 
@@ -30,6 +34,28 @@ public abstract class PStructSet<E extends PStruct> extends PDataSet<E> {
         this.filename = filename;
         this.rootName = root;
         this.config = YamlConfiguration.loadConfiguration(file);
+    }
+
+    public static <E extends PStruct> void loadTo(@NotNull final ConfigurationSection from,
+                                                  @NotNull final Map<String, E> to,
+                                                  @NotNull final Function<ConfigurationSection, E> loader) {
+
+        loadTo(from, to, loader, null);
+    }
+
+    public static <E extends PStruct> void loadTo(@NotNull final ConfigurationSection from,
+                                                  @NotNull final Map<String, E> to,
+                                                  @NotNull final Function<ConfigurationSection, E> loader,
+                                                  @Nullable final Consumer<String> onInvalid) {
+        for (final String key : from.getKeys(false)) {
+            final ConfigurationSection section = from.getConfigurationSection(key);
+            if (Objects.isNull(section)) {
+                BasicUtil.canDo(onInvalid, consumer -> consumer.accept(key));
+                continue;
+            }
+
+            to.put(key, loader.apply(section));
+        }
     }
 
     @Override

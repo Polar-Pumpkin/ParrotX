@@ -65,7 +65,13 @@ public abstract class Autoloader {
                     ItemUtil.save(target, item);
                 }),
                 new SimpleLoader<>(Vector.class, ConfigurationSection::getVector),
-                new SimpleLoader<>(ConfigurationSection.class, ConfigurationSection::getConfigurationSection),
+                new SimpleLoader<>(ConfigurationSection.class, (section, path) -> {
+                    final ConfigurationSection exist = section.getConfigurationSection(path);
+                    if (Objects.nonNull(exist)) {
+                        return exist;
+                    }
+                    return section.createSection(path);
+                }),
                 new SimpleLoader<>(UUID.class, (section, path) -> {
                     final String uuid = section.getString(path);
                     if (Objects.isNull(uuid)) {
