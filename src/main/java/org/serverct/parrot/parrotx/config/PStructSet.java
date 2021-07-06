@@ -17,8 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public abstract class PStructSet<E extends PStruct> extends PDataSet<E> {
 
@@ -38,14 +38,14 @@ public abstract class PStructSet<E extends PStruct> extends PDataSet<E> {
 
     public static <E extends PStruct> void loadTo(@NotNull final ConfigurationSection from,
                                                   @NotNull final Map<String, E> to,
-                                                  @NotNull final Function<ConfigurationSection, E> loader) {
+                                                  @NotNull final BiFunction<String, ConfigurationSection, E> loader) {
 
         loadTo(from, to, loader, null);
     }
 
     public static <E extends PStruct> void loadTo(@NotNull final ConfigurationSection from,
                                                   @NotNull final Map<String, E> to,
-                                                  @NotNull final Function<ConfigurationSection, E> loader,
+                                                  @NotNull final BiFunction<String, ConfigurationSection, E> loader,
                                                   @Nullable final Consumer<String> onInvalid) {
         for (final String key : from.getKeys(false)) {
             final ConfigurationSection section = from.getConfigurationSection(key);
@@ -54,7 +54,11 @@ public abstract class PStructSet<E extends PStruct> extends PDataSet<E> {
                 continue;
             }
 
-            to.put(key, loader.apply(section));
+            final E value = loader.apply(key, section);
+            if (Objects.isNull(value)) {
+                return;
+            }
+            to.put(key, value);
         }
     }
 
