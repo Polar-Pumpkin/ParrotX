@@ -1,5 +1,6 @@
 package org.serverct.parrot.parrotx.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -17,10 +18,7 @@ import parsii.eval.Variable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -160,13 +158,11 @@ public class BasicUtil {
         return false;
     }
 
-    @Contract("null, _ -> true;!null, _ -> false")
+    @Contract("null, _ -> true; !null, _ -> false")
     public static boolean isNull(@Nullable final Object object,
                                  @Nullable final Runnable ifNull) {
         if (Objects.isNull(object)) {
-            if (Objects.nonNull(ifNull)) {
-                ifNull.run();
-            }
+            BasicUtil.canDo(ifNull, Runnable::run);
             return true;
         }
         return false;
@@ -179,6 +175,11 @@ public class BasicUtil {
             }
         }
         return false;
+    }
+
+    @NotNull
+    public static <T> T orElse(@Nullable final T value, @NotNull final T other) {
+        return thisOrElse(value, other);
     }
 
     @NotNull
@@ -204,5 +205,13 @@ public class BasicUtil {
             return;
         }
         callback.accept(object);
+    }
+
+    @NotNull
+    public Optional<String> getUsername(@Nullable final UUID uuid) {
+        if (Objects.isNull(uuid)) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(Bukkit.getOfflinePlayer(uuid).getName());
     }
 }
