@@ -208,7 +208,7 @@ public class BasicUtil {
     }
 
     @NotNull
-    public Optional<String> getUsername(@Nullable final UUID uuid) {
+    public static Optional<String> getUsername(@Nullable final UUID uuid) {
         if (Objects.isNull(uuid)) {
             return Optional.empty();
         }
