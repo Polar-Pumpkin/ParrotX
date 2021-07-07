@@ -68,6 +68,12 @@ public class ItemBuilder {
     }
 
     @NotNull
+    public ItemBuilder display(@Nullable final String display, @Nullable Object... args) {
+        this.display = I18n.color(display, args);
+        return this;
+    }
+
+    @NotNull
     public ItemBuilder material(@NotNull final XMaterial material) {
         this.material = material;
         return this;

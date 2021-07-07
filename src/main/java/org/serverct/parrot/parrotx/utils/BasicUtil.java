@@ -214,4 +214,9 @@ public class BasicUtil {
         }
         return Optional.ofNullable(Bukkit.getOfflinePlayer(uuid).getName());
     }
+
+    @NotNull
+    public static String getUsername(@Nullable final UUID uuid, @NotNull final String def) {
+        return getUsername(uuid).orElse(def);
+    }
 }
