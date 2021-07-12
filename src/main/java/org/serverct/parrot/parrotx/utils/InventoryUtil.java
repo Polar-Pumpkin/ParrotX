@@ -25,7 +25,7 @@ public class InventoryUtil {
         for (int slot = 0; slot < inv.getSize(); slot++) {
             final ItemStack item = inv.getItem(slot);
             if (filter.test(item)) {
-                result.put(slot, item);
+                result.put(slot, item.clone());
             }
         }
         return result;
