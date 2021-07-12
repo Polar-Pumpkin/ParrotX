@@ -131,6 +131,9 @@ public class InventoryUtil {
 
         int left = amount;
         for (final ItemStack value : filter.values()) {
+            ParrotX.log("准备移除物品: ");
+            I18n.formatItemStack(value).forEach(ParrotX::log);
+
             final int stack = value.getAmount();
 
             if (left >= stack) {
