@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
 import org.serverct.parrot.parrotx.ParrotX;
+import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -120,6 +121,13 @@ public class InventoryUtil {
             ParrotX.log("Inventory 内符合条件的物品数量不足需要移除的数量.");
             return false;
         }
+        ParrotX.log("Inventory 内容: ");
+        for (ItemStack content : inventory.getContents()) {
+            if (ItemUtil.invalid(content)) {
+                continue;
+            }
+            I18n.formatItemStack(content).forEach(ParrotX::log);
+        }
 
         int left = amount;
         for (final ItemStack value : filter.values()) {
@@ -136,6 +144,13 @@ public class InventoryUtil {
             value.setAmount(stack - left);
             ParrotX.log("待移除数量不足该物品堆数量, 该物品堆数量变化: &e{0} &r-> &a{1}&r.", stack, value.getAmount());
             break;
+        }
+        ParrotX.log("Inventory 内容: ");
+        for (ItemStack content : inventory.getContents()) {
+            if (ItemUtil.invalid(content)) {
+                continue;
+            }
+            I18n.formatItemStack(content).forEach(ParrotX::log);
         }
         return true;
     }
