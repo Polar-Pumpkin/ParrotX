@@ -5,11 +5,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.data.autoload.Autoloader;
 import org.serverct.parrot.parrotx.data.autoload.DataLoader;
+import org.serverct.parrot.parrotx.utils.EnumUtil;
 
 import java.util.*;
 import java.util.function.Function;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class MapLoader implements DataLoader<Map> {
 
     private static final Map<Class<?>, Function<String, ?>> PARSER_MAP = new HashMap<>();
@@ -43,7 +44,14 @@ public class MapLoader implements DataLoader<Map> {
             return map;
         }
 
-        final Function<String, ?> keyParser = PARSER_MAP.get(classChain.get(1));
+        final Class<?> keyClass = classChain.get(1);
+        Function<String, ?> keyParser = PARSER_MAP.get(keyClass);
+        if (Objects.isNull(keyParser)) {
+            if (Enum.class.isAssignableFrom(keyClass)) {
+                keyParser = string -> EnumUtil.valueOf((Class<? extends Enum>) keyClass, string.toUpperCase());
+            }
+        }
+
         final DataLoader<?> valueLoader = Autoloader.getLoader(classChain.get(2));
         if (Objects.isNull(keyParser)) {
             Autoloader.log("加载 Map 数据时未注册 Key 对应分析函数: {0}", classChain.get(1));

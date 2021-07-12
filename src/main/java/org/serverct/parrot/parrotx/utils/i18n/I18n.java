@@ -10,6 +10,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.conversations.Conversable;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -109,6 +110,13 @@ public class I18n {
             return;
         }
         if (sender != null) {
+            if (sender instanceof Conversable) {
+                final Conversable conversable = (Conversable) sender;
+                if (conversable.isConversing()) {
+                    conversable.sendRawMessage(MessageFormat.format(color(message), args));
+                    return;
+                }
+            }
             sender.sendMessage(MessageFormat.format(color(message), args));
         }
     }
@@ -129,7 +137,7 @@ public class I18n {
                 public void run() {
                     send(sender, message, args);
                 }
-            }.runTask(plugin);
+            }.runTaskLater(plugin, 1L);
         }
     }
 
