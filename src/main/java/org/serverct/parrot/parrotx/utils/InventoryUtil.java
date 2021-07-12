@@ -10,8 +10,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
-import org.serverct.parrot.parrotx.ParrotX;
-import org.serverct.parrot.parrotx.utils.i18n.I18n;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -104,9 +102,7 @@ public class InventoryUtil {
 
     public static boolean remove(@NotNull final Inventory inventory, @NotNull final Predicate<ItemStack> checker,
                                  final int amount) {
-        ParrotX.log("移除 Inventory 中的 &a{0} &r个物品.", amount);
         if (amount <= 0) {
-            ParrotX.log("需要移除数量小于等于 0.");
             return true;
         }
 
@@ -115,61 +111,23 @@ public class InventoryUtil {
         for (final ItemStack value : filter.values()) {
             exist += value.getAmount();
         }
-        ParrotX.log("");
-        ParrotX.log("Inventory 内符合条件的物品有: ");
-        for (Map.Entry<Integer, ItemStack> entry : filter.entrySet()) {
-            final int index = entry.getKey();
-            final ItemStack content = entry.getValue();
-            if (ItemUtil.invalid(content)) {
-                continue;
-            }
-            ParrotX.log("Index: &a{0}&r.", index);
-            I18n.formatItemStack(content).forEach(ParrotX::log);
-        }
-        ParrotX.log("总数: &a{0}&r.", exist);
-        ParrotX.log("");
 
         if (exist < amount) {
-            ParrotX.log("Inventory 内符合条件的物品数量不足需要移除的数量.");
             return false;
         }
 
-        ParrotX.log("Inventory 内容: ");
-        for (ItemStack content : inventory.getContents()) {
-            if (ItemUtil.invalid(content)) {
-                continue;
-            }
-            I18n.formatItemStack(content).forEach(ParrotX::log);
-        }
-        ParrotX.log("");
-
         int left = amount;
         for (final ItemStack value : filter.values()) {
-            ParrotX.log("准备移除物品: ");
-            I18n.formatItemStack(value).forEach(ParrotX::log);
-
             final int stack = value.getAmount();
 
             if (left >= stack) {
                 final Map<Integer, ItemStack> map = inventory.removeItem(value);
                 left -= stack;
-                ParrotX.log("移除物品 &a{0} &r个, 剩余 &a{1} &r待移除.", stack, left);
-                ParrotX.log("无法移除的物品: &c{0}&r.", map);
                 continue;
             }
 
             value.setAmount(stack - left);
-            ParrotX.log("待移除数量不足该物品堆数量, 该物品堆数量变化: &e{0} &r-> &a{1}&r.", stack, value.getAmount());
             break;
-        }
-
-        ParrotX.log("");
-        ParrotX.log("Inventory 内容: ");
-        for (ItemStack content : inventory.getContents()) {
-            if (ItemUtil.invalid(content)) {
-                continue;
-            }
-            I18n.formatItemStack(content).forEach(ParrotX::log);
         }
         return true;
     }
