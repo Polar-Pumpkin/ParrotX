@@ -126,9 +126,10 @@ public class InventoryUtil {
             final int stack = value.getAmount();
 
             if (left >= stack) {
-                ParrotX.log("移除物品 &a{0} &r个, 剩余 &a{1} &r待移除.");
-                inventory.removeItem(value);
+                final Map<Integer, ItemStack> map = inventory.removeItem(value);
                 left -= stack;
+                ParrotX.log("移除物品 &a{0} &r个, 剩余 &a{1} &r待移除.", stack, left);
+                ParrotX.log("无法移除的物品: &c{0}&r.", map);
                 continue;
             }
 
