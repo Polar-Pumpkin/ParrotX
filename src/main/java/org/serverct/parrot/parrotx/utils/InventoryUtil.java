@@ -10,6 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.ParrotX;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -102,7 +103,9 @@ public class InventoryUtil {
 
     public static boolean remove(@NotNull final Inventory inventory, @NotNull final Predicate<ItemStack> checker,
                                  final int amount) {
+        ParrotX.debug("移除 Inventory 中的 &a{0} &r个物品.", amount);
         if (amount <= 0) {
+            ParrotX.debug("需要移除数量小于等于 0.");
             return true;
         }
 
@@ -111,8 +114,10 @@ public class InventoryUtil {
         for (final ItemStack value : filter.values()) {
             exist += value.getAmount();
         }
+        ParrotX.debug("Inventory 内符合条件的物品数量有: &a{0}&r.", exist);
 
         if (exist < amount) {
+            ParrotX.debug("Inventory 内符合条件的物品数量不足需要移除的数量.");
             return false;
         }
 
@@ -121,12 +126,14 @@ public class InventoryUtil {
             final int stack = value.getAmount();
 
             if (left >= stack) {
+                ParrotX.debug("移除物品 &a{0} &r个, 剩余 &a{1} &r待移除.");
                 inventory.removeItem(value);
                 left -= stack;
                 continue;
             }
 
             value.setAmount(stack - left);
+            ParrotX.debug("待移除数量不足该物品堆数量, 该物品堆数量变化: &e{0} &r-> &a{1}&r.", stack, value.getAmount());
             break;
         }
         return true;
