@@ -115,12 +115,25 @@ public class InventoryUtil {
         for (final ItemStack value : filter.values()) {
             exist += value.getAmount();
         }
-        ParrotX.log("Inventory 内符合条件的物品数量有: &a{0}&r.", exist);
+        ParrotX.log("");
+        ParrotX.log("Inventory 内符合条件的物品有: ");
+        for (Map.Entry<Integer, ItemStack> entry : filter.entrySet()) {
+            final int index = entry.getKey();
+            final ItemStack content = entry.getValue();
+            if (ItemUtil.invalid(content)) {
+                continue;
+            }
+            ParrotX.log("Index: &a{0}&r.", index);
+            I18n.formatItemStack(content).forEach(ParrotX::log);
+        }
+        ParrotX.log("总数: &a{0}&r.", exist);
+        ParrotX.log("");
 
         if (exist < amount) {
             ParrotX.log("Inventory 内符合条件的物品数量不足需要移除的数量.");
             return false;
         }
+
         ParrotX.log("Inventory 内容: ");
         for (ItemStack content : inventory.getContents()) {
             if (ItemUtil.invalid(content)) {
@@ -128,6 +141,7 @@ public class InventoryUtil {
             }
             I18n.formatItemStack(content).forEach(ParrotX::log);
         }
+        ParrotX.log("");
 
         int left = amount;
         for (final ItemStack value : filter.values()) {
@@ -148,6 +162,8 @@ public class InventoryUtil {
             ParrotX.log("待移除数量不足该物品堆数量, 该物品堆数量变化: &e{0} &r-> &a{1}&r.", stack, value.getAmount());
             break;
         }
+
+        ParrotX.log("");
         ParrotX.log("Inventory 内容: ");
         for (ItemStack content : inventory.getContents()) {
             if (ItemUtil.invalid(content)) {
