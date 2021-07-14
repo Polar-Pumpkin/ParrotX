@@ -23,7 +23,7 @@ public class InventoryUtil {
         for (int slot = 0; slot < inv.getSize(); slot++) {
             final ItemStack item = inv.getItem(slot);
             if (filter.test(item)) {
-                result.put(slot, item.clone());
+                result.put(slot, Objects.isNull(item) ? null : item.clone());
             }
         }
         return result;
