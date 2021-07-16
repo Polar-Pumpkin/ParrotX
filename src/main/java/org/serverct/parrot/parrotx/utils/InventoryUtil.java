@@ -134,7 +134,15 @@ public class InventoryUtil {
             value.setAmount(stack - left);
             break;
         }
-        return true;
+
+
+        final int after = count(inventory, checker);
+        final boolean value = exist - after >= amount;
+        if (!value) {
+            ParrotX.debug("移除物品后检查失败: Exist &e{0}&r, After &e{1}&r, Amount &e{2}&r.",
+                    exist, after, amount);
+        }
+        return value;
     }
 
     public static void openInventory(@NonNull PPlugin plugin, @NonNull Player user, @NonNull Inventory inventory) {
