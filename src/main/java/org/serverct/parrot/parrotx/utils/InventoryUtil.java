@@ -10,6 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.serverct.parrot.parrotx.PPlugin;
+import org.serverct.parrot.parrotx.ParrotX;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -122,6 +123,10 @@ public class InventoryUtil {
 
             if (left >= stack) {
                 final Map<Integer, ItemStack> map = inventory.removeItem(value);
+                if (!map.isEmpty()) {
+                    ParrotX.debug("移除物品失败: &c{0}&r.", map);
+                    return false;
+                }
                 left -= stack;
                 continue;
             }
