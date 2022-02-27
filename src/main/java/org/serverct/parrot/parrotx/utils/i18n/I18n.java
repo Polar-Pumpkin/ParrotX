@@ -238,11 +238,7 @@ public class I18n {
      */
     @NotNull
     public static String blank(int length) {
-        final StringBuilder builder = new StringBuilder();
-        for (int i = length; i > 0; i--) {
-            builder.append(" ");
-        }
-        return builder.toString();
+        return StringUtils.repeat(" ", length);
     }
 
     /**

@@ -19,13 +19,12 @@ public class Dependency {
 
     public static File library = new File("./library");
     public static List<String> caches = new ArrayList<>();
-    private String[] urls;
+    private final String[] urls;
     public List<File> files = new ArrayList<>();
 
     public Dependency(String... urls) {
         this.urls = urls;
     }
-
 
     /**
      * 稍后下载

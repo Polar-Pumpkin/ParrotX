@@ -23,8 +23,8 @@ public class InventoryUtil {
         final Map<Integer, ItemStack> result = new HashMap<>();
         for (int slot = 0; slot < inv.getSize(); slot++) {
             final ItemStack item = inv.getItem(slot);
-            if (filter.test(item)) {
-                result.put(slot, Objects.isNull(item) ? null : item.clone());
+            if (item != null && filter.test(item)) {
+                result.put(slot, item.clone());
             }
         }
         return result;
@@ -118,7 +118,9 @@ public class InventoryUtil {
         }
 
         int left = amount;
-        for (final ItemStack value : filter.values()) {
+        for (Map.Entry<Integer, ItemStack> entry : filter.entrySet()) {
+            final int index = entry.getKey();
+            final ItemStack value = entry.getValue();
             final int stack = value.getAmount();
 
             if (left >= stack) {
@@ -132,6 +134,7 @@ public class InventoryUtil {
             }
 
             value.setAmount(stack - left);
+            inventory.setItem(index, value);
             break;
         }
 
